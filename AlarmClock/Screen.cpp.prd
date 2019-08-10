@@ -1,0 +1,99 @@
+#include <arduino.h>
+
+class screen {
+public:
+
+    virtual char** get_text() {}
+    //    static char output_text[LCD_width+1][LCD_height];
+    //    for (byte i = 0; i < LCD_height; i++) output_text[LCD_width][i] = '\0'; //null termination
+    //
+    //    for (byte i = 0; i < controls_number; i++) {
+    //        strcat(output_text[controls[i]->position.column], controls[i]->get_text());
+    //    }
+    //    int x = controls[1]->value; //nejde udelat
+};
+
+class homeScreen : public screen {
+public:
+    Label dateLabel({ 0,0 }, 8);
+    Label day_of_weekLabel({ 0,9 }, 1);
+    Label timeLabel({ 0,11 }, 5);
+    Button alarmsButton({ 1,0 }, 1);
+    Button timerButton({ 1,1 }, 1);
+    
+    homeScreen() {
+        this->alarmsButton.set_text("\10\0", 2); // #TODO ?\10? symbol
+        this->timerButton.get_text("\11\0", 2); // #TODO \11 symbol
+    }
+
+};
+
+
+class Position {
+public:
+    byte row;
+    byte column;
+};
+
+class UserControl { //user controls (buttons, etc inherit from this class)
+public:
+    boolean selectable; //if not, the cursor skips it
+    boolean visible;
+    boolean selected; //when selected flag is set, onSpin() function works (otherwise not)
+    byte span;
+    Position position;
+    void(*onClick)(UserControl);
+    void(*onSpin)(UserControl, SpinDirection);
+
+    UserControl(Position pos, byte span_) {
+        position = pos;
+        span = span_;
+    }
+
+    void set_text(char * text, byte length) {
+        _text = text;
+        _text_length = length;
+    }
+
+    char * get_text() {
+        static char output_text[LCD_width + 1]; // +1 for null termination
+        if (!visible) output_text[0] = '\0';
+        else {
+            for (byte i = 0; i < _text_length; i++) {
+                output_text[i] = _text[i]; //_text should be null terminated, so I dont't have to change the rest
+            }
+        }
+        return output_text;
+    }
+
+private:
+    char * _text;
+    byte _text_length;
+};
+
+class Label : public UserControl {
+public:
+    Label(Position pos, byte span_) : UserControl(pos, span_) { selectable = false; }
+};
+
+class Button : public UserControl {
+public:
+    Button(Position pos, byte span_, void(*clickFunction)(UserControl)) : UserControl(pos, span_) { selectable = true; onClick = clickFunction; }
+};
+
+class NumericUpDown : public UserControl {
+public:
+    byte min = 0;
+    byte max = 10;
+    byte value = 0;
+    NumericUpDown(Position pos, byte span_, void(*spinFunction)(UserControl, SpinDirection)) : UserControl(pos, span_) { selectable = true; onClick = invertSelected; onSpin = spinFunction; }
+};
+
+void invertSelected(UserControl ctrl) {
+    ctrl.selected = !ctrl.selected;
+}
+
+void NumericUpDown_changeValue(NumericUpDown ctrl, SpinDirection dir) {
+    if (dir == left && ctrl.value > ctrl.min) ctrl.value--;
+    else if (dir == right && ctrl.value < ctrl.max) ctrl.value++;
+}
