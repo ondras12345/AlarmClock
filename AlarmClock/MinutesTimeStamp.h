@@ -19,6 +19,8 @@ public:
     byte get_hours();
     byte get_minutes();
     void set_hours_minutes(byte hours, byte minutes);
+    MinutesTimeStampClass(byte hours, byte minutes);
+    MinutesTimeStampClass();
 
 };
 

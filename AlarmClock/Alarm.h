@@ -14,7 +14,7 @@
 #include <RTClib.h> // for datetime
 
 
-//#define AlarmClass_EEPROM_record_length identifier(1B) + sizeof(TimeStampClass - jen  2 byte) + sizeof(AlarmsEnabled) + sizeof(DaysOfWeekClass - jen 1 byte (eeprom)) + sizeof(Snooze) + sizeOf(Signalization)
+//#define AlarmClass_EEPROM_record_length identifier(1B) + sizeof(TimeStampClass - jen  2 byte) + sizeof(enabled - 1 byte) + sizeof(DaysOfWeekClass - jen 1 byte (eeprom)) + sizeof(Snooze) + sizeOf(Signalization)
 #define AlarmClass_EEPROM_record_length (1 + 2 + 1 + 1 + 2 + 3)
 #define EEPROM_alarms_identificator 0xFE
 #define AlarmClass_current_snooze_count_none 255
@@ -29,12 +29,6 @@
 
 #define Alarm_last_ringing_frequency 2000 // in Hz
 #define Alarm_last_ringing_period 250 // in ms
-
-enum AlarmEnabled {
-    Off = 0,
-    Single = 1,
-    Repeat = 2
-};
 
 struct Snooze {
     byte time_minutes; // max 99
@@ -91,7 +85,7 @@ public:
 
     // saved in the EEPROM:
     MinutesTimeStampClass when;
-    AlarmEnabled enabled;
+    boolean enabled;
     DaysOfWeekClass days_of_week;
     Snooze snooze;
     Signalization signalization;
@@ -102,6 +96,18 @@ public:
     void loop(DateTime time);
     void set_hardware(void(*lamp_)(boolean), void(*ambient_)(byte, byte, unsigned long), void(*buzzerTone_)(unsigned int, unsigned long), void(*buzzerNoTone_)());
     AlarmClass();
+
+
+    /*
+    Edit utils
+    Utilities that can be used to easily edit alarms
+    For easy intellisense listing of all changable variables (all begining with 'set_')
+    */
+    boolean set_enabled(boolean enabled_);
+    boolean set_time(byte hours_, byte minutes_);
+    boolean set_days_of_week(DaysOfWeekClass days_of_week_);
+    boolean set_snooze(byte time_minutes_, byte count_);
+    boolean set_signalization(byte ambient_, boolean lamp_, boolean buzzer_);
 
 };
 
