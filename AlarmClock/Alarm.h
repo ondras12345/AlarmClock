@@ -98,19 +98,21 @@ public:
     AlarmClass();
 
 
-    /*
-    Edit utils
-    Utilities that can be used to easily edit alarms
-    For easy intellisense listing of all changable variables (all begining with 'set_')
-    */
     boolean set_enabled(boolean enabled_);
-    boolean set_time(byte hours_, byte minutes_);
-    boolean set_days_of_week(DaysOfWeekClass days_of_week_);
-    boolean set_snooze(byte time_minutes_, byte count_);
-    boolean set_signalization(byte ambient_, boolean lamp_, boolean buzzer_);
+    boolean get_enabled() { return enabled; };
 
+    boolean set_time(byte hours_, byte minutes_);
+    MinutesTimeStampClass get_time() { return when; };
+
+    boolean set_days_of_week(DaysOfWeekClass days_of_week_);
+    DaysOfWeekClass get_days_of_week() { return days_of_week; };
+
+    boolean set_snooze(byte time_minutes_, byte count_);
+    Snooze get_snooze() { return snooze; };
+
+    boolean set_signalization(byte ambient_, boolean lamp_, boolean buzzer_);
+    Signalization get_signalization() { return signalization; };
 };
 
 
 #endif
-
