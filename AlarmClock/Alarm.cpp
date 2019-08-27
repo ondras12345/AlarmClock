@@ -20,7 +20,7 @@ void AlarmClass::loop(DateTime time)
             }
 
         }
-        else { // alarm is ringing
+        else if (signalization.buzzer) { // alarm is ringing
             unsigned long period = (get_current_snooze_count() == 1) ? Alarm_last_ringing_period : Alarm_regular_ringing_period; // select either the regular or last ringing parameters
             unsigned int frequency = (get_current_snooze_count() == 1) ? Alarm_last_ringing_frequency : Alarm_regular_ringing_frequency;
 
