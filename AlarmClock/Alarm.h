@@ -14,7 +14,7 @@
 #include <RTClib.h> // for datetime
 
 
-//#define AlarmClass_EEPROM_record_length identifier(1B) + sizeof(TimeStampClass - jen  2 byte) + sizeof(AlarmsEnabled) + sizeof(DaysOfWeekClass - jen 1 byte (eeprom)) + sizeof(Snooze) + sizeOf(Signalization)
+//#define AlarmClass_EEPROM_record_length identifier(1B) + sizeof(TimeStampClass - jen  2 byte) + sizeof(enabled - 1 byte) + sizeof(DaysOfWeekClass - jen 1 byte (eeprom)) + sizeof(Snooze) + sizeOf(Signalization)
 #define AlarmClass_EEPROM_record_length (1 + 2 + 1 + 1 + 2 + 3)
 #define EEPROM_alarms_identificator 0xFE
 #define AlarmClass_current_snooze_count_none 255
@@ -29,12 +29,6 @@
 
 #define Alarm_last_ringing_frequency 2000 // in Hz
 #define Alarm_last_ringing_period 250 // in ms
-
-enum AlarmEnabled {
-    Off = 0,
-    Single = 1,
-    Repeat = 2
-};
 
 struct Snooze {
     byte time_minutes; // max 99
@@ -91,7 +85,7 @@ public:
 
     // saved in the EEPROM:
     MinutesTimeStampClass when;
-    AlarmEnabled enabled;
+    boolean enabled;
     DaysOfWeekClass days_of_week;
     Snooze snooze;
     Signalization signalization;

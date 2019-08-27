@@ -57,7 +57,7 @@ void AlarmClass::set_hardware(void(*lamp_)(boolean), void(*ambient_)(byte, byte,
 AlarmClass::AlarmClass()
 {
     when.timestamp = 0;
-    enabled = Off;
+    enabled = false;
     days_of_week.DaysOfWeek = 0;
     snooze = { 0,0 };
     signalization = { 0, false, false };
@@ -74,7 +74,7 @@ boolean AlarmClass::readEEPROM(byte data[]) // data length must be equal to Alar
     when.timestamp |= data[2] << 8;
     if (when.get_hours() > 23 || when.get_minutes() > 59) return false;
 
-    enabled = AlarmEnabled(data[3]);
+    enabled = data[3];
     days_of_week.DaysOfWeek = data[4];
 
     if (data[5] <= 99) snooze.time_minutes = data[5];
@@ -101,7 +101,7 @@ byte * AlarmClass::writeEEPROM()
 
     data[1] = when.timestamp & 0xFF;
     data[2] = (when.timestamp >> 8) & 0xFF;
-    data[3] = byte(enabled);
+    data[3] = enabled;
     data[4] = days_of_week.DaysOfWeek;
     data[5] = snooze.time_minutes;
     data[6] = snooze.count;
