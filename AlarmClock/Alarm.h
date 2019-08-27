@@ -56,6 +56,13 @@ protected:
     void(*buzzerTone)(unsigned int, unsigned long); // freq, duration
     void(*buzzerNoTone)();
 
+    // saved in the EEPROM:
+    MinutesTimeStampClass _when;
+    boolean _enabled;
+    DaysOfWeekClass _days_of_week;
+    Snooze _snooze;
+    Signalization _signalization;
+
     // current snooze count value selected from the variable that also contains other info; counts down to 0
     byte get_current_snooze_count() const { return current_snooze_count & AlarmClass_current_snooze_count_value_mask; };
 
@@ -82,14 +89,6 @@ protected:
 
 
 public:
-
-    // saved in the EEPROM:
-    MinutesTimeStampClass when;
-    boolean enabled;
-    DaysOfWeekClass days_of_week;
-    Snooze snooze;
-    Signalization signalization;
-
     boolean readEEPROM(byte data[]);
     byte * writeEEPROM();
 
@@ -99,19 +98,19 @@ public:
 
 
     boolean set_enabled(boolean enabled_);
-    boolean get_enabled() { return enabled; };
+    boolean get_enabled() { return _enabled; };
 
     boolean set_time(byte hours_, byte minutes_);
-    MinutesTimeStampClass get_time() { return when; };
+    MinutesTimeStampClass get_time() { return _when; };
 
     boolean set_days_of_week(DaysOfWeekClass days_of_week_);
-    DaysOfWeekClass get_days_of_week() { return days_of_week; };
+    DaysOfWeekClass get_days_of_week() { return _days_of_week; };
 
     boolean set_snooze(byte time_minutes_, byte count_);
-    Snooze get_snooze() { return snooze; };
+    Snooze get_snooze() { return _snooze; };
 
     boolean set_signalization(byte ambient_, boolean lamp_, boolean buzzer_);
-    Signalization get_signalization() { return signalization; };
+    Signalization get_signalization() { return _signalization; };
 };
 
 
