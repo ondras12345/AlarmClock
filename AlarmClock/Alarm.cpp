@@ -14,13 +14,13 @@ void AlarmClass::loop(DateTime time)
 
     if (get_active()) { // alarm is already active
         if (get_current_snooze_status()) { // alarm is NOT ringing (snooze)
-            if ((unsigned long)(millis() - previous_millis) >= (snooze.time_minutes * 60000)) {
+            if ((unsigned long)(millis() - previous_millis) >= (_snooze.time_minutes * 60000)) {
                 set_current_snooze_status(false); // current_snooze_count &= ~AlarmClass_current_snooze_count_snooze_mask; // flip the bit
                 set_current_snooze_count(get_current_snooze_count() - 1);
             }
 
         }
-        else if (signalization.buzzer) { // alarm is ringing
+        else if (_signalization.buzzer) { // alarm is ringing
             unsigned long period = (get_current_snooze_count() == 1) ? Alarm_last_ringing_period : Alarm_regular_ringing_period; // select either the regular or last ringing parameters
             unsigned int frequency = (get_current_snooze_count() == 1) ? Alarm_last_ringing_frequency : Alarm_regular_ringing_frequency;
 
@@ -34,13 +34,13 @@ void AlarmClass::loop(DateTime time)
 
     }
     else { // alarm is not active
-        if (days_of_week.getDayOfWeek_Adafruit(time.dayOfTheWeek()) && time.hour() == when.get_hours() && time.minute() == when.get_minutes() && enabled) { // time is matching
+        if (_days_of_week.getDayOfWeek_Adafruit(time.dayOfTheWeek()) && time.hour() == _when.get_hours() && time.minute() == _when.get_minutes() && _enabled) { // time is matching
             if ((time - last_alarm).totalseconds() > 60) { // check for last_alarm - in case the alarm gets canceled during the same minute it started
                 last_alarm = time;
-                current_snooze_count = snooze.count; // bit 6 = 0 --> alarm is ringing (NOT in snooze), bit 5 = 0 --> buzzer is off (doesn't matter)
+                current_snooze_count = _snooze.count; // bit 6 = 0 --> alarm is ringing (NOT in snooze), bit 5 = 0 --> buzzer is off (doesn't matter)
                 // Do events - can only switch on
-                if (signalization.ambient > 0) ambient(0, signalization.ambient, 900000); // 15 minutes
-                if (signalization.lamp) lamp(true);
+                if (_signalization.ambient > 0) ambient(0, _signalization.ambient, 900000); // 15 minutes
+                if (_signalization.lamp) lamp(true);
             }
         }
     }
@@ -56,11 +56,11 @@ void AlarmClass::set_hardware(void(*lamp_)(boolean), void(*ambient_)(byte, byte,
 
 AlarmClass::AlarmClass()
 {
-    when.timestamp = 0;
-    enabled = false;
-    days_of_week.DaysOfWeek = 0;
-    snooze = { 0,0 };
-    signalization = { 0, false, false };
+    _when.timestamp = 0;
+    _enabled = false;
+    _days_of_week.DaysOfWeek = 0;
+    _snooze = { 0,0 };
+    _signalization = { 0, false, false };
     last_alarm = DateTime(2000, 1, 1);
     current_snooze_count = AlarmClass_current_snooze_count_none;
 }
@@ -69,23 +69,23 @@ boolean AlarmClass::readEEPROM(byte data[]) // data length must be equal to Alar
 {
     if (data[0] != EEPROM_alarms_identificator) return false;
 
-    when.timestamp = 0;
-    when.timestamp = data[1];
-    when.timestamp |= data[2] << 8;
-    if (when.get_hours() > 23 || when.get_minutes() > 59) return false;
+    _when.timestamp = 0;
+    _when.timestamp = data[1];
+    _when.timestamp |= data[2] << 8;
+    if (_when.get_hours() > 23 || _when.get_minutes() > 59) return false;
 
-    enabled = data[3];
-    days_of_week.DaysOfWeek = data[4];
+    _enabled = data[3];
+    _days_of_week.DaysOfWeek = data[4];
 
-    if (data[5] <= 99) snooze.time_minutes = data[5];
+    if (data[5] <= 99) _snooze.time_minutes = data[5];
     else return false;
 
-    if (data[6] <= 9) snooze.count = data[6];
+    if (data[6] <= 9) _snooze.count = data[6];
     else return false;
 
-    signalization.ambient = data[7];
-    signalization.lamp = data[8];
-    signalization.buzzer = data[9];
+    _signalization.ambient = data[7];
+    _signalization.lamp = data[8];
+    _signalization.buzzer = data[9];
 
     // not saved in the EEPROM:
     last_alarm = DateTime(2000, 1, 1);
@@ -99,46 +99,46 @@ byte * AlarmClass::writeEEPROM()
     static byte data[AlarmClass_EEPROM_record_length];
     data[0] = EEPROM_alarms_identificator;
 
-    data[1] = when.timestamp & 0xFF;
-    data[2] = (when.timestamp >> 8) & 0xFF;
-    data[3] = enabled;
-    data[4] = days_of_week.DaysOfWeek;
-    data[5] = snooze.time_minutes;
-    data[6] = snooze.count;
-    data[7] = signalization.ambient;
-    data[8] = signalization.lamp;
-    data[9] = signalization.buzzer;
+    data[1] = _when.timestamp & 0xFF;
+    data[2] = (_when.timestamp >> 8) & 0xFF;
+    data[3] = _enabled;
+    data[4] = _days_of_week.DaysOfWeek;
+    data[5] = _snooze.time_minutes;
+    data[6] = _snooze.count;
+    data[7] = _signalization.ambient;
+    data[8] = _signalization.lamp;
+    data[9] = _signalization.buzzer;
 
     return data;
 }
 
 
 boolean AlarmClass::set_enabled(boolean enabled_) {
-    enabled = enabled_;
+    _enabled = enabled_;
     return true;
 }
 
 boolean AlarmClass::set_time(byte hours_, byte minutes_) {
     if (hours_ > 23 || minutes_ > 59) return false;
-    when = MinutesTimeStampClass(hours_, minutes_);
+    _when = MinutesTimeStampClass(hours_, minutes_);
     return true;
 }
 
 boolean AlarmClass::set_days_of_week(DaysOfWeekClass days_of_week_) {
-    days_of_week = days_of_week_;
+    _days_of_week = days_of_week_;
     return true;
 }
 
 boolean AlarmClass::set_snooze(byte time_minutes_, byte count_) {
     if (time_minutes_ > 99 || count_ > 9) return false;
-    snooze.time_minutes = time_minutes_;
-    snooze.count = count_;
+    _snooze.time_minutes = time_minutes_;
+    _snooze.count = count_;
     return true;
 }
 
 boolean AlarmClass::set_signalization(byte ambient_, boolean lamp_, boolean buzzer_) {
-    signalization.ambient = ambient_;
-    signalization.lamp = lamp_;
-    signalization.buzzer = buzzer_;
+    _signalization.ambient = ambient_;
+    _signalization.lamp = lamp_;
+    _signalization.buzzer = buzzer_;
     return true;
 }
