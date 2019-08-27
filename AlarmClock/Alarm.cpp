@@ -111,3 +111,34 @@ byte * AlarmClass::writeEEPROM()
 
     return data;
 }
+
+
+boolean AlarmClass::set_enabled(boolean enabled_) {
+    enabled = enabled_;
+    return true;
+}
+
+boolean AlarmClass::set_time(byte hours_, byte minutes_) {
+    if (hours_ > 23 || minutes_ > 59) return false;
+    when = MinutesTimeStampClass(hours_, minutes_);
+    return true;
+}
+
+boolean AlarmClass::set_days_of_week(DaysOfWeekClass days_of_week_) {
+    days_of_week = days_of_week_;
+    return true;
+}
+
+boolean AlarmClass::set_snooze(byte time_minutes_, byte count_) {
+    if (time_minutes_ > 99 || count_ > 9) return false;
+    snooze.time_minutes = time_minutes_;
+    snooze.count = count_;
+    return true;
+}
+
+boolean AlarmClass::set_signalization(byte ambient_, boolean lamp_, boolean buzzer_) {
+    signalization.ambient = ambient_;
+    signalization.lamp = lamp_;
+    signalization.buzzer = buzzer_;
+    return true;
+}

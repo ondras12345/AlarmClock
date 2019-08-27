@@ -97,6 +97,18 @@ public:
     void set_hardware(void(*lamp_)(boolean), void(*ambient_)(byte, byte, unsigned long), void(*buzzerTone_)(unsigned int, unsigned long), void(*buzzerNoTone_)());
     AlarmClass();
 
+
+    /*
+    Edit utils
+    Utilities that can be used to easily edit alarms
+    For easy intellisense listing of all changable variables (all begining with 'set_')
+    */
+    boolean set_enabled(boolean enabled_);
+    boolean set_time(byte hours_, byte minutes_);
+    boolean set_days_of_week(DaysOfWeekClass days_of_week_);
+    boolean set_snooze(byte time_minutes_, byte count_);
+    boolean set_signalization(byte ambient_, boolean lamp_, boolean buzzer_);
+
 };
 
 
