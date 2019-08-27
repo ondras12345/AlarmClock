@@ -34,7 +34,7 @@ void AlarmClass::loop(DateTime time)
 
     }
     else { // alarm is not active
-        if (days_of_week.getDayOfWeek_Adafruit(time.dayOfTheWeek()) && time.hour() == when.get_hours() && time.minute() == when.get_minutes()) { // time is matching
+        if (days_of_week.getDayOfWeek_Adafruit(time.dayOfTheWeek()) && time.hour() == when.get_hours() && time.minute() == when.get_minutes() && enabled) { // time is matching
             if ((time - last_alarm).totalseconds() > 60) { // check for last_alarm - in case the alarm gets canceled during the same minute it started
                 last_alarm = time;
                 current_snooze_count = snooze.count; // bit 6 = 0 --> alarm is ringing (NOT in snooze), bit 5 = 0 --> buzzer is off (doesn't matter)
