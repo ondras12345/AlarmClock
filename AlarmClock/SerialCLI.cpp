@@ -14,18 +14,18 @@ void SerialCLIClass::loop()
     else {
         byte index = 0;
         while (Serial.available() > 0) {
-            Serial_buffer[index] = Serial.read();
+            _Serial_buffer[index] = Serial.read();
             index++;
         }
-        Serial_buffer[index] = '\0';
+        _Serial_buffer[index] = '\0';
     }
 
-    if (!strcmp(Serial_buffer, "help")) { // ! - strcmp returns 0 if matches
-        printHelp();
+    if (!strcmp(_Serial_buffer, "help")) { // ! - strcmp returns 0 if matches
+        _printHelp();
     }
 }
 
-void SerialCLIClass::printHelp()
+void SerialCLIClass::_printHelp()
 {
     Serial.println();
     Serial.println(F("Help:"));

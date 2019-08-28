@@ -16,9 +16,9 @@
 class SerialCLIClass
 {
  protected:
-     char Serial_buffer[Serial_buffer_size + 1]; // +1 for termination
+     char _Serial_buffer[Serial_buffer_size + 1]; // +1 for termination
 
-     void printHelp();
+     void _printHelp();
 
  public:
      void loop();
