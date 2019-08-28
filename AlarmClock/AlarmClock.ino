@@ -59,7 +59,7 @@ AlarmClass alarms[alarms_count];
 CountdownTimerClass countdownTimer;
 PWMfadeClass ambientFader(pin_ambient);
 DateTime now;
-SerialCLIClass CLI;
+SerialCLIClass CLI(&alarms);
 
 
 // function prototypes
