@@ -9,7 +9,7 @@
 #include "WProgram.h"
 #endif
 
-#include "Settings.cpp"
+#include "Settings.h"
 #include "DaysOfWeek.h"
 #include "MinutesTimeStamp.h"
 #include <RTClib.h> // for datetime
@@ -33,7 +33,6 @@ struct Signalization {
     boolean lamp;
     boolean buzzer;
 };
-
 
 
 class AlarmClass

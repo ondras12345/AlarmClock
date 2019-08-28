@@ -1,3 +1,12 @@
+#ifndef _SETTINGS_h
+#define _SETTINGS_h
+
+#if defined(ARDUINO) && ARDUINO >= 100
+#include "arduino.h"
+#else
+#include "WProgram.h"
+#endif
+
 /*
 Compile-time options
 */
@@ -58,3 +67,5 @@ Serial CLI
 #define Serial_buffer_length 10
 #define Serial_prompt_length 5
 #define Serial_indentation_width 2
+
+#endif

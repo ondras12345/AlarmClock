@@ -20,7 +20,8 @@ Code directives:
  - returning array: https://www.tutorialspoint.com/cplusplus/cpp_return_arrays_from_functions.htm
 */
 
-#include "Settings.cpp"
+#include "Settings.h"
+#include "Constants.h"
 
 #ifdef DEBUG
 #define DEBUG_print(x) Serial.print(x)

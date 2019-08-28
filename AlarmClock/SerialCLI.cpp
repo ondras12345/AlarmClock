@@ -93,7 +93,7 @@ boolean SerialCLIClass::_list_selected_alarm()
     Serial.print(F("Days of week:"));
     for (byte i = 1; i <= 7; i++) {
         if (_alarms[_selected_alarm_index]->get_days_of_week().getDayOfWeek(i)) {
-            Serial.print(days_short[i]);
+            Serial.print(days_of_the_week_names_short[i]);
             Serial.print(' ');
         }
         else Serial.print("   ");

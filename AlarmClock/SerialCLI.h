@@ -9,8 +9,8 @@
 	#include "WProgram.h"
 #endif
 
-#include "Settings.cpp"
-#include "Constants.cpp"
+#include "Settings.h"
+#include "Constants.h"
 #include "Alarm.h"
 
 class SerialCLIClass
