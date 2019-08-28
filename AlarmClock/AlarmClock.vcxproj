@@ -131,6 +131,7 @@
     <ClCompile Include="MinutesTimeStamp.cpp" />
     <ClCompile Include="PWMfade.cpp" />
     <ClCompile Include="SerialCLI.cpp" />
+    <ClCompile Include="Settings.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

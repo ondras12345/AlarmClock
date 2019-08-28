@@ -20,27 +20,7 @@ Code directives:
  - returning array: https://www.tutorialspoint.com/cplusplus/cpp_return_arrays_from_functions.htm
 */
 
-// Compile-time options
-#define alarms_count 6
-#define VisualStudio
-#define DEBUG
-
-// 2,3 - reserved for buttons / rotary encoder
-#define pin_lamp 4
-#define pin_buzzer 5 // PWM
-#define pin_ambient 6 // PWM
-#define pin_LCD_enable 7
-// 9, 10, 11, 12, 13 - reserved for SPI (ethernet, SD card)
-
-#define I2C_LCD_address 0x27
-#define I2C_DS3231_address 0x68
-#define LCD_width 16
-#define LCD_height 2
-
-// error codes for self test
-#define error_I2C_ping_DS3231 1
-#define error_time_lost 2
-#define error_critical_mask 0b1111111111111101 // time_lost is not critical
+#include "Settings.cpp"
 
 #ifdef DEBUG
 #define DEBUG_print(x) Serial.print(x)
@@ -126,7 +106,6 @@ void init_hardware() {
 /*
 EEPROM
 */
-#define EEPROM_alarms_offset 10
 
 boolean readEEPROM() {
     boolean error = false;
@@ -134,9 +113,9 @@ boolean readEEPROM() {
 
     // alarms:
     for (byte i = 0; i < alarms_count && !error; i++) {
-        byte data[AlarmClass_EEPROM_record_length];
-        for (byte j = 0; j < AlarmClass_EEPROM_record_length; j++) {
-            data[j] = EEPROM.read((i * AlarmClass_EEPROM_record_length) + j + EEPROM_alarms_offset);
+        byte data[EEPROM_AlarmClass_record_length];
+        for (byte j = 0; j < EEPROM_AlarmClass_record_length; j++) {
+            data[j] = EEPROM.read((i * EEPROM_AlarmClass_record_length) + j + EEPROM_alarms_offset);
         }
         error |= !alarms[i].readEEPROM(data);
     }
@@ -151,8 +130,8 @@ boolean writeEEPROM() {
     // alarms:
     for (byte i = 0; i < alarms_count && !error; i++) {
         byte * data = alarms[i].writeEEPROM();
-        for (byte j = 0; j < AlarmClass_EEPROM_record_length; j++) {
-            EEPROM.write((i * AlarmClass_EEPROM_record_length) + j + EEPROM_alarms_offset, data[j]);
+        for (byte j = 0; j < EEPROM_AlarmClass_record_length; j++) {
+            EEPROM.write((i * EEPROM_AlarmClass_record_length) + j + EEPROM_alarms_offset, data[j]);
         }
     }
 
