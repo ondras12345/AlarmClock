@@ -16,7 +16,8 @@ void SerialCLIClass::loop()
         while (Serial.available() > 0) {
             _Serial_buffer[index] = tolower(Serial.read());
             if (_Serial_buffer[index] != '\n' && _Serial_buffer[index] != '\r') // ignore CRLF
-                index++;
+                if(index < Serial_buffer_size - 1) // to array prevent overflow when a new message comes during processing
+                    index++;
         }
         _Serial_buffer[index] = '\0';
     }
