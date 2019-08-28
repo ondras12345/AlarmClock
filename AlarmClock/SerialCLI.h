@@ -9,16 +9,21 @@
 	#include "WProgram.h"
 #endif
 
+#include "Settings.cpp"
 #include "Alarm.h"
-
-#define Serial_buffer_size 10
 
 class SerialCLIClass
 {
  protected:
-     char _Serial_buffer[Serial_buffer_size + 1]; // +1 for termination
+     const char _prompt_default[2 + 1] = "> ";
+     char _Serial_buffer[Serial_buffer_length + 1]; // +1 for termination
+     char _prompt[Serial_prompt_length + 1] = "> ";
+
+     const byte _select_alarm_none = 255;
+     byte _select_alarm = _select_alarm_none;
 
      void _printHelp();
+     void _select(byte index);
 
  public:
      void loop();

@@ -50,3 +50,9 @@ EEPROM
 #define EEPROM_alarms_offset 10
 #define EEPROM_AlarmClass_record_length (1 + 2 + 1 + 1 + 2 + 3)
 #define EEPROM_alarms_identificator 0xFE
+
+/*
+Serial CLI
+*/
+#define Serial_buffer_length 10
+#define Serial_prompt_length 5
