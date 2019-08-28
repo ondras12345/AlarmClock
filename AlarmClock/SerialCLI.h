@@ -19,11 +19,11 @@ class SerialCLIClass
      char _Serial_buffer[Serial_buffer_length + 1]; // +1 for termination
      char _prompt[Serial_prompt_length + 1] = "> ";
 
-     const byte _select_alarm_none = 255;
-     byte _select_alarm = _select_alarm_none;
+     const byte _selected_alarm_none = 255;
+     byte _selected_alarm = _selected_alarm_none;
 
      void _printHelp();
-     void _select(byte index);
+     void _select_alarm(byte index);
 
  public:
      void loop();

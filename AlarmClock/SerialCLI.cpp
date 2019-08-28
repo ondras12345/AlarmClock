@@ -26,13 +26,13 @@ void SerialCLIClass::loop()
         _printHelp();
     }
     else if (strstr(_Serial_buffer, "sel") != NULL) {
-        _select_alarm = _select_alarm_none;
+        _selected_alarm = _selected_alarm_none;
         char *index = strstr(_Serial_buffer, "sel");
         while (!isDigit(*index) && *index != '\0') *index++;
-        if (*index == '\0') _select(_select_alarm_none);
+        if (*index == '\0') _select_alarm(_selected_alarm_none);
         else {
             byte index_num = *index - '0';
-            if (index_num < alarms_count) _select(index_num);
+            if (index_num < alarms_count) _select_alarm(index_num);
             else {
                 Serial.print(F("Invalid i: "));
                 Serial.println(index_num);
@@ -59,10 +59,10 @@ void SerialCLIClass::_printHelp()
     Serial.println();
 }
 
-void SerialCLIClass::_select(byte __index)
+void SerialCLIClass::_select_alarm(byte __index)
 {
-    _select_alarm = __index;
-    if (_select_alarm == _select_alarm_none) strcpy(_prompt, _prompt_default);
-    else sprintf(_prompt, "A%u%s", _select_alarm, _prompt_default);
+    _selected_alarm = __index;
+    if (_selected_alarm == _selected_alarm_none) strcpy(_prompt, _prompt_default);
+    else sprintf(_prompt, "A%u%s", _selected_alarm, _prompt_default);
 }
 
