@@ -69,7 +69,7 @@ enum SelfTest_level {
 #include "Alarm.h"
 #include "CountdownTimer.h"
 #include "PWMfade.h"
-
+#include "SerialCLI.h"
 
 
 // Global variables
@@ -79,6 +79,8 @@ AlarmClass alarms[alarms_count];
 CountdownTimerClass countdownTimer;
 PWMfadeClass ambientFader(pin_ambient);
 DateTime now;
+SerialCLIClass CLI;
+
 
 // function prototypes
 #ifdef VisualStudio
@@ -108,6 +110,7 @@ void setup() {
 
 void loop() {
     now = rtc.now(); // # TODO longer interval between reads ; # TODO + summer_time
+    CLI.loop(); // # TODO longer interval
 
     for (byte i = 0; i < alarms_count; i++) alarms[i].loop(now);
     countdownTimer.loop();
