@@ -23,7 +23,7 @@ class SerialCLIClass
      byte _selected_alarm = _selected_alarm_none;
 
      void _printHelp();
-     void _select_alarm(byte index);
+     boolean _select_alarm(byte index);
 
  public:
      void loop();
