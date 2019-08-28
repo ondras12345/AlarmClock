@@ -14,7 +14,7 @@ void SerialCLIClass::loop()
     else {
         byte index = 0;
         while (Serial.available() > 0) {
-            _Serial_buffer[index] = Serial.read();
+            _Serial_buffer[index] = tolower(Serial.read());
             index++;
         }
         _Serial_buffer[index] = '\0';
