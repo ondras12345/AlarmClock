@@ -28,10 +28,10 @@ void SerialCLIClass::loop()
     else if (strstr(_Serial_buffer, "sel") != NULL) {
         _selected_alarm_index = _selected_alarm_index_none;
         char *index = strstr(_Serial_buffer, "sel");
-        while (!isDigit(*index) && *index != '\0') *index++;
+        index = _find_digit(index);
         if (*index == '\0') _select_alarm(_selected_alarm_index_none);
         else {
-            byte index_num = *index - '0';
+            byte index_num = _strbyte(index);
             if (!_select_alarm(index_num)) {
                 Serial.print(F("Invalid i: "));
                 Serial.println(index_num);
