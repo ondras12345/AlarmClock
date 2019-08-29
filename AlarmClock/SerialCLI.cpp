@@ -48,6 +48,13 @@ void SerialCLIClass::loop()
     else if (!strcmp(_Serial_buffer, "dis") || !strcmp(_Serial_buffer, "disable")) {
         if (!_set_enabled(false)) Serial.println(F("Sel first"));
     }
+    else if (strstr(_Serial_buffer, "time") != NULL) {
+        char *time = strstr(_Serial_buffer, "time");
+        if (!_set_time(time)) {
+            Serial.println(F("Sel first"));
+            Serial.println(F("Enter valid time"));
+        }
+    }
     else {
         Serial.println(F("? SYNTAX ERROR"));
         _printHelp();
@@ -72,8 +79,33 @@ void SerialCLIClass::_printHelp()
     Serial.println(F("ls - list selected alarm"));
     _indent(1);
     Serial.println(F("en/dis - enable/disable selected alarm"));
+    _indent(1);
+    Serial.println(F("time{h}:{m} - set time for selected alarm"));
     // ...
     Serial.println();
+}
+
+byte SerialCLIClass::_strbyte(char *str)
+{
+    byte result = 0;
+    while (isDigit(*str)) {
+        result = result * 10 + (*str - '0');
+        str++;
+    }
+    return result;
+}
+
+char * SerialCLIClass::_find_digit(char * str)
+{
+    while (!isDigit(*str) && *str != '\0') str++;
+    return str;
+}
+
+void SerialCLIClass::_indent(byte level)
+{
+    for (byte i = 0; i < level * Serial_indentation_width; i++) {
+        Serial.print(' ');
+    }
 }
 
 boolean SerialCLIClass::_select_alarm(byte __index)
@@ -149,9 +181,17 @@ boolean SerialCLIClass::_set_enabled(boolean __en)
     return true;
 }
 
-void SerialCLIClass::_indent(byte level)
+boolean SerialCLIClass::_set_time(char *time)
 {
-    for (byte i = 0; i < level * Serial_indentation_width; i++) {
-        Serial.print(' ');
-    }
+    if (_selected_alarm_index == _selected_alarm_index_none) return false;
+
+    byte hours, minutes;
+    time = _find_digit(time);
+    if (*time == '\0') return false;
+    hours = _strbyte(time);
+    time = _find_digit(time);
+    if (*time == '\0') return false;
+    minutes = _strbyte(time);
+
+    return _alarms[_selected_alarm_index]->set_time(hours, minutes);
 }

@@ -25,11 +25,15 @@ class SerialCLIClass
      byte _selected_alarm_index = _selected_alarm_index_none;
 
      void _printHelp();
+     byte _strbyte(char *str);
+     char * _find_digit(char *str);
+     void _indent(byte level);
+
      boolean _select_alarm(byte index);
      boolean _list_selected_alarm();
      boolean _set_enabled(boolean __en);
+     boolean _set_time(char *time);
 
-     void _indent(byte level);
  public:
      void loop();
      SerialCLIClass(AlarmClass (*alarms)[alarms_count]);
