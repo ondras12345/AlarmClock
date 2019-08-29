@@ -40,9 +40,13 @@ void SerialCLIClass::loop()
 
     }
     else if (!strcmp(_Serial_buffer, "ls") || !strcmp(_Serial_buffer, "list")) {
-        if (!_list_selected_alarm()) {
-            Serial.println(F("Sel first"));
-        }
+        if (!_list_selected_alarm()) Serial.println(F("Sel first"));
+    }
+    else if (!strcmp(_Serial_buffer, "en") || !strcmp(_Serial_buffer, "enable")) {
+        if(!_set_enabled(true)) Serial.println(F("Sel first"));
+    }
+    else if (!strcmp(_Serial_buffer, "dis") || !strcmp(_Serial_buffer, "disable")) {
+        if (!_set_enabled(false)) Serial.println(F("Sel first"));
     }
     else {
         Serial.println(F("? SYNTAX ERROR"));
@@ -66,6 +70,8 @@ void SerialCLIClass::_printHelp()
     Serial.println(F("sel{i} - select alarm{i}"));
     _indent(1);
     Serial.println(F("ls - list selected alarm"));
+    _indent(1);
+    Serial.println(F("en/dis - enable/disable selected alarm"));
     // ...
     Serial.println();
 }
@@ -73,15 +79,18 @@ void SerialCLIClass::_printHelp()
 boolean SerialCLIClass::_select_alarm(byte __index)
 {
     if (__index >= alarms_count) return false;
+
     _selected_alarm_index = __index;
     if (_selected_alarm_index == _selected_alarm_index_none) strcpy(_prompt, _prompt_default);
     else sprintf(_prompt, "A%u%s", _selected_alarm_index, _prompt_default);
+
     return true;
 }
 
 boolean SerialCLIClass::_list_selected_alarm()
 {
     if (_selected_alarm_index == _selected_alarm_index_none) return false;
+
     Serial.print(F("Num: "));
     Serial.println(_selected_alarm_index);
 
@@ -127,6 +136,15 @@ boolean SerialCLIClass::_list_selected_alarm()
     _indent(2);
     Serial.print(F("Buzzer: "));
     Serial.println(_alarms[_selected_alarm_index]->get_signalization().buzzer);
+
+    return true;
+}
+
+boolean SerialCLIClass::_set_enabled(boolean __en)
+{
+    if (_selected_alarm_index == _selected_alarm_index_none) return false;
+
+    _alarms[_selected_alarm_index]->set_enabled(__en);
 
     return true;
 }

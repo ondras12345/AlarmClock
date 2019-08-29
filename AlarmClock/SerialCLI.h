@@ -27,6 +27,7 @@ class SerialCLIClass
      void _printHelp();
      boolean _select_alarm(byte index);
      boolean _list_selected_alarm();
+     boolean _set_enabled(boolean __en);
 
      void _indent(byte level);
  public:
