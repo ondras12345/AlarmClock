@@ -35,6 +35,7 @@ class SerialCLIClass
      boolean _set_time(char *time);
      boolean _set_day_of_week(char *dow);
      boolean _set_snooze(char *snooze);
+     boolean _set_signalization(char *sig);
 
  public:
      void loop();

@@ -69,6 +69,13 @@ void SerialCLIClass::loop()
             Serial.println(F("Enter valid params"));
         }
     }
+    else if (strstr(_Serial_buffer, "sig") != NULL) {
+        char *sig = strstr(_Serial_buffer, "sig");
+        if (!_set_signalization(sig)) {
+            Serial.println(F("Sel first"));
+            Serial.println(F("Enter valid params"));
+        }
+    }
     else {
         Serial.println(F("? SYNTAX ERROR"));
         _printHelp();
@@ -100,9 +107,9 @@ void SerialCLIClass::_printHelp()
     _indent(2);
     Serial.println(F("dow{d}:{s} - set day {d} of week to {s} 1|0"));
     _indent(2);
-    Serial.println(F("snooze{t}:{c} - set snooze: time{t}min;count{c}"));
-    // ...
-    Serial.println();
+    Serial.println(F("snooze{t};{c} - set snooze: time{t}min;count{c}"));
+    _indent(2);
+    Serial.println(F("sig{a};{l};{b} - set signalization: ambient{a};lamp{l}1|0;{buzzer}1|0"));
 }
 
 byte SerialCLIClass::_strbyte(char *str)
@@ -246,4 +253,24 @@ boolean SerialCLIClass::_set_snooze(char * snooze)
     count = _strbyte(snooze);
 
     return _alarms[_selected_alarm_index]->set_snooze(time, count);
+}
+
+boolean SerialCLIClass::_set_signalization(char * sig)
+{
+    if (_selected_alarm_index == _selected_alarm_index_none) return false;
+
+    byte ambient;
+    boolean lamp, buzzer;
+
+    sig = _find_digit(sig);
+    if (*sig == '\0') return false;
+    ambient = _strbyte(sig);
+    sig = _find_digit(sig);
+    if (*sig == '\0') return false;
+    lamp = _find_digit(sig);
+    sig = _find_digit(sig);
+    if (*sig == '\0') return false;
+    buzzer = _strbyte(sig);
+
+    return _alarms[_selected_alarm_index]->set_signalization(ambient, lamp, buzzer);
 }
