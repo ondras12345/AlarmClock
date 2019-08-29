@@ -62,6 +62,13 @@ void SerialCLIClass::loop()
             Serial.println(F("Enter valid params"));
         }
     }
+    else if (strstr(_Serial_buffer, "snooze") != NULL) {
+        char *snooze = strstr(_Serial_buffer, "snooze");
+        if (!_set_snooze(snooze)) {
+            Serial.println(F("Sel first"));
+            Serial.println(F("Enter valid params"));
+        }
+    }
     else {
         Serial.println(F("? SYNTAX ERROR"));
         _printHelp();
@@ -92,6 +99,8 @@ void SerialCLIClass::_printHelp()
     Serial.println(F("time{h}:{m} - set time"));
     _indent(2);
     Serial.println(F("dow{d}:{s} - set day {d} of week to {s} 1|0"));
+    _indent(2);
+    Serial.println(F("snooze{t}:{c} - set snooze: time{t}min;count{c}"));
     // ...
     Serial.println();
 }
@@ -210,6 +219,7 @@ boolean SerialCLIClass::_set_time(char *time)
 boolean SerialCLIClass::_set_day_of_week(char *dow)
 {
     if (_selected_alarm_index == _selected_alarm_index_none) return false;
+
     byte day;
     boolean status;
     dow = _find_digit(dow);
@@ -220,4 +230,20 @@ boolean SerialCLIClass::_set_day_of_week(char *dow)
     status = _strbyte(dow);
 
     return _alarms[_selected_alarm_index]->set_day_of_week(day, status);
+}
+
+boolean SerialCLIClass::_set_snooze(char * snooze)
+{
+    if (_selected_alarm_index == _selected_alarm_index_none) return false;
+
+    byte time, count;
+
+    snooze = _find_digit(snooze);
+    if (*snooze == '\0') return false;
+    time = _strbyte(snooze);
+    snooze = _find_digit(snooze);
+    if (*snooze == '\0') return false;
+    count = _strbyte(snooze);
+
+    return _alarms[_selected_alarm_index]->set_snooze(time, count);
 }
