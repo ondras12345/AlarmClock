@@ -89,19 +89,19 @@ public:
     AlarmClass();
 
 
-    boolean set_enabled(boolean enabled_);
+    boolean set_enabled(boolean __enabled);
     boolean get_enabled() { return _enabled; };
 
-    boolean set_time(byte hours_, byte minutes_);
+    boolean set_time(byte __hours, byte __minutes);
     MinutesTimeStampClass get_time() { return _when; };
 
-    boolean set_days_of_week(DaysOfWeekClass days_of_week_);
+    boolean set_days_of_week(DaysOfWeekClass __days_of_week);
     DaysOfWeekClass get_days_of_week() { return _days_of_week; };
 
-    boolean set_snooze(byte time_minutes_, byte count_);
+    boolean set_snooze(byte __time_minutes, byte __count);
     Snooze get_snooze() { return _snooze; };
 
-    boolean set_signalization(byte ambient_, boolean lamp_, boolean buzzer_);
+    boolean set_signalization(byte __ambient, boolean __lamp, boolean __buzzer);
     Signalization get_signalization() { return _signalization; };
 };
 
