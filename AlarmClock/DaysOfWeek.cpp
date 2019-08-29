@@ -16,13 +16,16 @@ boolean DaysOfWeekClass::getDayOfWeek_Adafruit(byte num)
     else return bitRead(DaysOfWeek, num);
 }
 
-void DaysOfWeekClass::setDayOfWeek(byte num, boolean status)
+boolean DaysOfWeekClass::setDayOfWeek(byte num, boolean status)
 {
+    if (num > 7) return false;
     bitWrite(DaysOfWeek, num, status);
+    return true;
 }
-
-void DaysOfWeekClass::setDayOfWeek_Adafruit(byte num, boolean status)
+boolean DaysOfWeekClass::setDayOfWeek_Adafruit(byte num, boolean status)
 {
+    if (num > 6) return false;
     if (num == 0) bitWrite(DaysOfWeek, 7, status);
     else bitWrite(DaysOfWeek, num, status);
+    return true;
 }

@@ -23,8 +23,8 @@ public:
     byte DaysOfWeek;
     boolean getDayOfWeek(byte num);
     boolean getDayOfWeek_Adafruit(byte num);
-    void setDayOfWeek(byte num, boolean status);
-    void setDayOfWeek_Adafruit(byte num, boolean status);
+    boolean setDayOfWeek(byte num, boolean status);
+    boolean setDayOfWeek_Adafruit(byte num, boolean status);
 };
 
 #endif
