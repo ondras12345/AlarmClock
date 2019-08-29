@@ -33,6 +33,7 @@ class SerialCLIClass
      boolean _list_selected_alarm();
      boolean _set_enabled(boolean __en);
      boolean _set_time(char *time);
+     boolean _set_day_of_week(char *dow);
 
  public:
      void loop();

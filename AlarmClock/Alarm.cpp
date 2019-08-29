@@ -132,6 +132,11 @@ boolean AlarmClass::set_days_of_week(DaysOfWeekClass __days_of_week)
     return true;
 }
 
+boolean AlarmClass::set_day_of_week(byte __day, boolean __status)
+{
+    return _days_of_week.setDayOfWeek(__day, __status);
+}
+
 boolean AlarmClass::set_snooze(byte __time_minutes, byte __count)
 {
     if (__time_minutes > 99 || __count > 9) return false;

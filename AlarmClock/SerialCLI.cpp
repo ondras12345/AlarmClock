@@ -52,7 +52,14 @@ void SerialCLIClass::loop()
         char *time = strstr(_Serial_buffer, "time");
         if (!_set_time(time)) {
             Serial.println(F("Sel first"));
-            Serial.println(F("Enter valid time"));
+            Serial.println(F("Enter valid params"));
+        }
+    }
+    else if (strstr(_Serial_buffer, "dow") != NULL) {
+        char *dow = strstr(_Serial_buffer, "dow");
+        if (!_set_day_of_week(dow)) {
+            Serial.println(F("Sel first"));
+            Serial.println(F("Enter valid params"));
         }
     }
     else {
@@ -76,11 +83,15 @@ void SerialCLIClass::_printHelp()
     _indent(1);
     Serial.println(F("sel{i} - select alarm{i}"));
     _indent(1);
-    Serial.println(F("ls - list selected alarm"));
-    _indent(1);
-    Serial.println(F("en/dis - enable/disable selected alarm"));
-    _indent(1);
-    Serial.println(F("time{h}:{m} - set time for selected alarm"));
+    Serial.println(F("Selected alarm:"));
+    _indent(2);
+    Serial.println(F("ls - list"));
+    _indent(2);
+    Serial.println(F("en/dis - enable/disable"));
+    _indent(2);
+    Serial.println(F("time{h}:{m} - set time"));
+    _indent(2);
+    Serial.println(F("dow{d}:{s} - set day {d} of week to {s} 1|0"));
     // ...
     Serial.println();
 }
@@ -194,4 +205,19 @@ boolean SerialCLIClass::_set_time(char *time)
     minutes = _strbyte(time);
 
     return _alarms[_selected_alarm_index]->set_time(hours, minutes);
+}
+
+boolean SerialCLIClass::_set_day_of_week(char *dow)
+{
+    if (_selected_alarm_index == _selected_alarm_index_none) return false;
+    byte day;
+    boolean status;
+    dow = _find_digit(dow);
+    if (*dow == '\0') return false;
+    day = _strbyte(dow);
+    dow = _find_digit(dow);
+    if (*dow == '\0') return false;
+    status = _strbyte(dow);
+
+    return _alarms[_selected_alarm_index]->set_day_of_week(day, status);
 }
