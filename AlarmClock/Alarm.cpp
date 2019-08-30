@@ -96,7 +96,7 @@ boolean AlarmClass::readEEPROM(byte data[]) // data length must be equal to Alar
 
 byte * AlarmClass::writeEEPROM()
 {
-    static byte data[AlarmClass_EEPROM_record_length];
+    static byte data[EEPROM_AlarmClass_record_length];
     data[0] = EEPROM_alarms_identificator;
 
     data[1] = _when.timestamp & 0xFF;
@@ -113,32 +113,42 @@ byte * AlarmClass::writeEEPROM()
 }
 
 
-boolean AlarmClass::set_enabled(boolean enabled_) {
-    _enabled = enabled_;
+boolean AlarmClass::set_enabled(boolean __enabled)
+{
+    _enabled = __enabled;
     return true;
 }
 
-boolean AlarmClass::set_time(byte hours_, byte minutes_) {
-    if (hours_ > 23 || minutes_ > 59) return false;
-    _when = MinutesTimeStampClass(hours_, minutes_);
+boolean AlarmClass::set_time(byte __hours, byte __minutes)
+{
+    if (__hours > 23 || __minutes > 59) return false;
+    _when = MinutesTimeStampClass(__hours, __minutes);
     return true;
 }
 
-boolean AlarmClass::set_days_of_week(DaysOfWeekClass days_of_week_) {
-    _days_of_week = days_of_week_;
+boolean AlarmClass::set_days_of_week(DaysOfWeekClass __days_of_week)
+{
+    _days_of_week = __days_of_week;
     return true;
 }
 
-boolean AlarmClass::set_snooze(byte time_minutes_, byte count_) {
-    if (time_minutes_ > 99 || count_ > 9) return false;
-    _snooze.time_minutes = time_minutes_;
-    _snooze.count = count_;
+boolean AlarmClass::set_day_of_week(byte __day, boolean __status)
+{
+    return _days_of_week.setDayOfWeek(__day, __status);
+}
+
+boolean AlarmClass::set_snooze(byte __time_minutes, byte __count)
+{
+    if (__time_minutes > 99 || __count > 9) return false;
+    _snooze.time_minutes = __time_minutes;
+    _snooze.count = __count;
     return true;
 }
 
-boolean AlarmClass::set_signalization(byte ambient_, boolean lamp_, boolean buzzer_) {
-    _signalization.ambient = ambient_;
-    _signalization.lamp = lamp_;
-    _signalization.buzzer = buzzer_;
+boolean AlarmClass::set_signalization(byte __ambient, boolean __lamp, boolean __buzzer)
+{
+    _signalization.ambient = __ambient;
+    _signalization.lamp = __lamp;
+    _signalization.buzzer = __buzzer;
     return true;
 }

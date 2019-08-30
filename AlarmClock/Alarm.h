@@ -9,26 +9,19 @@
 #include "WProgram.h"
 #endif
 
+#include "Settings.h"
 #include "DaysOfWeek.h"
 #include "MinutesTimeStamp.h"
 #include <RTClib.h> // for datetime
 
 
 //#define AlarmClass_EEPROM_record_length identifier(1B) + sizeof(TimeStampClass - jen  2 byte) + sizeof(enabled - 1 byte) + sizeof(DaysOfWeekClass - jen 1 byte (eeprom)) + sizeof(Snooze) + sizeOf(Signalization)
-#define AlarmClass_EEPROM_record_length (1 + 2 + 1 + 1 + 2 + 3)
-#define EEPROM_alarms_identificator 0xFE
 #define AlarmClass_current_snooze_count_none 255
 #define AlarmClass_current_snooze_count_value_mask 0b00001111
 #define AlarmClass_current_snooze_count_snooze_mask 0b01000000
 #define AlarmClass_current_snooze_count_snooze_bit 6
 #define AlarmClass_current_snooze_count_beeping_mask 0b00100000
 #define AlarmClass_current_snooze_count_beeping_bit 5
-
-#define Alarm_regular_ringing_frequency 1000 // in Hz
-#define Alarm_regular_ringing_period 500 // in ms
-
-#define Alarm_last_ringing_frequency 2000 // in Hz
-#define Alarm_last_ringing_period 250 // in ms
 
 struct Snooze {
     byte time_minutes; // max 99
@@ -40,7 +33,6 @@ struct Signalization {
     boolean lamp;
     boolean buzzer;
 };
-
 
 
 class AlarmClass
@@ -97,19 +89,20 @@ public:
     AlarmClass();
 
 
-    boolean set_enabled(boolean enabled_);
+    boolean set_enabled(boolean __enabled);
     boolean get_enabled() { return _enabled; };
 
-    boolean set_time(byte hours_, byte minutes_);
+    boolean set_time(byte __hours, byte __minutes);
     MinutesTimeStampClass get_time() { return _when; };
 
-    boolean set_days_of_week(DaysOfWeekClass days_of_week_);
+    boolean set_days_of_week(DaysOfWeekClass __days_of_week);
+    boolean set_day_of_week(byte __day, boolean __status);
     DaysOfWeekClass get_days_of_week() { return _days_of_week; };
 
-    boolean set_snooze(byte time_minutes_, byte count_);
+    boolean set_snooze(byte __time_minutes, byte __count);
     Snooze get_snooze() { return _snooze; };
 
-    boolean set_signalization(byte ambient_, boolean lamp_, boolean buzzer_);
+    boolean set_signalization(byte __ambient, boolean __lamp, boolean __buzzer);
     Signalization get_signalization() { return _signalization; };
 };
 

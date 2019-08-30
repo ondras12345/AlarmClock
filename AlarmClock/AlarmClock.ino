@@ -20,27 +20,8 @@ Code directives:
  - returning array: https://www.tutorialspoint.com/cplusplus/cpp_return_arrays_from_functions.htm
 */
 
-// Compile-time options
-#define alarms_count 6
-#define VisualStudio
-#define DEBUG
-
-// 2,3 - reserved for buttons / rotary encoder
-#define pin_lamp 4
-#define pin_buzzer 5 // PWM
-#define pin_ambient 6 // PWM
-#define pin_LCD_enable 7
-// 9, 10, 11, 12, 13 - reserved for SPI (ethernet, SD card)
-
-#define I2C_LCD_address 0x27
-#define I2C_DS3231_address 0x68
-#define LCD_width 16
-#define LCD_height 2
-
-// error codes for self test
-#define error_I2C_ping_DS3231 1
-#define error_time_lost 2
-#define error_critical_mask 0b1111111111111101 // time_lost is not critical
+#include "Settings.h"
+#include "Constants.h"
 
 #ifdef DEBUG
 #define DEBUG_print(x) Serial.print(x)
@@ -69,7 +50,7 @@ enum SelfTest_level {
 #include "Alarm.h"
 #include "CountdownTimer.h"
 #include "PWMfade.h"
-
+#include "SerialCLI.h"
 
 
 // Global variables
@@ -79,6 +60,8 @@ AlarmClass alarms[alarms_count];
 CountdownTimerClass countdownTimer;
 PWMfadeClass ambientFader(pin_ambient);
 DateTime now;
+SerialCLIClass CLI(&alarms, writeEEPROM);
+
 
 // function prototypes
 #ifdef VisualStudio
@@ -108,6 +91,7 @@ void setup() {
 
 void loop() {
     now = rtc.now(); // # TODO longer interval between reads ; # TODO + summer_time
+    CLI.loop(); // # TODO longer interval
 
     for (byte i = 0; i < alarms_count; i++) alarms[i].loop(now);
     countdownTimer.loop();
@@ -123,7 +107,6 @@ void init_hardware() {
 /*
 EEPROM
 */
-#define EEPROM_alarms_offset 10
 
 boolean readEEPROM() {
     boolean error = false;
@@ -131,9 +114,9 @@ boolean readEEPROM() {
 
     // alarms:
     for (byte i = 0; i < alarms_count && !error; i++) {
-        byte data[AlarmClass_EEPROM_record_length];
-        for (byte j = 0; j < AlarmClass_EEPROM_record_length; j++) {
-            data[j] = EEPROM.read((i * AlarmClass_EEPROM_record_length) + j + EEPROM_alarms_offset);
+        byte data[EEPROM_AlarmClass_record_length];
+        for (byte j = 0; j < EEPROM_AlarmClass_record_length; j++) {
+            data[j] = EEPROM.read((i * EEPROM_AlarmClass_record_length) + j + EEPROM_alarms_offset);
         }
         error |= !alarms[i].readEEPROM(data);
     }
@@ -141,20 +124,16 @@ boolean readEEPROM() {
     return !error;
 }
 
-boolean writeEEPROM() {
-    boolean error = false;
+void writeEEPROM() {
     // basic config:
 
     // alarms:
-    for (byte i = 0; i < alarms_count && !error; i++) {
+    for (byte i = 0; i < alarms_count; i++) {
         byte * data = alarms[i].writeEEPROM();
-        for (byte j = 0; j < AlarmClass_EEPROM_record_length; j++) {
-            EEPROM.write((i * AlarmClass_EEPROM_record_length) + j + EEPROM_alarms_offset, data[j]);
+        for (byte j = 0; j < EEPROM_AlarmClass_record_length; j++) {
+            EEPROM.write((i * EEPROM_AlarmClass_record_length) + j + EEPROM_alarms_offset, data[j]);
         }
     }
-
-
-    return !error; // # TODO
 }
 
 /*
@@ -164,7 +143,7 @@ void factory_reset() {
     for (byte i = 0; i < alarms_count; i++) alarms[i] = AlarmClass();
     countdownTimer = CountdownTimerClass();
 
-    boolean error = !writeEEPROM();
+    writeEEPROM();
 }
 
 
@@ -238,7 +217,7 @@ void ambient(byte start, byte stop, unsigned long duration) {
     _interval = _choose_interval(_duration, diff);
     _step = step_sign * ((_interval * diff) / _duration);
     if (_step == 0) _step = step_sign; // step must not be 0
-    
+
     DEBUG_print("ambient - diff: ");
     DEBUG_println(diff);
 
