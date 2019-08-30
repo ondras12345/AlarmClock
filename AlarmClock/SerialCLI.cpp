@@ -6,6 +6,8 @@
 
 void SerialCLIClass::loop()
 {
+    boolean new_message = false;
+
     if (Serial.available() > Serial_buffer_length) {
         Serial.print(F("Cmd too long: "));
         while (Serial.available())
@@ -14,6 +16,7 @@ void SerialCLIClass::loop()
     else {
         byte index = 0;
         while (Serial.available() > 0) {
+            new_message = true;
             _Serial_buffer[index] = tolower(Serial.read());
             if (_Serial_buffer[index] != '\n' && _Serial_buffer[index] != '\r') // ignore CRLF
                 if (index < Serial_buffer_length - 1) // to array prevent overflow when a new message comes during processing
@@ -22,70 +25,72 @@ void SerialCLIClass::loop()
         _Serial_buffer[index] = '\0';
     }
 
-    if (!strcmp(_Serial_buffer, "help")) { // ! - strcmp returns 0 if matches
-        _printHelp();
-    }
-    else if (strstr(_Serial_buffer, "sel") != NULL) {
-        _selected_alarm_index = _selected_alarm_index_none;
-        char *index = strstr(_Serial_buffer, "sel");
-        index = _find_digit(index);
-        if (*index == '\0') _select_alarm(_selected_alarm_index_none);
-        else {
-            byte index_num = _strbyte(index);
-            if (!_select_alarm(index_num)) {
-                Serial.print(F("Invalid i: "));
-                Serial.println(index_num);
+    if (new_message) {
+        if (!strcmp(_Serial_buffer, "help")) { // ! - strcmp returns 0 if matches
+            _printHelp();
+        }
+        else if (strstr(_Serial_buffer, "sel") != NULL) {
+            _selected_alarm_index = _selected_alarm_index_none;
+            char *index = strstr(_Serial_buffer, "sel");
+            index = _find_digit(index);
+            if (*index == '\0') _select_alarm(_selected_alarm_index_none);
+            else {
+                byte index_num = _strbyte(index);
+                if (!_select_alarm(index_num)) {
+                    Serial.print(F("Invalid i: "));
+                    Serial.println(index_num);
+                }
+            }
+
+        }
+        else if (!strcmp(_Serial_buffer, "ls") || !strcmp(_Serial_buffer, "list")) {
+            if (!_list_selected_alarm()) Serial.println(F("Sel first"));
+        }
+        else if (!strcmp(_Serial_buffer, "en") || !strcmp(_Serial_buffer, "enable")) {
+            if (!_set_enabled(true)) Serial.println(F("Sel first"));
+        }
+        else if (!strcmp(_Serial_buffer, "dis") || !strcmp(_Serial_buffer, "disable")) {
+            if (!_set_enabled(false)) Serial.println(F("Sel first"));
+        }
+        else if (strstr(_Serial_buffer, "time") != NULL) {
+            char *time = strstr(_Serial_buffer, "time");
+            if (!_set_time(time)) {
+                Serial.println(F("Sel first"));
+                Serial.println(F("Enter valid params"));
             }
         }
+        else if (strstr(_Serial_buffer, "dow") != NULL) {
+            char *dow = strstr(_Serial_buffer, "dow");
+            if (!_set_day_of_week(dow)) {
+                Serial.println(F("Sel first"));
+                Serial.println(F("Enter valid params"));
+            }
+        }
+        else if (strstr(_Serial_buffer, "snooze") != NULL) {
+            char *snooze = strstr(_Serial_buffer, "snooze");
+            if (!_set_snooze(snooze)) {
+                Serial.println(F("Sel first"));
+                Serial.println(F("Enter valid params"));
+            }
+        }
+        else if (strstr(_Serial_buffer, "sig") != NULL) {
+            char *sig = strstr(_Serial_buffer, "sig");
+            if (!_set_signalization(sig)) {
+                Serial.println(F("Sel first"));
+                Serial.println(F("Enter valid params"));
+            }
+        }
+        else if (strstr(_Serial_buffer, "sav") != NULL) {
+            Serial.println(_save() ? F("Saved") : F("Nothing to save"));
+        }
+        else {
+            Serial.println(F("? SYNTAX ERROR"));
+            _printHelp();
+        }
 
+        Serial.println();
+        Serial.print(_prompt);
     }
-    else if (!strcmp(_Serial_buffer, "ls") || !strcmp(_Serial_buffer, "list")) {
-        if (!_list_selected_alarm()) Serial.println(F("Sel first"));
-    }
-    else if (!strcmp(_Serial_buffer, "en") || !strcmp(_Serial_buffer, "enable")) {
-        if (!_set_enabled(true)) Serial.println(F("Sel first"));
-    }
-    else if (!strcmp(_Serial_buffer, "dis") || !strcmp(_Serial_buffer, "disable")) {
-        if (!_set_enabled(false)) Serial.println(F("Sel first"));
-    }
-    else if (strstr(_Serial_buffer, "time") != NULL) {
-        char *time = strstr(_Serial_buffer, "time");
-        if (!_set_time(time)) {
-            Serial.println(F("Sel first"));
-            Serial.println(F("Enter valid params"));
-        }
-    }
-    else if (strstr(_Serial_buffer, "dow") != NULL) {
-        char *dow = strstr(_Serial_buffer, "dow");
-        if (!_set_day_of_week(dow)) {
-            Serial.println(F("Sel first"));
-            Serial.println(F("Enter valid params"));
-        }
-    }
-    else if (strstr(_Serial_buffer, "snooze") != NULL) {
-        char *snooze = strstr(_Serial_buffer, "snooze");
-        if (!_set_snooze(snooze)) {
-            Serial.println(F("Sel first"));
-            Serial.println(F("Enter valid params"));
-        }
-    }
-    else if (strstr(_Serial_buffer, "sig") != NULL) {
-        char *sig = strstr(_Serial_buffer, "sig");
-        if (!_set_signalization(sig)) {
-            Serial.println(F("Sel first"));
-            Serial.println(F("Enter valid params"));
-        }
-    }
-    else if (strstr(_Serial_buffer, "sav") != NULL) {
-        Serial.println(_save() ? F("Saved") : F("Nothing to save"));
-    }
-    else {
-        Serial.println(F("? SYNTAX ERROR"));
-        _printHelp();
-    }
-
-    Serial.println();
-    Serial.print(_prompt);
 }
 
 SerialCLIClass::SerialCLIClass(AlarmClass(*__alarms)[alarms_count], void(*__writeEEPROM)())
