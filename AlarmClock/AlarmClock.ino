@@ -60,7 +60,7 @@ AlarmClass alarms[alarms_count];
 CountdownTimerClass countdownTimer;
 PWMfadeClass ambientFader(pin_ambient);
 DateTime now;
-SerialCLIClass CLI(&alarms);
+SerialCLIClass CLI(&alarms, writeEEPROM);
 
 
 // function prototypes
@@ -124,20 +124,16 @@ boolean readEEPROM() {
     return !error;
 }
 
-boolean writeEEPROM() {
-    boolean error = false;
+void writeEEPROM() {
     // basic config:
 
     // alarms:
-    for (byte i = 0; i < alarms_count && !error; i++) {
+    for (byte i = 0; i < alarms_count; i++) {
         byte * data = alarms[i].writeEEPROM();
         for (byte j = 0; j < EEPROM_AlarmClass_record_length; j++) {
             EEPROM.write((i * EEPROM_AlarmClass_record_length) + j + EEPROM_alarms_offset, data[j]);
         }
     }
-
-
-    return !error; // # TODO
 }
 
 /*
@@ -147,7 +143,7 @@ void factory_reset() {
     for (byte i = 0; i < alarms_count; i++) alarms[i] = AlarmClass();
     countdownTimer = CountdownTimerClass();
 
-    boolean error = !writeEEPROM();
+    writeEEPROM();
 }
 
 
@@ -221,7 +217,7 @@ void ambient(byte start, byte stop, unsigned long duration) {
     _interval = _choose_interval(_duration, diff);
     _step = step_sign * ((_interval * diff) / _duration);
     if (_step == 0) _step = step_sign; // step must not be 0
-    
+
     DEBUG_print("ambient - diff: ");
     DEBUG_println(diff);
 

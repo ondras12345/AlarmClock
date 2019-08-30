@@ -43,7 +43,7 @@ void SerialCLIClass::loop()
         if (!_list_selected_alarm()) Serial.println(F("Sel first"));
     }
     else if (!strcmp(_Serial_buffer, "en") || !strcmp(_Serial_buffer, "enable")) {
-        if(!_set_enabled(true)) Serial.println(F("Sel first"));
+        if (!_set_enabled(true)) Serial.println(F("Sel first"));
     }
     else if (!strcmp(_Serial_buffer, "dis") || !strcmp(_Serial_buffer, "disable")) {
         if (!_set_enabled(false)) Serial.println(F("Sel first"));
@@ -76,6 +76,9 @@ void SerialCLIClass::loop()
             Serial.println(F("Enter valid params"));
         }
     }
+    else if (strstr(_Serial_buffer, "sav") != NULL) {
+        Serial.println(_save() ? F("Saved") : F("Nothing to save"));
+    }
     else {
         Serial.println(F("? SYNTAX ERROR"));
         _printHelp();
@@ -85,9 +88,11 @@ void SerialCLIClass::loop()
     Serial.print(_prompt);
 }
 
-SerialCLIClass::SerialCLIClass(AlarmClass(*__alarms)[alarms_count])
+SerialCLIClass::SerialCLIClass(AlarmClass(*__alarms)[alarms_count], void(*__writeEEPROM)())
 {
     _alarms = __alarms;
+    _writeEEPROM = __writeEEPROM;
+    strcpy(_prompt, _prompt_default);
 }
 
 void SerialCLIClass::_printHelp()
@@ -110,6 +115,9 @@ void SerialCLIClass::_printHelp()
     Serial.println(F("snooze{t};{c} - set snooze: time{t}min;count{c}"));
     _indent(2);
     Serial.println(F("sig{a};{l};{b} - set signalization: ambient{a};lamp{l}1|0;{buzzer}1|0"));
+    _indent(1);
+    Serial.println(F("sav - save all"));
+    // # TODO save - autosave on connection loss
 }
 
 byte SerialCLIClass::_strbyte(char *str)
@@ -205,6 +213,7 @@ boolean SerialCLIClass::_set_enabled(boolean __en)
 
     _alarms[_selected_alarm_index]->set_enabled(__en);
 
+    _change = true;
     return true;
 }
 
@@ -220,7 +229,11 @@ boolean SerialCLIClass::_set_time(char *time)
     if (*time == '\0') return false;
     minutes = _strbyte(time);
 
-    return _alarms[_selected_alarm_index]->set_time(hours, minutes);
+    if (_alarms[_selected_alarm_index]->set_time(hours, minutes)) {
+        _change = true;
+        return true;
+    }
+    else return false;
 }
 
 boolean SerialCLIClass::_set_day_of_week(char *dow)
@@ -236,7 +249,11 @@ boolean SerialCLIClass::_set_day_of_week(char *dow)
     if (*dow == '\0') return false;
     status = _strbyte(dow);
 
-    return _alarms[_selected_alarm_index]->set_day_of_week(day, status);
+    if (_alarms[_selected_alarm_index]->set_day_of_week(day, status)) {
+        _change = true;
+        return true;
+    }
+    else return false;
 }
 
 boolean SerialCLIClass::_set_snooze(char * snooze)
@@ -252,7 +269,11 @@ boolean SerialCLIClass::_set_snooze(char * snooze)
     if (*snooze == '\0') return false;
     count = _strbyte(snooze);
 
-    return _alarms[_selected_alarm_index]->set_snooze(time, count);
+    if (_alarms[_selected_alarm_index]->set_snooze(time, count)) {
+        _change = true;
+        return true;
+    }
+    else return false;
 }
 
 boolean SerialCLIClass::_set_signalization(char * sig)
@@ -272,5 +293,19 @@ boolean SerialCLIClass::_set_signalization(char * sig)
     if (*sig == '\0') return false;
     buzzer = _strbyte(sig);
 
-    return _alarms[_selected_alarm_index]->set_signalization(ambient, lamp, buzzer);
+    if (_alarms[_selected_alarm_index]->set_signalization(ambient, lamp, buzzer)) {
+        _change = true;
+        return true;
+    }
+    else return false;
+}
+
+boolean SerialCLIClass::_save()
+{
+    if (_change) {
+        _change = false;
+        _writeEEPROM();
+        return true;
+    }
+    else return false;
 }
