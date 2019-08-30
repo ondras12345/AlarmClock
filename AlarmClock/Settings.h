@@ -67,5 +67,6 @@ Serial CLI
 #define Serial_buffer_length 10
 #define Serial_prompt_length 5
 #define Serial_indentation_width 2
+#define Serial_autosave_interval 60 * 1000 // time elapsed since last command
 
 #endif

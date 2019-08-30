@@ -22,6 +22,7 @@ protected:
     char _Serial_buffer[Serial_buffer_length + 1]; // +1 for termination
     char _prompt[Serial_prompt_length + 1];
     boolean _change = false; // for save
+    unsigned long _previous_command_millis = 0; // for autosave
 
     const byte _selected_alarm_index_none = 255;
     byte _selected_alarm_index = _selected_alarm_index_none;

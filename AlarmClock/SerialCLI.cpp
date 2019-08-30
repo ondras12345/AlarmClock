@@ -88,9 +88,13 @@ void SerialCLIClass::loop()
             _printHelp();
         }
 
+        _previous_command_millis = millis();
         Serial.println();
         Serial.print(_prompt);
     }
+
+    // autosave
+    if ((unsigned long)(millis() - _previous_command_millis) >= Serial_autosave_interval) _save();
 }
 
 SerialCLIClass::SerialCLIClass(AlarmClass(*__alarms)[alarms_count], void(*__writeEEPROM)())
@@ -122,7 +126,6 @@ void SerialCLIClass::_printHelp()
     Serial.println(F("sig{a};{l};{b} - set signalization: ambient{a};lamp{l}1|0;{buzzer}1|0"));
     _indent(1);
     Serial.println(F("sav - save all"));
-    // # TODO save - autosave on connection loss
 }
 
 byte SerialCLIClass::_strbyte(char *str)
