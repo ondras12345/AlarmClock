@@ -11,7 +11,19 @@
 Compile-time options
 */
 #define VisualStudio
+
+/*
+DEBUG
+*/
 //#define DEBUG
+
+#ifdef DEBUG
+#define DEBUG_print(x) Serial.print(x)
+#define DEBUG_println(x) Serial.println(x)
+#else
+#define DEBUG_print(x)
+#define DEBUG_println(x)
+#endif // DEBUG
 
 /*
 Alarms

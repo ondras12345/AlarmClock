@@ -23,15 +23,6 @@ Code directives:
 #include "Settings.h"
 #include "Constants.h"
 
-#ifdef DEBUG
-#define DEBUG_print(x) Serial.print(x)
-#define DEBUG_println(x) Serial.println(x)
-#else
-#define DEBUG_print(x)
-#define DEBUG_println(x)
-#endif // DEBUG
-
-
 enum SpinDirection { // for rotary encoder
     left = 1,
     right = 2
@@ -107,7 +98,6 @@ void init_hardware() {
 /*
 EEPROM
 */
-
 boolean readEEPROM() {
     boolean error = false;
     // basic config:
