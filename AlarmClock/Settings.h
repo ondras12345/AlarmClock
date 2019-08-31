@@ -68,6 +68,7 @@ Error codes
 // error codes for self test
 #define error_I2C_ping_DS3231 1
 #define error_time_lost 2
+#define error_EEPROM 4
 #define error_critical_mask 0b1111111111111101 // time_lost is not critical
 
 /*
