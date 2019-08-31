@@ -86,4 +86,11 @@ Serial CLI
 #define Serial_indentation_width 2
 #define Serial_autosave_interval 60 * 1000UL // time elapsed since last command
 
+/*
+Button debounce
+*/
+#define button_count 2
+#define button_index_snooze 0
+#define button_index_stop 1
+
 #endif

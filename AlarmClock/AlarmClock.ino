@@ -38,6 +38,7 @@ enum SelfTest_level {
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 #include <RTClib.h>
+#include <Bounce2.h>
 #include "Alarm.h"
 #include "CountdownTimer.h"
 #include "PWMfade.h"
@@ -52,6 +53,7 @@ CountdownTimerClass countdownTimer;
 PWMfadeClass ambientFader(pin_ambient);
 DateTime now;
 SerialCLIClass CLI(&alarms, writeEEPROM);
+Bounce buttons[button_count];
 
 
 // function prototypes
@@ -67,9 +69,16 @@ void buzzerTone(unsigned int freq, unsigned long duration = 0); // specifies def
 
 void setup() {
     // # TODO pinMode()s
+
+    buttons[button_index_snooze].attach(pin_button_snooze, INPUT_PULLUP); // # TODO DEBUG only, then switch to external pull-ups
+    buttons[button_index_stop].attach(pin_button_stop, INPUT_PULLUP);
+    for (byte i = 0; i < button_count; i++) buttons[i].interval(25);
+
     init_hardware();
+
     Wire.begin();
     Serial.begin(9600);
+
     lcd_on();
 
     unsigned int error = SelfTest(POST);
@@ -83,6 +92,13 @@ void setup() {
 void loop() {
     now = rtc.now(); // # TODO longer interval between reads ; # TODO + summer_time
     CLI.loop(); // # TODO longer interval
+
+    if (buttons[button_index_snooze].fell()) {
+        for (byte i = 0; i < alarms_count; i++) alarms[i].button_snooze();
+    }
+    if (buttons[button_index_stop].fell()) {
+        for (byte i = 0; i < alarms_count; i++) alarms[i].button_stop();
+    }
 
     for (byte i = 0; i < alarms_count; i++) alarms[i].loop(now);
     countdownTimer.loop();
