@@ -30,6 +30,7 @@ protected:
     void _printHelp();
     byte _strbyte(char *str);
     char * _find_digit(char *str);
+    char * _find_next_digit(char *str);
     void _indent(byte level);
 
     boolean _select_alarm(byte index);

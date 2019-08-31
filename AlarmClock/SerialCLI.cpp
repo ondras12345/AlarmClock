@@ -161,6 +161,13 @@ char * SerialCLIClass::_find_digit(char * str)
     return str;
 }
 
+char * SerialCLIClass::_find_next_digit(char * str)
+{
+    while (isDigit(*str) && *str != '\0') str++;
+    str = _find_digit(str);
+    return str;
+}
+
 void SerialCLIClass::_indent(byte level)
 {
     for (byte i = 0; i < level * Serial_indentation_width; i++) {
@@ -247,10 +254,10 @@ boolean SerialCLIClass::_set_time(char *time)
     if (_selected_alarm_index == _selected_alarm_index_none) return false;
 
     byte hours, minutes;
-    time = _find_digit(time);
+    time = _find_next_digit(time);
     if (*time == '\0') return false;
     hours = _strbyte(time);
-    time = _find_digit(time);
+    time = _find_next_digit(time);
     if (*time == '\0') return false;
     minutes = _strbyte(time);
 
@@ -267,10 +274,10 @@ boolean SerialCLIClass::_set_day_of_week(char *dow)
 
     byte day;
     boolean status;
-    dow = _find_digit(dow);
+    dow = _find_next_digit(dow);
     if (*dow == '\0') return false;
     day = _strbyte(dow);
-    dow = _find_digit(dow);
+    dow = _find_next_digit(dow);
     if (*dow == '\0') return false;
     status = _strbyte(dow);
 
@@ -287,10 +294,10 @@ boolean SerialCLIClass::_set_snooze(char * snooze)
 
     byte time, count;
 
-    snooze = _find_digit(snooze);
+    snooze = _find_next_digit(snooze);
     if (*snooze == '\0') return false;
     time = _strbyte(snooze);
-    snooze = _find_digit(snooze);
+    snooze = _find_next_digit(snooze);
     if (*snooze == '\0') return false;
     count = _strbyte(snooze);
 
@@ -308,13 +315,13 @@ boolean SerialCLIClass::_set_signalization(char * sig)
     byte ambient;
     boolean lamp, buzzer;
 
-    sig = _find_digit(sig);
+    sig = _find_next_digit(sig);
     if (*sig == '\0') return false;
     ambient = _strbyte(sig);
-    sig = _find_digit(sig);
+    sig = _find_next_digit(sig);
     if (*sig == '\0') return false;
-    lamp = _find_digit(sig);
-    sig = _find_digit(sig);
+    lamp = _find_next_digit(sig);
+    sig = _find_next_digit(sig);
     if (*sig == '\0') return false;
     buzzer = _strbyte(sig);
 
