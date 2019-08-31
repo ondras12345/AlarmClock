@@ -140,6 +140,7 @@ boolean readEEPROM() {
 }
 
 void writeEEPROM() {
+    DEBUG_println(F("EEPROM write"));
     // basic config:
 
     // alarms:
