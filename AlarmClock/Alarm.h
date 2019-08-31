@@ -86,6 +86,8 @@ public:
 
     void loop(DateTime time);
     void set_hardware(void(*lamp_)(boolean), void(*ambient_)(byte, byte, unsigned long), void(*buzzerTone_)(unsigned int, unsigned long), void(*buzzerNoTone_)());
+    void button_snooze();
+    void button_stop();
     AlarmClass();
 
 

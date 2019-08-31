@@ -7,16 +7,10 @@
 
 void AlarmClass::loop(DateTime time)
 {
-
-    // # TODO button handling
-    // stop - stops everything (even if in snooze)
-    // snooze - doesn't have any effect when last ringing
-
     if (get_active()) { // alarm is already active
         if (get_current_snooze_status()) { // alarm is NOT ringing (snooze)
-            if ((unsigned long)(millis() - previous_millis) >= (_snooze.time_minutes * 60000)) {
-                set_current_snooze_status(false); // current_snooze_count &= ~AlarmClass_current_snooze_count_snooze_mask; // flip the bit
-                set_current_snooze_count(get_current_snooze_count() - 1);
+            if ((unsigned long)(millis() - previous_millis) >= (_snooze.time_minutes * 60000UL)) {
+                set_current_snooze_status(false);
             }
 
         }
@@ -37,9 +31,9 @@ void AlarmClass::loop(DateTime time)
         if (_days_of_week.getDayOfWeek_Adafruit(time.dayOfTheWeek()) && time.hour() == _when.get_hours() && time.minute() == _when.get_minutes() && _enabled) { // time is matching
             if ((time - last_alarm).totalseconds() > 60) { // check for last_alarm - in case the alarm gets canceled during the same minute it started
                 last_alarm = time;
-                current_snooze_count = _snooze.count; // bit 6 = 0 --> alarm is ringing (NOT in snooze), bit 5 = 0 --> buzzer is off (doesn't matter)
+                set_current_snooze_count(_snooze.count);
                 // Do events - can only switch on
-                if (_signalization.ambient > 0) ambient(0, _signalization.ambient, 900000); // 15 minutes
+                if (_signalization.ambient > 0) ambient(0, _signalization.ambient, 900000UL); // 15 minutes
                 if (_signalization.lamp) lamp(true);
             }
         }
@@ -52,6 +46,33 @@ void AlarmClass::set_hardware(void(*lamp_)(boolean), void(*ambient_)(byte, byte,
     ambient = ambient_;
     buzzerTone = buzzerTone_;
     buzzerNoTone = buzzerNoTone_;
+}
+
+// doesn't have any effect during last ringing
+void AlarmClass::button_snooze()
+{
+    if (!get_current_snooze_status()) {
+        if (get_current_snooze_count() > 1) {
+            set_current_snooze_status(true);
+            set_current_snooze_count(get_current_snooze_count() - 1);
+
+            // ambient(0, 0, 0);
+            lamp(false);
+            buzzerNoTone();
+            set_current_beeping_status(false);
+        }
+    }
+}
+
+// stops everything (even if in snooze)
+void AlarmClass::button_stop()
+{
+    current_snooze_count = AlarmClass_current_snooze_count_none;
+
+    ambient(0, 0, 0);
+    lamp(false);
+    buzzerNoTone();
+    set_current_beeping_status(false);
 }
 
 AlarmClass::AlarmClass()

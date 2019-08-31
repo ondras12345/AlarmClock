@@ -231,6 +231,8 @@ unsigned long _choose_interval(unsigned long duration, byte diff) {
     unsigned long previousInterval = duration;
     int step;
 
+    if (diff == 0) return interval;
+
     do {
         step = (interval * diff) / duration;
         previousInterval = interval;
