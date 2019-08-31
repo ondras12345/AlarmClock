@@ -237,7 +237,7 @@ unsigned long _choose_interval(unsigned long duration, byte diff) {
         step = (interval * diff) / duration;
         previousInterval = interval;
         interval = interval / 2;
-    } while ((step > 1 || step == 0) && interval > 250);
+    } while (step > 1 && interval > 250);
 
     if (interval < 250) interval = previousInterval;
 
