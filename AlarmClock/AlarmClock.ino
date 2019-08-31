@@ -96,6 +96,7 @@ void loop() {
         CLI.loop();
     }
 
+    for (byte i = 0; i < button_count; i++) buttons[i].update();
     if (buttons[button_index_snooze].fell()) {
         for (byte i = 0; i < alarms_count; i++) alarms[i].button_snooze();
     }
