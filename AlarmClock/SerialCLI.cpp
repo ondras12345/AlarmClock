@@ -11,21 +11,37 @@ void SerialCLIClass::loop()
     if (Serial.available() > Serial_buffer_length) {
         Serial.print(F("Cmd too long: "));
         while (Serial.available())
-            Serial.print(Serial.read());
+            Serial.print(char(Serial.read()));
     }
     else {
-        byte index = 0;
-        while (Serial.available() > 0) {
-            new_message = true;
-            _Serial_buffer[index] = tolower(Serial.read());
-            if (_Serial_buffer[index] != '\n' && _Serial_buffer[index] != '\r') // ignore CRLF
-                if (index < Serial_buffer_length - 1) // to array prevent overflow when a new message comes during processing
-                    index++;
+        if (Serial.available() > 0) {
+            byte index = 0;
+            while (Serial.available() > 0) {
+                new_message = true;
+                _Serial_buffer[index] = tolower(Serial.read());
+                DEBUG_print(F("Index: "));
+                DEBUG_println(index);
+                if (_Serial_buffer[index] != '\n' && _Serial_buffer[index] != '\r') // ignore CRLF
+                    if (index < Serial_buffer_length - 1) // to prevent array overflow when a new message comes during processing
+                        index++;
+            }
+            _Serial_buffer[index] = '\0';
+            Serial.print("> ");
+            Serial.println(_Serial_buffer);
+#ifdef DEBUG
+            char *ptr = &_Serial_buffer[0];
+            while (*ptr != '\0') {
+                Serial.print(byte(*ptr), HEX);
+                Serial.print(' ');
+                ptr++;
+            }
+            Serial.println();
+#endif // DEBUG
         }
-        _Serial_buffer[index] = '\0';
     }
 
     if (new_message) {
+        DEBUG_println(F("Processing"));
         if (!strcmp(_Serial_buffer, "help")) { // ! - strcmp returns 0 if matches
             _printHelp();
         }
