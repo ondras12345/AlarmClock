@@ -55,7 +55,7 @@ void AlarmClass::set_hardware(void(*lamp_)(boolean), void(*ambient_)(byte, byte,
 // doesn't have any effect during last ringing
 void AlarmClass::button_snooze()
 {
-    if (!get_current_snooze_status()) {
+    if (!get_current_snooze_status() && get_active()) {
         if (get_current_snooze_count() > 1) {
             set_current_snooze_status(true);
             set_current_snooze_count(get_current_snooze_count() - 1);
