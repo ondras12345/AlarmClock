@@ -82,8 +82,8 @@ void SerialCLIClass::loop()
                 Serial.println(F("Enter valid params"));
             }
         }
-        else if (strstr(_Serial_buffer, "snooze") != NULL) {
-            char *snooze = strstr(_Serial_buffer, "snooze");
+        else if (strstr(_Serial_buffer, "snz") != NULL) {
+            char *snooze = strstr(_Serial_buffer, "snz");
             if (!_set_snooze(snooze)) {
                 Serial.println(F("Sel first"));
                 Serial.println(F("Enter valid params"));
@@ -137,7 +137,7 @@ void SerialCLIClass::_printHelp()
     _indent(2);
     Serial.println(F("dow{d}:{s} - set day {d} of week to {s} 1|0"));
     _indent(2);
-    Serial.println(F("snooze{t};{c} - set snooze: time{t}min;count{c}"));
+    Serial.println(F("snz{t};{c} - set snooze: time{t}min;count{c}"));
     _indent(2);
     Serial.println(F("sig{a};{l};{b} - set signalization: ambient{a};lamp{l}1|0;{buzzer}1|0"));
     _indent(1);
@@ -197,7 +197,7 @@ boolean SerialCLIClass::_list_selected_alarm()
     Serial.println(_alarms[_selected_alarm_index]->get_enabled());
 
     _indent(1);
-    Serial.print(F("Days of week:"));
+    Serial.print(F("Days of week: "));
     for (byte i = 1; i <= 7; i++) {
         if (_alarms[_selected_alarm_index]->get_days_of_week().getDayOfWeek(i)) {
             Serial.print(days_of_the_week_names_short[i]);
