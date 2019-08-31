@@ -104,9 +104,11 @@ void loop() {
     for (byte i = 0; i < button_count; i++) buttons[i].update();
     if (buttons[button_index_snooze].fell()) {
         for (byte i = 0; i < alarms_count; i++) alarms[i].button_snooze();
+        DEBUG_println(F("snooze pressed"));
     }
     if (buttons[button_index_stop].fell()) {
         for (byte i = 0; i < alarms_count; i++) alarms[i].button_stop();
+        DEBUG_println(F("stop pressed"));
     }
 
     for (byte i = 0; i < alarms_count; i++) alarms[i].loop(now);
