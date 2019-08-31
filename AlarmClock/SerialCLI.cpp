@@ -7,6 +7,7 @@
 void SerialCLIClass::loop()
 {
     boolean new_message = false;
+    if (Serial.available()) delay(20); // wait for the whole message to arrive
 
     if (Serial.available() > Serial_buffer_length) {
         Serial.print(F("Cmd too long: "));
