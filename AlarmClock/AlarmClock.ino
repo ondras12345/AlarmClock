@@ -92,6 +92,7 @@ void setup() {
         factory_reset(); // # TODO nejdriv zobraz chybu, zaloguj pokud to neni chyba eeprom, pak pockej na uzivatele
     }
 
+    Serial.println(F("boot"));
 }
 
 void loop() {
