@@ -45,6 +45,18 @@ enum SelfTest_level {
 #include "SerialCLI.h"
 
 
+// function prototypes
+#ifdef VisualStudio
+unsigned int SelfTest(SelfTest_level level);
+#endif
+// Hardware
+//void lamp(boolean status);
+void buzzerTone(unsigned int freq, unsigned long duration = 0); // specifies default duration=0
+//void buzzerNoTone();
+//void ambient(byte intensity);
+void writeEEPROM(); // Arduino IDE needs it before SerialCLI definition
+
+
 // Global variables
 LiquidCrystal_I2C lcd(I2C_LCD_address, LCD_width, LCD_height);
 RTC_DS3231 rtc; // DS3231
@@ -56,16 +68,6 @@ SerialCLIClass CLI(&alarms, writeEEPROM);
 Bounce buttons[button_count];
 
 unsigned long loop_rtc_previous_millis = 0;
-
-// function prototypes
-#ifdef VisualStudio
-unsigned int SelfTest(SelfTest_level level);
-#endif
-// Hardware
-//void lamp(boolean status);
-void buzzerTone(unsigned int freq, unsigned long duration = 0); // specifies default duration=0
-//void buzzerNoTone();
-//void ambient(byte intensity);
 
 
 void setup() {
