@@ -55,6 +55,7 @@ DateTime now;
 SerialCLIClass CLI(&alarms, writeEEPROM);
 Bounce buttons[button_count];
 
+unsigned long loop_rtc_previous_millis = 0;
 
 // function prototypes
 #ifdef VisualStudio
@@ -90,8 +91,10 @@ void setup() {
 }
 
 void loop() {
-    now = rtc.now(); // # TODO longer interval between reads ; # TODO + summer_time
-    CLI.loop(); // # TODO longer interval
+    if ((unsigned long)(millis() - loop_rtc_previous_millis) >= 800UL) {
+        now = rtc.now(); // # TODO + summer_time
+        CLI.loop();
+    }
 
     if (buttons[button_index_snooze].fell()) {
         for (byte i = 0; i < alarms_count; i++) alarms[i].button_snooze();
