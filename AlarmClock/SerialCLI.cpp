@@ -47,7 +47,6 @@ void SerialCLIClass::loop()
             _printHelp();
         }
         else if (strstr(_Serial_buffer, "sel") != NULL) {
-            _selected_alarm_index = _selected_alarm_index_none;
             char *index = strstr(_Serial_buffer, "sel");
             index = _find_digit(index);
             if (*index == '\0') _select_alarm(_selected_alarm_index_none);
@@ -177,7 +176,7 @@ void SerialCLIClass::_indent(byte level)
 
 boolean SerialCLIClass::_select_alarm(byte __index)
 {
-    if (__index >= alarms_count) return false;
+    if (__index >= alarms_count && __index != _selected_alarm_index_none) return false;
 
     _selected_alarm_index = __index;
     if (_selected_alarm_index == _selected_alarm_index_none) strcpy(_prompt, _prompt_default);
