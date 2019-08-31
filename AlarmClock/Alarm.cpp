@@ -32,6 +32,10 @@ void AlarmClass::loop(DateTime time)
             if ((time - last_alarm).totalseconds() > 60) { // check for last_alarm - in case the alarm gets canceled during the same minute it started
                 last_alarm = time;
                 set_current_snooze_count(_snooze.count);
+
+                // safety feature - if ambient() got stuck:
+                if (_signalization.buzzer) buzzerTone(Alarm_regular_ringing_frequency, 0);
+
                 // Do events - can only switch on
                 if (_signalization.ambient > 0) ambient(0, _signalization.ambient, 900000UL); // 15 minutes
                 if (_signalization.lamp) lamp(true);
