@@ -81,7 +81,7 @@ protected:
 
 
 public:
-    boolean readEEPROM(byte data[]);
+    boolean readEEPROM(byte data[EEPROM_AlarmClass_record_length]);
     byte * writeEEPROM();
 
     void loop(DateTime time);

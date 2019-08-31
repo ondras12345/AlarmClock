@@ -90,8 +90,18 @@ AlarmClass::AlarmClass()
     current_snooze_count = AlarmClass_current_snooze_count_none;
 }
 
-boolean AlarmClass::readEEPROM(byte data[]) // data length must be equal to AlarmClass_EEPROM_record_length
+boolean AlarmClass::readEEPROM(byte data[EEPROM_AlarmClass_record_length])
 {
+#if defined(DEBUG) && defined(DEBUG_EEPROM_alarms)
+    Serial.println();
+    Serial.println(F("EEPROM alarm read:"));
+    for (byte i = 0; i < EEPROM_AlarmClass_record_length; i++) {
+        Serial.print(data[i], HEX);
+        Serial.print(' ');
+    }
+    Serial.println();
+#endif // DEBUG
+
     if (data[0] != EEPROM_alarms_identificator) return false;
 
     _when.timestamp = 0;
@@ -116,6 +126,7 @@ boolean AlarmClass::readEEPROM(byte data[]) // data length must be equal to Alar
     last_alarm = DateTime(2000, 1, 1);
     current_snooze_count = AlarmClass_current_snooze_count_none;
 
+    DEBUG_println(F("EEPROM alarm read OK"));
     return true;
 }
 
@@ -135,6 +146,14 @@ byte * AlarmClass::writeEEPROM()
     data[9] = _signalization.buzzer;
 
     return data;
+#if defined(DEBUG) && defined(DEBUG_EEPROM_alarms)
+    Serial.println(F("EEPROM alarm write:"));
+    for (byte i = 0; i < EEPROM_AlarmClass_record_length; i++) {
+        Serial.print(data[i], HEX);
+        Serial.print(' ');
+    }
+    Serial.println();
+#endif // DEBUG
 }
 
 

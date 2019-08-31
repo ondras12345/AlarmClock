@@ -16,6 +16,8 @@ Compile-time options
 DEBUG
 */
 //#define DEBUG
+//#define DEBUG_EEPROM_alarms // extra EEPROM messages
+//#define DEBUG_EEPROM_writes // very long messages when writing
 
 #ifdef DEBUG
 #define DEBUG_print(x) Serial.print(x)
@@ -77,6 +79,7 @@ EEPROM
 #define EEPROM_alarms_offset 10
 #define EEPROM_AlarmClass_record_length (1 + 2 + 1 + 1 + 2 + 3)
 #define EEPROM_alarms_identificator 0xFE
+#define EEPROM_DEBUG_dump_length 100
 
 /*
 Serial CLI

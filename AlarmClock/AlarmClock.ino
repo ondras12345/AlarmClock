@@ -126,6 +126,25 @@ void init_hardware() {
 EEPROM
 */
 boolean readEEPROM() {
+#ifdef DEBUG
+    Serial.print(F("EEPROM dump"));
+    byte val;
+    for (byte i = 0; i < EEPROM_DEBUG_dump_length; i++) {
+        if (i % 16 == 0) {
+            Serial.println();
+            if (i < 16) Serial.print('0');
+            Serial.print(i, HEX); // address
+            Serial.print("  ");
+        }
+        val = EEPROM.read(i);
+        if (val < 16) Serial.print('0');
+        Serial.print(val, HEX);
+        Serial.print(' ');
+    }
+    Serial.println();
+#endif // DEBUG
+
+
     boolean error = false;
     // basic config:
 
@@ -147,9 +166,22 @@ void writeEEPROM() {
 
     // alarms:
     for (byte i = 0; i < alarms_count; i++) {
+#if defined(DEBUG) && defined(DEBUG_EEPROM_writes)
+        Serial.print(F("Alarm "));
+        Serial.println(i);
+#endif
         byte * data = alarms[i].writeEEPROM();
         for (byte j = 0; j < EEPROM_AlarmClass_record_length; j++) {
-            EEPROM.write((i * EEPROM_AlarmClass_record_length) + j + EEPROM_alarms_offset, data[j]);
+            unsigned int address = (i * EEPROM_AlarmClass_record_length) + j + EEPROM_alarms_offset;
+#if defined(DEBUG) && defined(DEBUG_EEPROM_writes)
+            Serial.print(F("Saving "));
+            if (data[j] < 16) Serial.print('0');
+            Serial.print(data[j], HEX);
+            Serial.print(F(" to "));
+            if (address < 16) Serial.print('0');
+            Serial.println(address, HEX);
+#endif // DEBUG
+            EEPROM.update(address, data[j]);
         }
     }
 }
