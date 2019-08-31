@@ -39,12 +39,16 @@ Alarms
 /*
 Pins
 */
-// 2,3 - reserved for buttons / rotary encoder
-#define pin_lamp 4
-#define pin_buzzer 5 // PWM
+// 0, 1 - Serial
+// 2, 3 - reserved for buttons / rotary encoder
+#define pin_button_snooze 4
+#define pin_button_stop 5
 #define pin_ambient 6 // PWM
-#define pin_LCD_enable 7
-// 9, 10, 11, 12, 13 - reserved for SPI (ethernet, SD card)
+#define pin_lamp 7
+#define pin_LCD_enable 8
+#define pin_buzzer 9 // PWM, TimerOne
+// 10, 11, 12, 13, A0 - reserved for SPI (ethernet)
+// A4, A5 - I2C
 
 /*
 I2C
@@ -64,6 +68,7 @@ Error codes
 // error codes for self test
 #define error_I2C_ping_DS3231 1
 #define error_time_lost 2
+#define error_EEPROM 4
 #define error_critical_mask 0b1111111111111101 // time_lost is not critical
 
 /*
@@ -80,5 +85,12 @@ Serial CLI
 #define Serial_prompt_length 5
 #define Serial_indentation_width 2
 #define Serial_autosave_interval 60 * 1000UL // time elapsed since last command
+
+/*
+Button debounce
+*/
+#define button_count 2
+#define button_index_snooze 0
+#define button_index_stop 1
 
 #endif
