@@ -353,6 +353,9 @@ boolean SerialCLIClass::_save()
 void SerialCLIClass::_rtc_get()
 {
     Serial.print(F("Time: "));
+    if (_now.dayOfTheWeek() == 0) Serial.print(days_of_the_week_names_short[7]);
+    else Serial.print(days_of_the_week_names_short[_now.dayOfTheWeek()]);
+    Serial.print(' ');
     Serial.print(_now.day());
     Serial.print(". ");
     Serial.print(_now.month());
