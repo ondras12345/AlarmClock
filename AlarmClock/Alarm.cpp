@@ -11,6 +11,7 @@ void AlarmClass::loop(DateTime time)
         if (get_current_snooze_status()) { // alarm is NOT ringing (snooze)
             if ((unsigned long)(millis() - previous_millis) >= (_snooze.time_minutes * 60000UL)) {
                 set_current_snooze_status(false);
+                DEBUG_println(F("Alarm waking from snooze"));
             }
 
         }
@@ -29,9 +30,10 @@ void AlarmClass::loop(DateTime time)
     }
     else { // alarm is not active
         if (_days_of_week.getDayOfWeek_Adafruit(time.dayOfTheWeek()) && time.hour() == _when.get_hours() && time.minute() == _when.get_minutes() && _enabled) { // time is matching
-            if ((time - last_alarm).totalseconds() > 60) { // check for last_alarm - in case the alarm gets canceled during the same minute it started
+            if ((time - last_alarm).totalseconds() > 60UL) { // check for last_alarm - in case the alarm gets canceled during the same minute it started
                 last_alarm = time;
                 set_current_snooze_count(_snooze.count);
+                set_current_snooze_status(false);
 
                 // safety feature - if ambient() got stuck:
                 if (_signalization.buzzer) buzzerTone(Alarm_regular_ringing_frequency, 0);
@@ -39,6 +41,7 @@ void AlarmClass::loop(DateTime time)
                 // Do events - can only switch on
                 if (_signalization.ambient > 0) ambient(0, _signalization.ambient, 900000UL); // 15 minutes
                 if (_signalization.lamp) lamp(true);
+                DEBUG_println(F("Alarm activated"));
             }
         }
     }
@@ -76,7 +79,8 @@ void AlarmClass::button_stop()
     ambient(0, 0, 0);
     lamp(false);
     buzzerNoTone();
-    set_current_beeping_status(false);
+    //set_current_beeping_status(false); // this would break it (alarm would wake from snooze)
+    // becasue current_snooze_count != AlarmClass_current_snooze_count_none
 }
 
 AlarmClass::AlarmClass()
