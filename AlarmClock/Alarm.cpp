@@ -62,6 +62,7 @@ void AlarmClass::button_snooze()
         if (get_current_snooze_count() > 1) {
             set_current_snooze_status(true);
             set_current_snooze_count(get_current_snooze_count() - 1);
+            previous_millis = millis();
 
             // ambient(0, 0, 0);
             lamp(false);
