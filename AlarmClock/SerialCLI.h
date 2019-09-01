@@ -16,7 +16,7 @@
 class SerialCLIClass
 {
 protected:
-    AlarmClass(*_alarms)[alarms_count];
+    AlarmClass *_alarms;
     void(*_writeEEPROM)();
     const char _prompt_default[2 + 1] = "> ";
     char _Serial_buffer[Serial_buffer_length + 1]; // +1 for termination
@@ -44,7 +44,7 @@ protected:
 
 public:
     void loop();
-    SerialCLIClass(AlarmClass(*alarms)[alarms_count], void(*__writeEEPROM)());
+    SerialCLIClass(AlarmClass *alarms, void(*__writeEEPROM)());
 };
 
 #endif

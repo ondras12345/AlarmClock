@@ -64,7 +64,7 @@ AlarmClass alarms[alarms_count];
 CountdownTimerClass countdownTimer;
 PWMfadeClass ambientFader(pin_ambient);
 DateTime now;
-SerialCLIClass CLI(&alarms, writeEEPROM);
+SerialCLIClass CLI(alarms, writeEEPROM);
 Bounce buttons[button_count];
 
 unsigned long loop_rtc_previous_millis = 0;

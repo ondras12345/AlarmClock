@@ -132,28 +132,28 @@ boolean AlarmClass::readEEPROM(byte data[EEPROM_AlarmClass_record_length])
 
 byte * AlarmClass::writeEEPROM()
 {
-    static byte data[EEPROM_AlarmClass_record_length];
-    data[0] = EEPROM_alarms_identificator;
+    _EEPROM_data[0] = EEPROM_alarms_identificator;
 
-    data[1] = _when.timestamp & 0xFF;
-    data[2] = (_when.timestamp >> 8) & 0xFF;
-    data[3] = _enabled;
-    data[4] = _days_of_week.DaysOfWeek;
-    data[5] = _snooze.time_minutes;
-    data[6] = _snooze.count;
-    data[7] = _signalization.ambient;
-    data[8] = _signalization.lamp;
-    data[9] = _signalization.buzzer;
+    _EEPROM_data[1] = _when.timestamp & 0xFF;
+    _EEPROM_data[2] = (_when.timestamp >> 8) & 0xFF;
+    _EEPROM_data[3] = _enabled;
+    _EEPROM_data[4] = _days_of_week.DaysOfWeek;
+    _EEPROM_data[5] = _snooze.time_minutes;
+    _EEPROM_data[6] = _snooze.count;
+    _EEPROM_data[7] = _signalization.ambient;
+    _EEPROM_data[8] = _signalization.lamp;
+    _EEPROM_data[9] = _signalization.buzzer;
 
-    return data;
 #if defined(DEBUG) && defined(DEBUG_EEPROM_alarms)
     Serial.println(F("EEPROM alarm write:"));
     for (byte i = 0; i < EEPROM_AlarmClass_record_length; i++) {
-        Serial.print(data[i], HEX);
+        Serial.print(_EEPROM_data[i], HEX);
         Serial.print(' ');
     }
     Serial.println();
 #endif // DEBUG
+
+    return _EEPROM_data;
 }
 
 

@@ -38,6 +38,8 @@ struct Signalization {
 class AlarmClass
 {
 protected:
+    byte _EEPROM_data[EEPROM_AlarmClass_record_length]; // needs to be static (because of pointers)
+
     // not saved in EEPROM:
     DateTime last_alarm; // needed in case the alarm gets canceled during the same minute it started
     byte current_snooze_count; // bit 6 - currently in snooze; bit 5 - currently beeping; bit 0,1,2,3 - actual value (max 9)

@@ -113,7 +113,7 @@ void SerialCLIClass::loop()
     if ((unsigned long)(millis() - _previous_command_millis) >= Serial_autosave_interval) _save();
 }
 
-SerialCLIClass::SerialCLIClass(AlarmClass(*__alarms)[alarms_count], void(*__writeEEPROM)())
+SerialCLIClass::SerialCLIClass(AlarmClass *__alarms, void(*__writeEEPROM)())
 {
     _alarms = __alarms;
     _writeEEPROM = __writeEEPROM;
@@ -194,12 +194,12 @@ boolean SerialCLIClass::_list_selected_alarm()
 
     _indent(1);
     Serial.print(F("Enabled: "));
-    Serial.println(_alarms[_selected_alarm_index]->get_enabled());
+    Serial.println((_alarms + _selected_alarm_index)->get_enabled());
 
     _indent(1);
     Serial.print(F("Days of week: "));
     for (byte i = 1; i <= 7; i++) {
-        if (_alarms[_selected_alarm_index]->get_days_of_week().getDayOfWeek(i)) {
+        if ((_alarms + _selected_alarm_index)->get_days_of_week().getDayOfWeek(i)) {
             Serial.print(days_of_the_week_names_short[i]);
             Serial.print(' ');
         }
@@ -209,31 +209,31 @@ boolean SerialCLIClass::_list_selected_alarm()
 
     _indent(1);
     Serial.print(F("Time: "));
-    Serial.print(_alarms[_selected_alarm_index]->get_time().get_hours());
+    Serial.print((_alarms + _selected_alarm_index)->get_time().get_hours());
     Serial.print(":");
-    Serial.println(_alarms[_selected_alarm_index]->get_time().get_minutes());
+    Serial.println((_alarms + _selected_alarm_index)->get_time().get_minutes());
 
     _indent(1);
     Serial.println(F("Snooze: "));
     _indent(2);
     Serial.print(F("Time: "));
-    Serial.print(_alarms[_selected_alarm_index]->get_snooze().time_minutes);
+    Serial.print((_alarms + _selected_alarm_index)->get_snooze().time_minutes);
     Serial.println(F(" min"));
     _indent(2);
     Serial.print(F("Count: "));
-    Serial.println(_alarms[_selected_alarm_index]->get_snooze().count);
+    Serial.println((_alarms + _selected_alarm_index)->get_snooze().count);
 
     _indent(1);
     Serial.println(F("Signalization: "));
     _indent(2);
     Serial.print(F("Ambient: "));
-    Serial.println(_alarms[_selected_alarm_index]->get_signalization().ambient);
+    Serial.println((_alarms + _selected_alarm_index)->get_signalization().ambient);
     _indent(2);
     Serial.print(F("Lamp: "));
-    Serial.println(_alarms[_selected_alarm_index]->get_signalization().lamp);
+    Serial.println((_alarms + _selected_alarm_index)->get_signalization().lamp);
     _indent(2);
     Serial.print(F("Buzzer: "));
-    Serial.println(_alarms[_selected_alarm_index]->get_signalization().buzzer);
+    Serial.println((_alarms + _selected_alarm_index)->get_signalization().buzzer);
 
     return true;
 }
@@ -242,7 +242,7 @@ boolean SerialCLIClass::_set_enabled(boolean __en)
 {
     if (_selected_alarm_index == _selected_alarm_index_none) return false;
 
-    _alarms[_selected_alarm_index]->set_enabled(__en);
+    (_alarms + _selected_alarm_index)->set_enabled(__en);
 
     _change = true;
     return true;
@@ -260,7 +260,7 @@ boolean SerialCLIClass::_set_time(char *time)
     if (*time == '\0') return false;
     minutes = _strbyte(time);
 
-    if (_alarms[_selected_alarm_index]->set_time(hours, minutes)) {
+    if ((_alarms + _selected_alarm_index)->set_time(hours, minutes)) {
         _change = true;
         return true;
     }
@@ -280,7 +280,7 @@ boolean SerialCLIClass::_set_day_of_week(char *dow)
     if (*dow == '\0') return false;
     status = _strbyte(dow);
 
-    if (_alarms[_selected_alarm_index]->set_day_of_week(day, status)) {
+    if ((_alarms + _selected_alarm_index)->set_day_of_week(day, status)) {
         _change = true;
         return true;
     }
@@ -300,7 +300,7 @@ boolean SerialCLIClass::_set_snooze(char * snooze)
     if (*snooze == '\0') return false;
     count = _strbyte(snooze);
 
-    if (_alarms[_selected_alarm_index]->set_snooze(time, count)) {
+    if ((_alarms + _selected_alarm_index)->set_snooze(time, count)) {
         _change = true;
         return true;
     }
@@ -324,7 +324,7 @@ boolean SerialCLIClass::_set_signalization(char * sig)
     if (*sig == '\0') return false;
     buzzer = _strbyte(sig);
 
-    if (_alarms[_selected_alarm_index]->set_signalization(ambient, lamp, buzzer)) {
+    if ((_alarms + _selected_alarm_index)->set_signalization(ambient, lamp, buzzer)) {
         _change = true;
         return true;
     }
