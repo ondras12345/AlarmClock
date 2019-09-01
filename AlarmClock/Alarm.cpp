@@ -11,6 +11,8 @@ void AlarmClass::loop(DateTime time)
         if (get_current_snooze_status()) { // alarm is NOT ringing (snooze)
             if ((unsigned long)(millis() - previous_millis) >= (_snooze.time_minutes * 60000UL)) {
                 set_current_snooze_status(false);
+                if (_signalization.lamp) lamp(true);
+                DEBUG_println(F("Alarm waking from snooze"));
             }
 
         }
@@ -29,9 +31,10 @@ void AlarmClass::loop(DateTime time)
     }
     else { // alarm is not active
         if (_days_of_week.getDayOfWeek_Adafruit(time.dayOfTheWeek()) && time.hour() == _when.get_hours() && time.minute() == _when.get_minutes() && _enabled) { // time is matching
-            if ((time - last_alarm).totalseconds() > 60) { // check for last_alarm - in case the alarm gets canceled during the same minute it started
+            if ((time - last_alarm).totalseconds() > 60UL) { // check for last_alarm - in case the alarm gets canceled during the same minute it started
                 last_alarm = time;
                 set_current_snooze_count(_snooze.count);
+                set_current_snooze_status(false);
 
                 // safety feature - if ambient() got stuck:
                 if (_signalization.buzzer) buzzerTone(Alarm_regular_ringing_frequency, 0);
@@ -39,6 +42,7 @@ void AlarmClass::loop(DateTime time)
                 // Do events - can only switch on
                 if (_signalization.ambient > 0) ambient(0, _signalization.ambient, 900000UL); // 15 minutes
                 if (_signalization.lamp) lamp(true);
+                DEBUG_println(F("Alarm activated"));
             }
         }
     }
@@ -59,6 +63,7 @@ void AlarmClass::button_snooze()
         if (get_current_snooze_count() > 1) {
             set_current_snooze_status(true);
             set_current_snooze_count(get_current_snooze_count() - 1);
+            previous_millis = millis();
 
             // ambient(0, 0, 0);
             lamp(false);
@@ -76,7 +81,8 @@ void AlarmClass::button_stop()
     ambient(0, 0, 0);
     lamp(false);
     buzzerNoTone();
-    set_current_beeping_status(false);
+    //set_current_beeping_status(false); // this would break it (alarm would wake from snooze)
+    // becasue current_snooze_count != AlarmClass_current_snooze_count_none
 }
 
 AlarmClass::AlarmClass()
@@ -90,8 +96,18 @@ AlarmClass::AlarmClass()
     current_snooze_count = AlarmClass_current_snooze_count_none;
 }
 
-boolean AlarmClass::readEEPROM(byte data[]) // data length must be equal to AlarmClass_EEPROM_record_length
+boolean AlarmClass::readEEPROM(byte data[EEPROM_AlarmClass_record_length])
 {
+#if defined(DEBUG) && defined(DEBUG_EEPROM_alarms)
+    Serial.println();
+    Serial.println(F("EEPROM alarm read:"));
+    for (byte i = 0; i < EEPROM_AlarmClass_record_length; i++) {
+        Serial.print(data[i], HEX);
+        Serial.print(' ');
+    }
+    Serial.println();
+#endif // DEBUG
+
     if (data[0] != EEPROM_alarms_identificator) return false;
 
     _when.timestamp = 0;
@@ -116,25 +132,34 @@ boolean AlarmClass::readEEPROM(byte data[]) // data length must be equal to Alar
     last_alarm = DateTime(2000, 1, 1);
     current_snooze_count = AlarmClass_current_snooze_count_none;
 
+    DEBUG_println(F("EEPROM alarm read OK"));
     return true;
 }
 
 byte * AlarmClass::writeEEPROM()
 {
-    static byte data[EEPROM_AlarmClass_record_length];
-    data[0] = EEPROM_alarms_identificator;
+    _EEPROM_data[0] = EEPROM_alarms_identificator;
 
-    data[1] = _when.timestamp & 0xFF;
-    data[2] = (_when.timestamp >> 8) & 0xFF;
-    data[3] = _enabled;
-    data[4] = _days_of_week.DaysOfWeek;
-    data[5] = _snooze.time_minutes;
-    data[6] = _snooze.count;
-    data[7] = _signalization.ambient;
-    data[8] = _signalization.lamp;
-    data[9] = _signalization.buzzer;
+    _EEPROM_data[1] = _when.timestamp & 0xFF;
+    _EEPROM_data[2] = (_when.timestamp >> 8) & 0xFF;
+    _EEPROM_data[3] = _enabled;
+    _EEPROM_data[4] = _days_of_week.DaysOfWeek;
+    _EEPROM_data[5] = _snooze.time_minutes;
+    _EEPROM_data[6] = _snooze.count;
+    _EEPROM_data[7] = _signalization.ambient;
+    _EEPROM_data[8] = _signalization.lamp;
+    _EEPROM_data[9] = _signalization.buzzer;
 
-    return data;
+#if defined(DEBUG) && defined(DEBUG_EEPROM_alarms)
+    Serial.println(F("EEPROM alarm write:"));
+    for (byte i = 0; i < EEPROM_AlarmClass_record_length; i++) {
+        Serial.print(_EEPROM_data[i], HEX);
+        Serial.print(' ');
+    }
+    Serial.println();
+#endif // DEBUG
+
+    return _EEPROM_data;
 }
 
 

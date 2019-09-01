@@ -64,14 +64,17 @@ AlarmClass alarms[alarms_count];
 CountdownTimerClass countdownTimer;
 PWMfadeClass ambientFader(pin_ambient);
 DateTime now;
-SerialCLIClass CLI(&alarms, writeEEPROM);
+SerialCLIClass CLI(alarms, writeEEPROM);
 Bounce buttons[button_count];
 
 unsigned long loop_rtc_previous_millis = 0;
 
 
 void setup() {
-    // # TODO pinMode()s
+    pinMode(pin_ambient, OUTPUT);
+    pinMode(pin_lamp, OUTPUT);
+    pinMode(pin_buzzer, OUTPUT);
+    pinMode(pin_LCD_enable, OUTPUT);
 
     buttons[button_index_snooze].attach(pin_button_snooze, INPUT_PULLUP); // # TODO DEBUG only, then switch to external pull-ups
     buttons[button_index_stop].attach(pin_button_stop, INPUT_PULLUP);
@@ -88,26 +91,37 @@ void setup() {
     if ((error & error_critical_mask) == 0) error |= (readEEPROM() ? 0 : error_EEPROM);
     error |= SelfTest(time); // rtc.begin() can be omited (only calls Wire.begin())
 
-    if ((error & error_critical_mask) != 0) factory_reset(); // # TODO nejdriv zobraz chybu, zaloguj pokud to neni chyba eeprom, pak pockej na uzivatele
+    if (error & error_time_lost) {
+        Serial.println(F("RTC time lost"));
+        // # TODO
+    }
 
+    if ((error & error_critical_mask) != 0) {
+        factory_reset(); // # TODO nejdriv zobraz chybu, zaloguj pokud to neni chyba eeprom, pak pockej na uzivatele
+    }
+
+    Serial.println(F("boot"));
 }
 
 void loop() {
     if ((unsigned long)(millis() - loop_rtc_previous_millis) >= 800UL) {
         now = rtc.now(); // # TODO + summer_time
-        CLI.loop();
+        CLI.loop(now);
     }
 
     for (byte i = 0; i < button_count; i++) buttons[i].update();
     if (buttons[button_index_snooze].fell()) {
         for (byte i = 0; i < alarms_count; i++) alarms[i].button_snooze();
+        DEBUG_println(F("snooze pressed"));
     }
     if (buttons[button_index_stop].fell()) {
         for (byte i = 0; i < alarms_count; i++) alarms[i].button_stop();
+        DEBUG_println(F("stop pressed"));
     }
 
     for (byte i = 0; i < alarms_count; i++) alarms[i].loop(now);
     countdownTimer.loop();
+    ambientFader.loop();
 
 }
 
@@ -121,6 +135,25 @@ void init_hardware() {
 EEPROM
 */
 boolean readEEPROM() {
+#ifdef DEBUG
+    Serial.print(F("EEPROM dump"));
+    byte val;
+    for (byte i = 0; i < EEPROM_DEBUG_dump_length; i++) {
+        if (i % 16 == 0) {
+            Serial.println();
+            if (i < 16) Serial.print('0');
+            Serial.print(i, HEX); // address
+            Serial.print("  ");
+        }
+        val = EEPROM.read(i);
+        if (val < 16) Serial.print('0');
+        Serial.print(val, HEX);
+        Serial.print(' ');
+    }
+    Serial.println();
+#endif // DEBUG
+
+
     boolean error = false;
     // basic config:
 
@@ -137,13 +170,27 @@ boolean readEEPROM() {
 }
 
 void writeEEPROM() {
+    DEBUG_println(F("EEPROM write"));
     // basic config:
 
     // alarms:
     for (byte i = 0; i < alarms_count; i++) {
+#if defined(DEBUG) && defined(DEBUG_EEPROM_writes)
+        Serial.print(F("Alarm "));
+        Serial.println(i);
+#endif
         byte * data = alarms[i].writeEEPROM();
         for (byte j = 0; j < EEPROM_AlarmClass_record_length; j++) {
-            EEPROM.write((i * EEPROM_AlarmClass_record_length) + j + EEPROM_alarms_offset, data[j]);
+            unsigned int address = (i * EEPROM_AlarmClass_record_length) + j + EEPROM_alarms_offset;
+#if defined(DEBUG) && defined(DEBUG_EEPROM_writes)
+            Serial.print(F("Saving "));
+            if (data[j] < 16) Serial.print('0');
+            Serial.print(data[j], HEX);
+            Serial.print(F(" to "));
+            if (address < 16) Serial.print('0');
+            Serial.println(address, HEX);
+#endif // DEBUG
+            EEPROM.update(address, data[j]);
         }
     }
 }
@@ -152,6 +199,7 @@ void writeEEPROM() {
 Factory reset
 */
 void factory_reset() {
+    Serial.println(F("Factory reset"));
     for (byte i = 0; i < alarms_count; i++) alarms[i] = AlarmClass();
     countdownTimer = CountdownTimerClass();
 
@@ -218,7 +266,7 @@ void lamp(boolean status) { digitalWrite(pin_lamp, status); }
 void buzzerTone(unsigned int freq, unsigned long duration) { tone(pin_buzzer, freq, duration); } // default value duration=0 specified in prototype
 void buzzerNoTone() { noTone(pin_buzzer); }
 void ambient(byte start, byte stop, unsigned long duration) {
-    int step_sign = (start > stop) ? 1 : -1;
+    int step_sign = (start > stop) ? -1 : 1;
     byte diff = abs(stop - start);
     int _step = 0;
     unsigned long _interval = 250;
