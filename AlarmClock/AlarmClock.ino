@@ -71,7 +71,10 @@ unsigned long loop_rtc_previous_millis = 0;
 
 
 void setup() {
-    // # TODO pinMode()s
+    pinMode(pin_ambient, OUTPUT);
+    pinMode(pin_lamp, OUTPUT);
+    pinMode(pin_buzzer, OUTPUT);
+    pinMode(pin_LCD_enable, OUTPUT);
 
     buttons[button_index_snooze].attach(pin_button_snooze, INPUT_PULLUP); // # TODO DEBUG only, then switch to external pull-ups
     buttons[button_index_stop].attach(pin_button_stop, INPUT_PULLUP);
