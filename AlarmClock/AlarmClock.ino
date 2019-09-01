@@ -98,7 +98,7 @@ void setup() {
 void loop() {
     if ((unsigned long)(millis() - loop_rtc_previous_millis) >= 800UL) {
         now = rtc.now(); // # TODO + summer_time
-        CLI.loop();
+        CLI.loop(now);
     }
 
     for (byte i = 0; i < button_count; i++) buttons[i].update();

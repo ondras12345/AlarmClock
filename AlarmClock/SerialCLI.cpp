@@ -4,8 +4,9 @@
 
 #include "SerialCLI.h"
 
-void SerialCLIClass::loop()
+void SerialCLIClass::loop(DateTime __time)
 {
+    _now = __time;
     boolean new_message = false;
     if (Serial.available()) delay(20); // wait for the whole message to arrive
 
@@ -99,6 +100,10 @@ void SerialCLIClass::loop()
         else if (strstr(_Serial_buffer, "sav") != NULL) {
             Serial.println(_save() ? F("Saved") : F("Nothing to save"));
         }
+        else if (strstr(_Serial_buffer, "rtc") != NULL) {
+            _rtc_get();
+            // # TODO set
+        }
         else {
             Serial.println(F("? SYNTAX ERROR"));
             _printHelp();
@@ -142,6 +147,10 @@ void SerialCLIClass::_printHelp()
     Serial.println(F("sig{a};{l};{b} - set signalization: ambient{a};lamp{l}1|0;{buzzer}1|0"));
     _indent(1);
     Serial.println(F("sav - save all"));
+    _indent(1);
+    Serial.println(F("rtc - get RTC time"));
+    //_indent(1);
+    //Serial.println(F("rtc{h}:{m} - set RTC time"));
 }
 
 byte SerialCLIClass::_strbyte(char *str)
@@ -339,4 +348,20 @@ boolean SerialCLIClass::_save()
         return true;
     }
     else return false;
+}
+
+void SerialCLIClass::_rtc_get()
+{
+    Serial.print(F("Time: "));
+    Serial.print(_now.day());
+    Serial.print(". ");
+    Serial.print(_now.month());
+    Serial.print(". ");
+    Serial.print(_now.year());
+    Serial.print("  ");
+    Serial.print(_now.hour());
+    Serial.print(':');
+    Serial.print(_now.minute());
+    Serial.print(':');
+    Serial.println(_now.second());
 }

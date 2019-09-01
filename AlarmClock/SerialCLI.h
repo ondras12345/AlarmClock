@@ -17,6 +17,7 @@ class SerialCLIClass
 {
 protected:
     AlarmClass *_alarms;
+    DateTime _now;
     void(*_writeEEPROM)();
     const char _prompt_default[2 + 1] = "> ";
     char _Serial_buffer[Serial_buffer_length + 1]; // +1 for termination
@@ -41,9 +42,11 @@ protected:
     boolean _set_snooze(char *snooze);
     boolean _set_signalization(char *sig);
     boolean _save(); // check if something changed, save if true
+    void _rtc_get();
+    //boolean _rtc_set(); // # TODO
 
 public:
-    void loop();
+    void loop(DateTime time);
     SerialCLIClass(AlarmClass *alarms, void(*__writeEEPROM)());
 };
 
