@@ -13,7 +13,8 @@
     - [ ] 'sav' (with DEBUG on) - nothing to save
     - [ ] Autosave (with DEBUG on)
     - [ ] 'rtc' - get time
-    - [ ] Set time (to be implemented)
+    - [ ] 'sd{dd}.{mm}.{yy}' - set RTC date (year - 2000 !!)
+    - [ ] 'st{h}:{m}' - set RTC time
 
 - [ ] Buttons
     - [ ] 'snooze' button (with DEBUG on)
@@ -40,3 +41,4 @@
 - [ ] RTC
     - Get time - see 'Serial CLI'
     - Set time - see 'Serial CLI'
+    
