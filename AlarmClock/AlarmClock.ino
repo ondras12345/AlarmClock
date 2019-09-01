@@ -88,6 +88,11 @@ void setup() {
     if ((error & error_critical_mask) == 0) error |= (readEEPROM() ? 0 : error_EEPROM);
     error |= SelfTest(time); // rtc.begin() can be omited (only calls Wire.begin())
 
+    if (error & error_time_lost) {
+        Serial.println(F("RTC time lost"));
+        // # TODO
+    }
+
     if ((error & error_critical_mask) != 0) {
         factory_reset(); // # TODO nejdriv zobraz chybu, zaloguj pokud to neni chyba eeprom, pak pockej na uzivatele
     }
