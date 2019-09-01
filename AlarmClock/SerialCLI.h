@@ -18,6 +18,7 @@ class SerialCLIClass
 protected:
     AlarmClass *_alarms;
     DateTime _now;
+    RTC_DS3231 *_rtc;
     void(*_writeEEPROM)();
     const char _prompt_default[2 + 1] = "> ";
     char _Serial_buffer[Serial_buffer_length + 1]; // +1 for termination
@@ -42,12 +43,13 @@ protected:
     boolean _set_snooze(char *snooze);
     boolean _set_signalization(char *sig);
     boolean _save(); // check if something changed, save if true
+    boolean _rtc_time(char *time);
+    boolean _rtc_date(char *date);
     void _rtc_get();
-    //boolean _rtc_set(); // # TODO
 
 public:
     void loop(DateTime time);
-    SerialCLIClass(AlarmClass *alarms, void(*__writeEEPROM)());
+    SerialCLIClass(AlarmClass *alarms, void(*__writeEEPROM)(), RTC_DS3231 *__rtc);
 };
 
 #endif

@@ -102,7 +102,18 @@ void SerialCLIClass::loop(DateTime __time)
         }
         else if (strstr(_Serial_buffer, "rtc") != NULL) {
             _rtc_get();
-            // # TODO set
+        }
+        else if (strstr(_Serial_buffer, "sd") != NULL) {
+            char *date = strstr(_Serial_buffer, "sd");
+            if (!_rtc_date(date)) {
+                Serial.println(F("Enter valid params"));
+            }
+        }
+        else if (strstr(_Serial_buffer, "st") != NULL) {
+            char *time = strstr(_Serial_buffer, "st");
+            if (!_rtc_time(time)) {
+                Serial.println(F("Enter valid params"));
+            }
         }
         else {
             Serial.println(F("? SYNTAX ERROR"));
@@ -118,10 +129,11 @@ void SerialCLIClass::loop(DateTime __time)
     if ((unsigned long)(millis() - _previous_command_millis) >= Serial_autosave_interval) _save();
 }
 
-SerialCLIClass::SerialCLIClass(AlarmClass *__alarms, void(*__writeEEPROM)())
+SerialCLIClass::SerialCLIClass(AlarmClass *__alarms, void(*__writeEEPROM)(), RTC_DS3231 *__rtc)
 {
     _alarms = __alarms;
     _writeEEPROM = __writeEEPROM;
+    _rtc = __rtc;
     strcpy(_prompt, _prompt_default);
 }
 
@@ -148,9 +160,13 @@ void SerialCLIClass::_printHelp()
     _indent(1);
     Serial.println(F("sav - save all"));
     _indent(1);
+    Serial.println(F("RTC:"));
+    _indent(2);
     Serial.println(F("rtc - get RTC time"));
-    //_indent(1);
-    //Serial.println(F("rtc{h}:{m} - set RTC time"));
+    _indent(2);
+    Serial.println(F("sd{dd}.{mm}.{yy} - set RTC date"));
+    _indent(2);
+    Serial.println(F("st{h}:{m} - set RTC time"));
 }
 
 byte SerialCLIClass::_strbyte(char *str)
@@ -348,6 +364,46 @@ boolean SerialCLIClass::_save()
         return true;
     }
     else return false;
+}
+
+boolean SerialCLIClass::_rtc_time(char * time)
+{
+    byte hour, minute;
+    time = _find_next_digit(time);
+    if (*time == '\0') return false;
+    hour = _strbyte(time);
+    time = _find_next_digit(time);
+    if (*time == '\0') return false;
+    minute = _strbyte(time);
+
+    if (hour > 23 || minute > 59) return false;
+
+
+    _now = _rtc->now();
+    _rtc->adjust(DateTime(_now.year(), _now.month(), _now.day(), hour, minute));
+    return true;
+}
+
+boolean SerialCLIClass::_rtc_date(char * date)
+{
+    int year;
+    byte month, day;
+
+    date = _find_next_digit(date);
+    if (*date == '\0') return false;
+    day = _strbyte(date);
+    date = _find_next_digit(date);
+    if (*date == '\0') return false;
+    month = _strbyte(date);
+    date = _find_next_digit(date);
+    if (*date == '\0') return false;
+    year = _strbyte(date);
+
+    if (month > 12 || day > 31) return false;
+
+    _now = _rtc->now();
+    _rtc->adjust(DateTime(year, month, day, _now.hour(), _now.minute()));
+    return true;
 }
 
 void SerialCLIClass::_rtc_get()
