@@ -11,6 +11,7 @@ void AlarmClass::loop(DateTime time)
         if (get_current_snooze_status()) { // alarm is NOT ringing (snooze)
             if ((unsigned long)(millis() - previous_millis) >= (_snooze.time_minutes * 60000UL)) {
                 set_current_snooze_status(false);
+                if (_signalization.lamp) lamp(true);
                 DEBUG_println(F("Alarm waking from snooze"));
             }
 
