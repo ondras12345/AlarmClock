@@ -121,6 +121,7 @@ void loop() {
 
     for (byte i = 0; i < alarms_count; i++) alarms[i].loop(now);
     countdownTimer.loop();
+    ambientFader.loop();
 
 }
 
@@ -265,7 +266,7 @@ void lamp(boolean status) { digitalWrite(pin_lamp, status); }
 void buzzerTone(unsigned int freq, unsigned long duration) { tone(pin_buzzer, freq, duration); } // default value duration=0 specified in prototype
 void buzzerNoTone() { noTone(pin_buzzer); }
 void ambient(byte start, byte stop, unsigned long duration) {
-    int step_sign = (start > stop) ? 1 : -1;
+    int step_sign = (start > stop) ? -1 : 1;
     byte diff = abs(stop - start);
     int _step = 0;
     unsigned long _interval = 250;
