@@ -10,7 +10,7 @@
 /*
 Compile-time options
 */
-#define VisualStudio
+#define VisualStudio // support for visual studio (aditional function prototypes required)
 
 /*
 DEBUG
