@@ -41,4 +41,8 @@
 - [ ] RTC
     - Get time - see 'Serial CLI'
     - Set time - see 'Serial CLI'
-    
+
+- [ ] Compile time options
+    - [ ] Alarm count
+    - [ ] Alarm ringing frequency and period
+    - [ ] DEBUG
