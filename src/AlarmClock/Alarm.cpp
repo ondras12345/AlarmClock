@@ -31,7 +31,7 @@ void AlarmClass::loop(DateTime time)
     }
     else { // alarm is not active
         if (_days_of_week.getDayOfWeek_Adafruit(time.dayOfTheWeek()) && time.hour() == _when.get_hours() && time.minute() == _when.get_minutes() && _enabled) { // time is matching
-            if ((time - last_alarm).totalseconds() > 60UL) { // check for last_alarm - in case the alarm gets canceled during the same minute it started
+            if ((time - last_alarm).totalseconds() > 60) { // check for last_alarm - in case the alarm gets canceled during the same minute it started
                 last_alarm = time;
                 set_current_snooze_count(_snooze.count);
                 set_current_snooze_status(false);
