@@ -78,7 +78,7 @@ void setup() {
 
     buttons[button_index_snooze].attach(pin_button_snooze, INPUT_PULLUP); // # TODO DEBUG only, then switch to external pull-ups
     buttons[button_index_stop].attach(pin_button_stop, INPUT_PULLUP);
-    for (byte i = 0; i < button_count; i++) buttons[i].interval(25);
+    for (byte i = 0; i < button_count; i++) buttons[i].interval(button_debounce_interval);
 
     init_hardware();
 

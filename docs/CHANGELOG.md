@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Repository tree (source is now in `src` directory, ...)
 - Checklist for tests
+- Constants are now separated from user-configurable settings
 
 ### Removed
 
