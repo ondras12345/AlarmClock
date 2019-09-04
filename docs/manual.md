@@ -1,8 +1,10 @@
 # Arduino-alarm-clock
 This project's source code and electronic designs are available on [Github][Github repo].
 
+
 # Features
 TODO this should be in README
+
 
 # Configuration
 ## Compile-time
@@ -34,7 +36,12 @@ If you really need to, make sure you choose a pin that
 supports all the functions used (eg. [PWM][Arduino PWM], TimerOne, ...)
 
 ## Runtime
-There are currently no runtime configurable parameters (except for alarms).
+### RTC time
+RTC time can be set using the Serial CLI. Use the commands `sd` and `st` (type
+`help` for more information).
+
+TODO LCD
+
 
 ## Alarms
 TODO Enabled - SIG, REP
@@ -56,8 +63,10 @@ bool: [boolean][Wikipedia boolean]
 days of week: Mo = 1, Su = 7  
 Ambient LED strip dimming: [PWM][Wikipedia PWM]
 
+
 # LCD
 TODO implement
+
 
 # Serial CLI
 There is a CLI (command line interface) available. To access it, connect to the Arduino's USB
