@@ -36,11 +36,11 @@ enum SelfTest_level {
 
 #include <EEPROM.h>
 #include <Wire.h>
-#include <LiquidCrystal_I2C.h>
+//#include <LiquidCrystal_I2C.h>  // # TODO implement LCD
 #include <RTClib.h>
 #include <Bounce2.h>
 #include "Alarm.h"
-#include "CountdownTimer.h"
+//#include "CountdownTimer.h"  // # TODO implement CountdownTimer
 #include "PWMfade.h"
 #include "SerialCLI.h"
 
@@ -58,10 +58,10 @@ void writeEEPROM(); // Arduino IDE needs it before SerialCLI definition
 
 
 // Global variables
-LiquidCrystal_I2C lcd(I2C_LCD_address, LCD_width, LCD_height);
+//LiquidCrystal_I2C lcd(I2C_LCD_address, LCD_width, LCD_height);  // # TODO implement LCD
 RTC_DS3231 rtc; // DS3231
 AlarmClass alarms[alarms_count];
-CountdownTimerClass countdownTimer;
+//CountdownTimerClass countdownTimer;  // # TODO implement CountdownTimer
 PWMfadeClass ambientFader(pin_ambient);
 DateTime now;
 SerialCLIClass CLI(alarms, writeEEPROM, &rtc);
@@ -74,7 +74,7 @@ void setup() {
     pinMode(pin_ambient, OUTPUT);
     pinMode(pin_lamp, OUTPUT);
     pinMode(pin_buzzer, OUTPUT);
-    pinMode(pin_LCD_enable, OUTPUT);
+    //pinMode(pin_LCD_enable, OUTPUT);  // # TODO implement LCD
 
     buttons[button_index_snooze].attach(pin_button_snooze, INPUT_PULLUP); // # TODO DEBUG only, then switch to external pull-ups
     buttons[button_index_stop].attach(pin_button_stop, INPUT_PULLUP);
@@ -85,7 +85,7 @@ void setup() {
     Wire.begin();
     Serial.begin(9600);
 
-    lcd_on();
+    //lcd_on();  // # TODO implement LCD
 
     unsigned int error = SelfTest(POST);
     if ((error & error_critical_mask) == 0) error |= (readEEPROM() ? 0 : error_EEPROM);
@@ -97,7 +97,7 @@ void setup() {
     }
 
     if ((error & error_critical_mask) != 0) {
-        factory_reset(); // # TODO nejdriv zobraz chybu, zaloguj pokud to neni chyba eeprom, pak pockej na uzivatele
+        factory_reset(); // # TODO show the error first, write to log if it is not EEPROM error, the wait for the user
     }
 
     Serial.println(F("boot"));
@@ -120,14 +120,14 @@ void loop() {
     }
 
     for (byte i = 0; i < alarms_count; i++) alarms[i].loop(now);
-    countdownTimer.loop();
+    //countdownTimer.loop();  // # TODO implement CountdownTimer
     ambientFader.loop();
 
 }
 
 void init_hardware() {
     for (byte i = 0; i < alarms_count; i++) alarms[i].set_hardware(lamp, ambient, buzzerTone, buzzerNoTone);
-    countdownTimer.set_hardware(lamp, ambient, buzzerTone, buzzerNoTone);
+    //countdownTimer.set_hardware(lamp, ambient, buzzerTone, buzzerNoTone);  // # TODO implement CountdownTimer
 }
 
 
@@ -201,7 +201,7 @@ Factory reset
 void factory_reset() {
     Serial.println(F("Factory reset"));
     for (byte i = 0; i < alarms_count; i++) alarms[i] = AlarmClass();
-    countdownTimer = CountdownTimerClass();
+    //countdownTimer = CountdownTimerClass();  // # TODO implement CountdownTimer
 
     writeEEPROM();
 }
@@ -210,6 +210,7 @@ void factory_reset() {
 /*
 LCD
 */
+/*
 boolean lcd_on() {
     digitalWrite(pin_LCD_enable, HIGH);
     delay(100);
@@ -223,6 +224,7 @@ boolean lcd_on() {
 void lcd_off() {
     digitalWrite(pin_LCD_enable, LOW);
 }
+*/  // # TODO implement LCD
 
 
 /*
@@ -232,7 +234,7 @@ unsigned int SelfTest(SelfTest_level level) {
     unsigned int error = 0; // each bit signalizes an error
 
     if (level == POST) {
-        //digitalWrite(..., HIGH);
+        //digitalWrite(..., HIGH);  // # TODO
         tone(pin_buzzer, 1000, 100);
         delay(400);
         //digitalWrite(..., LOW);
