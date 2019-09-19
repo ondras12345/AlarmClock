@@ -17,8 +17,9 @@ void AlarmClass::loop(DateTime time)
 
         }
         else if (_signalization.buzzer) { // alarm is ringing
-            unsigned long period = (get_current_snooze_count() == 1) ? Alarm_last_ringing_period : Alarm_regular_ringing_period; // select either the regular or last ringing parameters
-            unsigned int frequency = (get_current_snooze_count() == 1) ? Alarm_last_ringing_frequency : Alarm_regular_ringing_frequency;
+	    // select either the regular or last ringing parameters
+            unsigned long period = (get_current_snooze_count() == 0) ? Alarm_last_ringing_period : Alarm_regular_ringing_period;
+            unsigned int frequency = (get_current_snooze_count() == 0) ? Alarm_last_ringing_frequency : Alarm_regular_ringing_frequency;
 
             if ((unsigned long)(millis() - previous_millis) >= period) { // inverse buzzer
                 previous_millis = millis();
@@ -60,7 +61,7 @@ void AlarmClass::set_hardware(void(*lamp_)(boolean), void(*ambient_)(byte, byte,
 void AlarmClass::button_snooze()
 {
     if (!get_current_snooze_status() && get_active()) {
-        if (get_current_snooze_count() > 1) {
+        if (get_current_snooze_count() >= 1) {
             set_current_snooze_status(true);
             set_current_snooze_count(get_current_snooze_count() - 1);
             previous_millis = millis();
