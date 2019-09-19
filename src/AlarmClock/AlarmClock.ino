@@ -280,6 +280,7 @@ void ambient(byte start, byte stop, unsigned long duration) {
     _step = step_sign * ((_interval * diff) / _duration);
     if (_step == 0) _step = step_sign; // step must not be 0
 
+#if defined(DEBUG) && defined(DEBUG_ambient)
     DEBUG_print("ambient - diff: ");
     DEBUG_println(diff);
 
@@ -291,6 +292,7 @@ void ambient(byte start, byte stop, unsigned long duration) {
 
     DEBUG_print("ambient - step: ");
     DEBUG_println(_step);
+#endif
 
 
     ambientFader.set(start, stop, _step, _interval);
