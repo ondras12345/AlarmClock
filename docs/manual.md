@@ -24,7 +24,7 @@ Do not modify `src/AlarmClock/Constants.h`
 | LCD_height                      | 2           | rows  | Number of lines                             |
 | Serial_indentation_width        | 2           | chars | Indentation width for the Serial CLI        |
 | Serial_autosave_interval        | 60 * 1000UL | ms    | Inactivity length after for autosave        |
-| button_debounce_interval        | 25          | ms    | Debounce interval for buttons.
+| button_debounce_interval        | 25          | ms    | Debounce interval for buttons.              |
 
 **Notes:**  
 1000UL - normal 16bit int would overflow, so this needs to be an unsigned long  
