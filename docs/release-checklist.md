@@ -4,7 +4,7 @@
 - [ ] Go trough docs/test-checklist.md
 - [ ] Update docs/CHANGELOG.md
 - [ ] Update README.md (??)
-- [ ] Update wiki (??)
+- [ ] Update docs/manual.md
 - [ ] `git tag`
 - [ ] `git push --tags`
 - [ ] Github release - text from docs/CHANGELOG.md

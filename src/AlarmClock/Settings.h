@@ -9,6 +9,7 @@
 /*
 This file contains settings that are meant to be user changable.
 Constants like error codes are in Constants.h
+For more info about these options see docs/manual.md
 */
 
 
