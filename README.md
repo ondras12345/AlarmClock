@@ -5,3 +5,8 @@ Arduino alarm clock using the DS3231 RTC and a LCD
 - https://github.com/adafruit/RTClib
 - https://github.com/johnrickman/LiquidCrystal_I2C
 - https://github.com/thomasfredericks/Bounce2
+
+# Docs
+See the [manual][manual].
+
+[manual]: ./docs/manual.md
