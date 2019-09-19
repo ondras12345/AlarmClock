@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+- Snooze count being offset by 1 (2 meant 1,
+  0 wasn't handled properly ('last ringing' feature did not trigger))
 
 ## [0.0.1] - 2019-09-02
 First working version
