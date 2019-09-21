@@ -1,6 +1,6 @@
-// 
-// 
-// 
+//
+//
+//
 
 #include "Alarm.h"
 
@@ -89,7 +89,7 @@ void AlarmClass::button_stop()
 AlarmClass::AlarmClass()
 {
     _when.timestamp = 0;
-    _enabled = false;
+    _enabled = Off;
     _days_of_week.DaysOfWeek = 0;
     _snooze = { 0,0 };
     _signalization = { 0, false, false };
@@ -116,7 +116,7 @@ boolean AlarmClass::readEEPROM(byte data[EEPROM_AlarmClass_record_length])
     _when.timestamp |= data[2] << 8;
     if (_when.get_hours() > 23 || _when.get_minutes() > 59) return false;
 
-    _enabled = data[3];
+    _enabled = AlarmEnabled(data[3]);
     _days_of_week.DaysOfWeek = data[4];
 
     if (data[5] <= 99) _snooze.time_minutes = data[5];
@@ -143,7 +143,7 @@ byte * AlarmClass::writeEEPROM()
 
     _EEPROM_data[1] = _when.timestamp & 0xFF;
     _EEPROM_data[2] = (_when.timestamp >> 8) & 0xFF;
-    _EEPROM_data[3] = _enabled;
+    _EEPROM_data[3] = byte(_enabled);
     _EEPROM_data[4] = _days_of_week.DaysOfWeek;
     _EEPROM_data[5] = _snooze.time_minutes;
     _EEPROM_data[6] = _snooze.count;
