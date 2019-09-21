@@ -66,6 +66,7 @@ PWMfadeClass ambientFader(pin_ambient);
 DateTime now;
 SerialCLIClass CLI(alarms, writeEEPROM, &rtc);
 Bounce buttons[button_count];
+boolean button_stop_new_press = false;
 
 unsigned long loop_rtc_previous_millis = 0;
 
@@ -121,12 +122,14 @@ void loop() {
     if (buttons[button_index_stop].fell()) {
         for (byte i = 0; i < alarms_count; i++) alarms[i].button_stop();
         DEBUG_println(F("stop pressed"));
+        button_stop_new_press = true;
     }
-    if (buttons[button_index_stop].duration() >= button_long_press) {
+    if (buttons[button_index_stop].duration() >= button_long_press && buttons[button_index_stop].read() == LOW && !inhibit && button_stop_new_press) {
         set_inhibit(true);
     }
-    if (buttons[button_index_stop].duration() >= button_long_press * 4UL) {
+    if (buttons[button_index_stop].duration() >= button_long_press * 4UL && buttons[button_index_stop].read() == LOW && inhibit && button_stop_new_press) {
         set_inhibit(false);
+        button_stop_new_press = false;
     }
     if (inhibit && (unsigned long)(millis() - inhibit_previous_millis) >= Alarm_inhibit_duration) {
         set_inhibit(false);
@@ -340,6 +343,6 @@ void set_inhibit(boolean status) {
     inhibit = status;
     for (byte i = 0; i < alarms_count; i++) alarms[i].set_inhibit(status);
     if (status) DEBUG_print(F("inhibit enabled"));
-    else DEBUG_print(F("inhibit disabled"));
+    else DEBUG_println(F("inhibit disabled"));
     digitalWrite(pin_LED, status);
 }
