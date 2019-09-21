@@ -31,11 +31,12 @@ void AlarmClass::loop(DateTime time)
 
     }
     else { // alarm is not active
-        if (_days_of_week.getDayOfWeek_Adafruit(time.dayOfTheWeek()) && time.hour() == _when.get_hours() && time.minute() == _when.get_minutes() && _enabled) { // time is matching
+        if (_days_of_week.getDayOfWeek_Adafruit(time.dayOfTheWeek()) && time.hour() == _when.get_hours() && time.minute() == _when.get_minutes() && _enabled != Off) { // time is matching
             if ((time - last_alarm).totalseconds() > 60) { // check for last_alarm - in case the alarm gets canceled during the same minute it started
                 last_alarm = time;
                 set_current_snooze_count(_snooze.count);
                 set_current_snooze_status(false);
+                if (_enabled == Single) _enabled = Off;
 
                 // safety feature - if ambient() got stuck:
                 if (_signalization.buzzer) buzzerTone(Alarm_regular_ringing_frequency, 0);
@@ -164,7 +165,7 @@ byte * AlarmClass::writeEEPROM()
 }
 
 
-boolean AlarmClass::set_enabled(boolean __enabled)
+boolean AlarmClass::set_enabled(AlarmEnabled __enabled)
 {
     _enabled = __enabled;
     return true;

@@ -37,7 +37,7 @@ protected:
 
     boolean _select_alarm(byte index);
     boolean _list_selected_alarm();
-    boolean _set_enabled(boolean __en);
+    boolean _set_enabled(AlarmEnabled __en);
     boolean _set_time(char *time);
     boolean _set_day_of_week(char *dow);
     boolean _set_snooze(char *snooze);

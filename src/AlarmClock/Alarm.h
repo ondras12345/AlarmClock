@@ -100,8 +100,8 @@ public:
     AlarmClass();
 
 
-    boolean set_enabled(boolean __enabled);
-    boolean get_enabled() { return _enabled; };
+    boolean set_enabled(AlarmEnabled __enabled);
+    AlarmEnabled get_enabled() { return _enabled; };
 
     boolean set_time(byte __hours, byte __minutes);
     MinutesTimeStampClass get_time() { return _when; };
