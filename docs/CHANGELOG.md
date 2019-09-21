@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CHANGELOG.md
 - Checklist for releasing
 - manual.md
+- Inhibit function (see manual)  
+  __WARNING__: This required pins swap - lamp is now on pin 10  
+  __HARDWARE__: A new LED should be added
 
 ### Changed
 - Repository tree (source is now in `src` directory, ...)

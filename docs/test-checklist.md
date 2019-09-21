@@ -20,6 +20,7 @@
 - [ ] Buttons
     - [ ] 'snooze' button (with DEBUG on)
     - [ ] 'stop' button (with DEBUG on)
+    - [ ] 'stop' button hold (with DEBUG on)
 
 - [ ] Alarms
     - [ ] Trigger
@@ -39,6 +40,10 @@
         - Wait 1 minute, alarm should retrigger
         - Ringing sound should be different (last ringing)
         - Press 'stop' button - alarm should stop
+
+    - [ ] Inhibit
+        - Enable the 'inhibit' function by holding the 'stop' button
+        - Do the 'Trigger' steps. The alarm shouldn't trigger
 
 - [ ] RTC
     - Get time - see 'Serial CLI'

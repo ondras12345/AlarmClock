@@ -51,6 +51,7 @@ protected:
     DateTime last_alarm; // needed in case the alarm gets canceled during the same minute it started
     byte current_snooze_count; // bit 6 - currently in snooze; bit 5 - currently beeping; bit 0,1,2,3 - actual value (max 9)
     unsigned long previous_millis;
+    boolean inhibit;
 
     void(*lamp)(boolean);
     void(*ambient)(byte, byte, unsigned long);
@@ -116,6 +117,9 @@ public:
 
     boolean set_signalization(byte __ambient, boolean __lamp, boolean __buzzer);
     Signalization get_signalization() { return _signalization; };
+
+    boolean get_inhibit() { return inhibit; };
+    boolean set_inhibit(boolean __inhibit);
 };
 
 

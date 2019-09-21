@@ -4,27 +4,42 @@ This project's source code and electronic designs are available on [Github][Gith
 
 # Features
 TODO this should be in README
+## Inhibit
+This feature allows you to inhibit all alarms for a set time (see the
+Alarm_inhibit_duration compile-time option). I plan to use it when I get up
+before the alarm rings, so that I don't have to wait for the alarm to activate
+nor disable it (I know that I'd forget to re-enable it).
 
+If an alarm with option 'Enabled: Single' is inhibited, it gets disabled
+the same as if it started ringing normally.
+
+This feature can by enabled by holding the 'stop' button (long press duration
+is defined by button_long_press compile-time option). It disables automatically
+after the set time, but it can be manually disabled by holding the 'stop' button
+4x longer than for a normal
+It is indicated by the LED.
 
 # Configuration
 ## Compile-time
 Edit the file `src/AlarmClock/Settings.h`  
 Do not modify `src/AlarmClock/Constants.h`
 
-| Option                          | Default     | Unit  | Meaning                                     |
-| ------------------------------- | ----------- | ----- | ------------------------------------------- |
-| DEBUG                           | disabled    |       | Enables debug messages if uncommented       |
-| alarms_count                    | 6           |       | Number of configurable alarms. Must be <255 |
-| Alarm_regular_ringing_frequency | 1000        | Hz    | Buzzer tone frequency (regular ringing)     |
-| Alarm_regular_ringing_period    | 500         | ms    | Buzzer on/off time length (regular ringing) |
-| Alarm_last_ringing_frequency    | 2000        | Hz    | Buzzer tone frequency (last ringing)        |
-| Alarm_last_ringing_period       | 250         | ms    | Buzzer on/off time length (last ringing)    |
-| I2C_LCD_address                 | 0x27        |       | I2C address of the LCD                      |
-| LCD_width                       | 16          | cols  | Number of chars per line                    |
-| LCD_height                      | 2           | rows  | Number of lines                             |
-| Serial_indentation_width        | 2           | chars | Indentation width for the Serial CLI        |
-| Serial_autosave_interval        | 60 * 1000UL | ms    | Inactivity length after for autosave        |
-| button_debounce_interval        | 25          | ms    | Debounce interval for buttons.              |
+| Option                          | Default            | Unit  | Meaning                                     |
+| ------------------------------- | ------------------ | ----- | ------------------------------------------- |
+| DEBUG                           | disabled           |       | Enables debug messages if uncommented       |
+| alarms_count                    | 6                  |       | Number of configurable alarms. Must be <255 |
+| Alarm_regular_ringing_frequency | 1000               | Hz    | Buzzer tone frequency (regular ringing)     |
+| Alarm_regular_ringing_period    | 500                | ms    | Buzzer on/off time length (regular ringing) |
+| Alarm_last_ringing_frequency    | 2000               | Hz    | Buzzer tone frequency (last ringing)        |
+| Alarm_last_ringing_period       | 250                | ms    | Buzzer on/off time length (last ringing)    |
+| Alarm_inhibit_duration          | 60 * 60UL * 1000UL | ms    | Duration of the 'inhibit' function          |
+| I2C_LCD_address                 | 0x27               |       | I2C address of the LCD                      |
+| LCD_width                       | 16                 | cols  | Number of chars per line                    |
+| LCD_height                      | 2                  | rows  | Number of lines                             |
+| Serial_indentation_width        | 2                  | chars | Indentation width for the Serial CLI        |
+| Serial_autosave_interval        | 60 * 1000UL        | ms    | Inactivity length after for autosave        |
+| button_debounce_interval        | 25                 | ms    | Debounce interval for buttons.              |
+| button_long_press               | 1000               | ms    | Minimal duration of a 'long press'          |
 
 **Notes:**  
 1000UL - normal 16bit int would overflow, so this needs to be an unsigned long  
