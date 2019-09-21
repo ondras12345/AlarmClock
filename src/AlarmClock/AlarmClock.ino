@@ -69,11 +69,15 @@ Bounce buttons[button_count];
 
 unsigned long loop_rtc_previous_millis = 0;
 
+boolean inhibit = false;
+unsigned long inhibit_previous_millis = 0;
+
 
 void setup() {
     pinMode(pin_ambient, OUTPUT);
     pinMode(pin_lamp, OUTPUT);
     pinMode(pin_buzzer, OUTPUT);
+    pinMode(pin_LED, OUTPUT);
     //pinMode(pin_LCD_enable, OUTPUT);  // # TODO implement LCD
 
     buttons[button_index_snooze].attach(pin_button_snooze, INPUT_PULLUP); // # TODO DEBUG only, then switch to external pull-ups
@@ -117,6 +121,15 @@ void loop() {
     if (buttons[button_index_stop].fell()) {
         for (byte i = 0; i < alarms_count; i++) alarms[i].button_stop();
         DEBUG_println(F("stop pressed"));
+    }
+    if (buttons[button_index_stop].duration() >= button_long_press) {
+        set_inhibit(true);
+    }
+    if (buttons[button_index_stop].duration() >= button_long_press * 4UL) {
+        set_inhibit(false);
+    }
+    if (inhibit && (unsigned long)(millis() - inhibit_previous_millis) >= Alarm_inhibit_duration) {
+        set_inhibit(false);
     }
 
     for (byte i = 0; i < alarms_count; i++) alarms[i].loop(now);
@@ -316,4 +329,17 @@ unsigned long _choose_interval(unsigned long duration, byte diff) {
     if (interval < 250) interval = previousInterval;
 
     return interval;
+}
+
+
+/*
+Utils
+*/
+void set_inhibit(boolean status) {
+    inhibit_previous_millis = millis();
+    inhibit = status;
+    for (byte i = 0; i < alarms_count; i++) alarms[i].set_inhibit(status);
+    if (status) DEBUG_print(F("inhibit enabled"));
+    else DEBUG_print(F("inhibit disabled"));
+    digitalWrite(pin_LED, status);
 }

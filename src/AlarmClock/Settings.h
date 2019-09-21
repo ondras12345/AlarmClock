@@ -34,6 +34,8 @@ Alarms
 #define Alarm_last_ringing_frequency 2000 // in Hz
 #define Alarm_last_ringing_period 250 // in ms
 
+#define Alarm_inhibit_duration 60 * 60UL * 1000UL  // in ms
+
 /*
 Pins
 */
@@ -41,11 +43,12 @@ Pins
 // 2, 3 - reserved for buttons / rotary encoder
 #define pin_button_snooze 4
 #define pin_button_stop 5
-#define pin_ambient 6 // PWM
-#define pin_lamp 7
+#define pin_ambient 6  // PWM
+#define pin_LED 7  // inhibit indicator
 #define pin_LCD_enable 8
-#define pin_buzzer 9 // PWM, TimerOne
-// 10, 11, 12, 13, A0 - reserved for SPI (eg. ethernet)
+#define pin_buzzer 9  // PWM, TimerOne
+#define pin_lamp 10  // (PWM)
+// 11, 12, 13, A0, A1 - reserved for 2 SPI devices (eg. ethernet)
 // A4, A5 - I2C
 
 /*
@@ -67,8 +70,9 @@ Serial CLI
 #define Serial_autosave_interval 60 * 1000UL // time elapsed since last command
 
 /*
-Button debounce
+Buttons
 */
-#define button_debounce_interval 25 // ms
+#define button_debounce_interval 25  // ms
+#define button_long_press 1000  // ms
 
 #endif
