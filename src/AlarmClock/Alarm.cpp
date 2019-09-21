@@ -33,18 +33,24 @@ void AlarmClass::loop(DateTime time)
     else { // alarm is not active
         if (_days_of_week.getDayOfWeek_Adafruit(time.dayOfTheWeek()) && time.hour() == _when.get_hours() && time.minute() == _when.get_minutes() && _enabled != Off) { // time is matching
             if ((time - last_alarm).totalseconds() > 60) { // check for last_alarm - in case the alarm gets canceled during the same minute it started
-                last_alarm = time;
-                set_current_snooze_count(_snooze.count);
-                set_current_snooze_status(false);
-                if (_enabled == Single) _enabled = Off;
+                if (_enabled == Single) _enabled = Off;  // must disable even if alarm is inhibited
 
-                // safety feature - if ambient() got stuck:
-                if (_signalization.buzzer) buzzerTone(Alarm_regular_ringing_frequency, 0);
+                if (get_inhibit()) {
+                    DEBUG_println(F("Alarm inhibited"));
+                }
+                else {
+                    last_alarm = time;
+                    set_current_snooze_count(_snooze.count);
+                    set_current_snooze_status(false);
 
-                // Do events - can only switch on
-                if (_signalization.ambient > 0) ambient(0, _signalization.ambient, 900000UL); // 15 minutes
-                if (_signalization.lamp) lamp(true);
-                DEBUG_println(F("Alarm activated"));
+                    // safety feature - if ambient() got stuck:
+                    if (_signalization.buzzer) buzzerTone(Alarm_regular_ringing_frequency, 0);
+
+                    // Do events - can only switch on
+                    if (_signalization.ambient > 0) ambient(0, _signalization.ambient, 900000UL); // 15 minutes
+                    if (_signalization.lamp) lamp(true);
+                    DEBUG_println(F("Alarm activated"));
+                }
             }
         }
     }
@@ -96,6 +102,7 @@ AlarmClass::AlarmClass()
     _signalization = { 0, false, false };
     last_alarm = DateTime(2000, 1, 1);
     current_snooze_count = AlarmClass_current_snooze_count_none;
+    inhibit = false;
 }
 
 boolean AlarmClass::readEEPROM(byte data[EEPROM_AlarmClass_record_length])
@@ -133,6 +140,7 @@ boolean AlarmClass::readEEPROM(byte data[EEPROM_AlarmClass_record_length])
     // not saved in the EEPROM:
     last_alarm = DateTime(2000, 1, 1);
     current_snooze_count = AlarmClass_current_snooze_count_none;
+    inhibit = false;
 
     DEBUG_println(F("EEPROM alarm read OK"));
     return true;
@@ -202,5 +210,11 @@ boolean AlarmClass::set_signalization(byte __ambient, boolean __lamp, boolean __
     _signalization.ambient = __ambient;
     _signalization.lamp = __lamp;
     _signalization.buzzer = __buzzer;
+    return true;
+}
+
+boolean AlarmClass::set_inhibit(boolean __inhibit)
+{
+    inhibit = __inhibit;
     return true;
 }
