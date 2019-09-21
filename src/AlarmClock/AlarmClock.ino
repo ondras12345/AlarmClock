@@ -342,7 +342,7 @@ void set_inhibit(boolean status) {
     inhibit_previous_millis = millis();
     inhibit = status;
     for (byte i = 0; i < alarms_count; i++) alarms[i].set_inhibit(status);
-    if (status) DEBUG_print(F("inhibit enabled"));
+    if (status) DEBUG_println(F("inhibit enabled"));
     else DEBUG_println(F("inhibit disabled"));
     digitalWrite(pin_LED, status);
 }
