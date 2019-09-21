@@ -33,7 +33,10 @@ void AlarmClass::loop(DateTime time)
     else { // alarm is not active
         if (_days_of_week.getDayOfWeek_Adafruit(time.dayOfTheWeek()) && time.hour() == _when.get_hours() && time.minute() == _when.get_minutes() && _enabled != Off) { // time is matching
             if ((time - last_alarm).totalseconds() > 60) { // check for last_alarm - in case the alarm gets canceled during the same minute it started
-                if (_enabled == Single) _enabled = Off;  // must disable even if alarm is inhibited
+                if (_enabled == Single) {
+                    _enabled = Off;
+                    writeEEPROM_all();
+                }  // must disable even if alarm is inhibited
 
                 if (get_inhibit()) {
                     DEBUG_println(F("Alarm inhibited"));
@@ -56,12 +59,13 @@ void AlarmClass::loop(DateTime time)
     }
 }
 
-void AlarmClass::set_hardware(void(*lamp_)(boolean), void(*ambient_)(byte, byte, unsigned long), void(*buzzerTone_)(unsigned int, unsigned long), void(*buzzerNoTone_)())
+void AlarmClass::set_hardware(void(*lamp_)(boolean), void(*ambient_)(byte, byte, unsigned long), void(*buzzerTone_)(unsigned int, unsigned long), void(*buzzerNoTone_)(), void(*writeEEPROM_)())
 {
     lamp = lamp_;
     ambient = ambient_;
     buzzerTone = buzzerTone_;
     buzzerNoTone = buzzerNoTone_;
+    writeEEPROM_all = writeEEPROM_;
 }
 
 // doesn't have any effect during last ringing
