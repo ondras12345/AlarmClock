@@ -44,18 +44,17 @@ TODO LCD
 
 
 ## Alarms
-TODO Enabled - SIG, REP
 
-| Option                          | Values        | Type  | Meaning                                       |
-| ------------------------------- | ------------- | ----- | --------------------------------------------- |
-| Enabled                         | (1\|0)        | bool  |                                               |
-| Days of week                    | (1-7):(1\|0)  | bools | Days of the week the alarm is enabled for     |
-| Time                            | (0-23):(0-59) | time  |                                               |
-| Snooze: time                    | (1-99)        | min   | How long is the alarm in snooze               |
-| Snooze: count                   | (0-9)         | count | How many times can the snooze feature be used |
-| Signalization: Ambient          | (0-255)       |       | Ambient LED strips intensity (0 = disabled)   |
-| Signalization: Lamp             | (0\|1)        | bool  | Is the 'lamp' output activated                |
-| Signalization: Buzzer           | (0\|1)        | bool  | Is the buzzer activated                       |
+| Option                          | Values          | Type  | Meaning                                       |
+| ------------------------------- | --------------- | ----- | --------------------------------------------- |
+| Enabled                         | (Off\|SGL\|RPT) | enum  | Off: disabled, Single: only rings once        |
+| Days of week                    | (1-7):(1\|0)    | bools | Days of the week the alarm is enabled for     |
+| Time                            | (0-23):(0-59)   | time  |                                               |
+| Snooze: time                    | (1-99)          | min   | How long is the alarm in snooze               |
+| Snooze: count                   | (0-9)           | count | How many times can the snooze feature be used |
+| Signalization: Ambient          | (0-255)         |       | Ambient LED strips intensity (0 = disabled)   |
+| Signalization: Lamp             | (0\|1)          | bool  | Is the 'lamp' output activated                |
+| Signalization: Buzzer           | (0\|1)          | bool  | Is the buzzer activated                       |
 
 
 **Notes:**  
@@ -84,7 +83,7 @@ There is an autosave feature that saves the changes after long inactivity
 ```
 sel0
 ls
-en
+en-rpt
 dow2:1
 sel
 sav
@@ -93,7 +92,7 @@ sav
 Explanation:
 - `sel0` selects the alarm
 - `ls` lists the alarms configuration
-- `en` enables the alarm
+- `en-rpt` enables the alarm
 - `dow2:1` enables the alarm for Tuesdays
 - `sel` deselects the alarm (optional)
 - `sav` saves the changes (optional - see [Autosave](#autosave))
