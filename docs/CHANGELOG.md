@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Repository tree (source is now in `src` directory, ...)
 - Checklist for tests
 - Constants are now separated from user-configurable settings
+- Alarm option 'Enabled' can now be Single\|Repeat\|Off.
+  This unlocks the ability to configure an alarm to automatically disable after
+  it rings once.  
+  __WARNING__: Old enabled alarms written in EEPROM will now
+  become 'Single' enabled.
 
 ### Removed
 
