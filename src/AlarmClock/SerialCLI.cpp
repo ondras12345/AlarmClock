@@ -63,11 +63,14 @@ void SerialCLIClass::loop(DateTime __time)
         else if (!strcmp(_Serial_buffer, "ls") || !strcmp(_Serial_buffer, "list")) {
             if (!_list_selected_alarm()) Serial.println(F("Sel first"));
         }
-        else if (!strcmp(_Serial_buffer, "en") || !strcmp(_Serial_buffer, "enable")) {
-            if (!_set_enabled(true)) Serial.println(F("Sel first"));
+        else if (!strcmp(_Serial_buffer, "en-sgl")) {
+            if (!_set_enabled(Single)) Serial.println(F("Sel first"));
+        }
+        else if (!strcmp(_Serial_buffer, "en-rpt")) {
+            if (!_set_enabled(Repeat)) Serial.println(F("Sel first"));
         }
         else if (!strcmp(_Serial_buffer, "dis") || !strcmp(_Serial_buffer, "disable")) {
-            if (!_set_enabled(false)) Serial.println(F("Sel first"));
+            if (!_set_enabled(Off)) Serial.println(F("Sel first"));
         }
         else if (strstr(_Serial_buffer, "time") != NULL) {
             char *time = strstr(_Serial_buffer, "time");
@@ -148,7 +151,9 @@ void SerialCLIClass::_printHelp()
     _indent(2);
     Serial.println(F("ls - list"));
     _indent(2);
-    Serial.println(F("en/dis - enable/disable"));
+    Serial.println(F("en-sgl/en-rpt - enable - single/repeat"));
+    _indent(2);
+    Serial.println(F("dis - disable"));
     _indent(2);
     Serial.println(F("time{h}:{m} - set time"));
     _indent(2);
@@ -219,7 +224,19 @@ boolean SerialCLIClass::_list_selected_alarm()
 
     _indent(1);
     Serial.print(F("Enabled: "));
-    Serial.println((_alarms + _selected_alarm_index)->get_enabled());
+    switch ((_alarms + _selected_alarm_index)->get_enabled()) {
+    case Off:
+        Serial.println(F("Off"));
+        break;
+
+    case Single:
+        Serial.println(F("Single"));
+        break;
+
+    case Repeat:
+        Serial.println(F("Repeat"));
+        break;
+    }
 
     _indent(1);
     Serial.print(F("Days of week: "));
@@ -263,7 +280,7 @@ boolean SerialCLIClass::_list_selected_alarm()
     return true;
 }
 
-boolean SerialCLIClass::_set_enabled(boolean __en)
+boolean SerialCLIClass::_set_enabled(AlarmEnabled __en)
 {
     if (_selected_alarm_index == _selected_alarm_index_none) return false;
 

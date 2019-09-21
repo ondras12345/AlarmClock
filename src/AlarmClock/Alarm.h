@@ -16,7 +16,7 @@
 #include <RTClib.h> // for datetime
 
 
-//#define AlarmClass_EEPROM_record_length identifier(1B) + sizeof(TimeStampClass - jen  2 byte) + sizeof(enabled - 1 byte) + sizeof(DaysOfWeekClass - jen 1 byte (eeprom)) + sizeof(Snooze) + sizeOf(Signalization)
+//#define AlarmClass_EEPROM_record_length identifier(1B) + sizeof(TimeStampClass - jen  2 byte) + sizeof(AlarmsEnabled - 1 byte) + sizeof(DaysOfWeekClass - jen 1 byte (eeprom)) + sizeof(Snooze) + sizeOf(Signalization)
 #define AlarmClass_current_snooze_count_none 255
 #define AlarmClass_current_snooze_count_value_mask 0b00001111
 #define AlarmClass_current_snooze_count_snooze_mask 0b01000000
@@ -24,6 +24,12 @@
 #define AlarmClass_current_snooze_count_beeping_mask 0b00100000
 #define AlarmClass_current_snooze_count_beeping_bit 5
 
+
+enum AlarmEnabled {
+    Off = 0,
+    Single = 1,
+    Repeat = 2
+};
 struct Snooze {
     byte time_minutes; // max 99
     byte count; // max 9
@@ -53,7 +59,7 @@ protected:
 
     // saved in the EEPROM:
     MinutesTimeStampClass _when;
-    boolean _enabled;
+    AlarmEnabled _enabled;
     DaysOfWeekClass _days_of_week;
     Snooze _snooze;
     Signalization _signalization;
@@ -94,8 +100,8 @@ public:
     AlarmClass();
 
 
-    boolean set_enabled(boolean __enabled);
-    boolean get_enabled() { return _enabled; };
+    boolean set_enabled(AlarmEnabled __enabled);
+    AlarmEnabled get_enabled() { return _enabled; };
 
     boolean set_time(byte __hours, byte __minutes);
     MinutesTimeStampClass get_time() { return _when; };
