@@ -40,6 +40,7 @@ void AlarmClass::loop(DateTime time)
 
                 if (get_inhibit()) {
                     DEBUG_println(F("Alarm inhibited"));
+                    last_alarm = time;  // otherwise it would spam the log
                 }
                 else {
                     last_alarm = time;
