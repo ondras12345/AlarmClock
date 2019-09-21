@@ -126,7 +126,7 @@ void loop() {
 }
 
 void init_hardware() {
-    for (byte i = 0; i < alarms_count; i++) alarms[i].set_hardware(lamp, ambient, buzzerTone, buzzerNoTone);
+    for (byte i = 0; i < alarms_count; i++) alarms[i].set_hardware(lamp, ambient, buzzerTone, buzzerNoTone, writeEEPROM);
     //countdownTimer.set_hardware(lamp, ambient, buzzerTone, buzzerNoTone);  // # TODO implement CountdownTimer
 }
 

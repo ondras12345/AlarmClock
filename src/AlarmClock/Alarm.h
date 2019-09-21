@@ -56,6 +56,7 @@ protected:
     void(*ambient)(byte, byte, unsigned long);
     void(*buzzerTone)(unsigned int, unsigned long); // freq, duration
     void(*buzzerNoTone)();
+    void(*writeEEPROM_all)();
 
     // saved in the EEPROM:
     MinutesTimeStampClass _when;
@@ -94,7 +95,7 @@ public:
     byte * writeEEPROM();
 
     void loop(DateTime time);
-    void set_hardware(void(*lamp_)(boolean), void(*ambient_)(byte, byte, unsigned long), void(*buzzerTone_)(unsigned int, unsigned long), void(*buzzerNoTone_)());
+    void set_hardware(void(*lamp_)(boolean), void(*ambient_)(byte, byte, unsigned long), void(*buzzerTone_)(unsigned int, unsigned long), void(*buzzerNoTone_)(), void(*writeEEPROM_)());
     void button_snooze();
     void button_stop();
     AlarmClass();

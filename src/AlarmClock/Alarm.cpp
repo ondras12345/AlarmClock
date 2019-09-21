@@ -36,7 +36,10 @@ void AlarmClass::loop(DateTime time)
                 last_alarm = time;
                 set_current_snooze_count(_snooze.count);
                 set_current_snooze_status(false);
-                if (_enabled == Single) _enabled = Off;
+                if (_enabled == Single) {
+                    _enabled = Off;
+                    writeEEPROM_all();
+                }
 
                 // safety feature - if ambient() got stuck:
                 if (_signalization.buzzer) buzzerTone(Alarm_regular_ringing_frequency, 0);
@@ -50,12 +53,13 @@ void AlarmClass::loop(DateTime time)
     }
 }
 
-void AlarmClass::set_hardware(void(*lamp_)(boolean), void(*ambient_)(byte, byte, unsigned long), void(*buzzerTone_)(unsigned int, unsigned long), void(*buzzerNoTone_)())
+void AlarmClass::set_hardware(void(*lamp_)(boolean), void(*ambient_)(byte, byte, unsigned long), void(*buzzerTone_)(unsigned int, unsigned long), void(*buzzerNoTone_)(), void(*writeEEPROM_)())
 {
     lamp = lamp_;
     ambient = ambient_;
     buzzerTone = buzzerTone_;
     buzzerNoTone = buzzerNoTone_;
+    writeEEPROM_all = writeEEPROM_;
 }
 
 // doesn't have any effect during last ringing
