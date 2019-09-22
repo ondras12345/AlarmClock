@@ -119,7 +119,6 @@
     <ClInclude Include="Alarm.h" />
     <ClInclude Include="CountdownTimer.h" />
     <ClInclude Include="DaysOfWeek.h" />
-    <ClInclude Include="MinutesTimeStamp.h" />
     <ClInclude Include="PWMfade.h" />
     <ClInclude Include="SerialCLI.h" />
     <ClInclude Include="__vm\.AlarmClock.vsarduino.h" />
@@ -129,7 +128,6 @@
     <ClCompile Include="Constants.h" />
     <ClCompile Include="CountdownTimer.cpp" />
     <ClCompile Include="DaysOfWeek.cpp" />
-    <ClCompile Include="MinutesTimeStamp.cpp" />
     <ClCompile Include="PWMfade.cpp" />
     <ClCompile Include="SerialCLI.cpp" />
     <ClCompile Include="Settings.h" />

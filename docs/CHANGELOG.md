@@ -22,6 +22,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   it rings once.  
   __WARNING__: Old enabled alarms written in EEPROM will now
   become 'Single' enabled.
+- Alarm record format in the EEPROM  
+  __WARNING__: This breaks old EEPROM records and may perform a factory reset
+  when first used, because minutes and/or hours of the old record may exceed
+  the limits (23 h 59 min) when interpreted as the new format.
 
 ### Removed
 
