@@ -17,7 +17,7 @@ void AlarmClass::loop(DateTime time)
 
         }
         else if (_signalization.buzzer) { // alarm is ringing
-	    // select either the regular or last ringing parameters
+            // select either the regular or last ringing parameters
             unsigned long period = (get_current_snooze_count() == 0) ? Alarm_last_ringing_period : Alarm_regular_ringing_period;
             unsigned int frequency = (get_current_snooze_count() == 0) ? Alarm_last_ringing_frequency : Alarm_regular_ringing_frequency;
 
@@ -31,7 +31,7 @@ void AlarmClass::loop(DateTime time)
 
     }
     else { // alarm is not active
-        if (_days_of_week.getDayOfWeek_Adafruit(time.dayOfTheWeek()) && time.hour() == _when.get_hours() && time.minute() == _when.get_minutes() && _enabled != Off) { // time is matching
+        if (_days_of_week.getDayOfWeek_Adafruit(time.dayOfTheWeek()) && time.hour() == _when.hours && time.minute() == _when.minutes && _enabled != Off) { // time is matching
             if ((time - last_alarm).totalseconds() > 60) { // check for last_alarm - in case the alarm gets canceled during the same minute it started
                 if (_enabled == Single) {
                     _enabled = Off;
@@ -100,10 +100,10 @@ void AlarmClass::button_stop()
 
 AlarmClass::AlarmClass()
 {
-    _when.timestamp = 0;
+    _when = { 0, 0 };
     _enabled = Off;
     _days_of_week.DaysOfWeek = 0;
-    _snooze = { 0,0 };
+    _snooze = { 0, 0 };
     _signalization = { 0, false, false };
     last_alarm = DateTime(2000, 1, 1);
     current_snooze_count = AlarmClass_current_snooze_count_none;
@@ -124,10 +124,9 @@ boolean AlarmClass::readEEPROM(byte data[EEPROM_AlarmClass_record_length])
 
     if (data[0] != EEPROM_alarms_identificator) return false;
 
-    _when.timestamp = 0;
-    _when.timestamp = data[1];
-    _when.timestamp |= data[2] << 8;
-    if (_when.get_hours() > 23 || _when.get_minutes() > 59) return false;
+    _when.hours = data[1];
+    _when.minutes = data[2];
+    if (_when.hours > 23 || _when.minutes > 59) return false;
 
     _enabled = AlarmEnabled(data[3]);
     _days_of_week.DaysOfWeek = data[4];
@@ -155,8 +154,8 @@ byte * AlarmClass::writeEEPROM()
 {
     _EEPROM_data[0] = EEPROM_alarms_identificator;
 
-    _EEPROM_data[1] = _when.timestamp & 0xFF;
-    _EEPROM_data[2] = (_when.timestamp >> 8) & 0xFF;
+    _EEPROM_data[1] = _when.hours;
+    _EEPROM_data[2] = _when.minutes;
     _EEPROM_data[3] = byte(_enabled);
     _EEPROM_data[4] = _days_of_week.DaysOfWeek;
     _EEPROM_data[5] = _snooze.time_minutes;
@@ -187,7 +186,7 @@ boolean AlarmClass::set_enabled(AlarmEnabled __enabled)
 boolean AlarmClass::set_time(byte __hours, byte __minutes)
 {
     if (__hours > 23 || __minutes > 59) return false;
-    _when = MinutesTimeStampClass(__hours, __minutes);
+    _when = { __hours, __minutes };
     return true;
 }
 

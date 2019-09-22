@@ -251,9 +251,9 @@ boolean SerialCLIClass::_list_selected_alarm()
 
     _indent(1);
     Serial.print(F("Time: "));
-    Serial.print((_alarms + _selected_alarm_index)->get_time().get_hours());
+    Serial.print((_alarms + _selected_alarm_index)->get_time().hours);
     Serial.print(":");
-    Serial.println((_alarms + _selected_alarm_index)->get_time().get_minutes());
+    Serial.println((_alarms + _selected_alarm_index)->get_time().minutes);
 
     _indent(1);
     Serial.println(F("Snooze: "));

@@ -12,7 +12,6 @@
 #include "Settings.h"
 #include "Constants.h"
 #include "DaysOfWeek.h"
-#include "MinutesTimeStamp.h"
 #include <RTClib.h> // for datetime
 
 
@@ -33,6 +32,11 @@ enum AlarmEnabled {
 struct Snooze {
     byte time_minutes; // max 99
     byte count; // max 9
+};
+
+struct hours_minutes {
+    byte hours;
+    byte minutes;
 };
 
 struct Signalization {
@@ -60,7 +64,7 @@ protected:
     void(*writeEEPROM_all)();
 
     // saved in the EEPROM:
-    MinutesTimeStampClass _when;
+    hours_minutes _when;
     AlarmEnabled _enabled;
     DaysOfWeekClass _days_of_week;
     Snooze _snooze;
@@ -106,7 +110,7 @@ public:
     AlarmEnabled get_enabled() { return _enabled; };
 
     boolean set_time(byte __hours, byte __minutes);
-    MinutesTimeStampClass get_time() { return _when; };
+    hours_minutes get_time() { return _when; };
 
     boolean set_days_of_week(DaysOfWeekClass __days_of_week);
     boolean set_day_of_week(byte __day, boolean __status);
