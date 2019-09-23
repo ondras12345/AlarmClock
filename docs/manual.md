@@ -83,9 +83,10 @@ TODO implement
 
 
 # Serial CLI
-There is a CLI (command line interface) available. To access it, connect to the Arduino's USB
-port and use a terminal (eg. [PuTTY] or Arduino IDE's Serial monitor). Select the correct
-COM port and baudrate (9600).
+There is a CLI (command line interface) available. To access it, connect to
+the Arduino's USB port and use a terminal (eg. [PuTTY] or Arduino IDE's
+Serial monitor). Select the correct COM port and baudrate (9600).
+Individual commands (messages) must be terminated with CR or LF or both.
 
 For info about available commands, type `help`.
 
@@ -112,8 +113,6 @@ Explanation:
 - `sel` deselects the alarm (optional)
 - `sav` saves the changes (optional - see [Autosave](#autosave))
 
-
-TODO PuTTY support
 
 [Github repo]: https://github.com/ondras12345/Arduino-alarm-clock
 [Arduino PWM]: https://www.arduino.cc/reference/en/language/functions/analog-io/analogwrite/
