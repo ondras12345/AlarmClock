@@ -30,7 +30,7 @@ void SerialCLIClass::loop(DateTime __time)
             _Serial_buffer[index] = '\0';
             Serial.print("> ");
             Serial.println(_Serial_buffer);
-#ifdef DEBUG
+#if defined(DEBUG) && defined(DEBUG_Serial_CLI)
             char *ptr = &_Serial_buffer[0];
             while (*ptr != '\0') {
                 Serial.print(byte(*ptr), HEX);

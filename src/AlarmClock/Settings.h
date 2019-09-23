@@ -22,6 +22,7 @@ DEBUG
 //#define DEBUG_EEPROM_alarms // extra EEPROM messages
 //#define DEBUG_EEPROM_writes // very long messages when writing
 //#define DEBUG_ambient  // very long messages when calculating
+//#define DEBUG_Serial_CLI  // HEX dumps of received data, ...
 
 /*
 Alarms
