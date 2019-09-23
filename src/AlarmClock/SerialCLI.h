@@ -22,6 +22,7 @@ protected:
     void(*_writeEEPROM)();
     const char _prompt_default[2 + 1] = "> ";
     char _Serial_buffer[Serial_buffer_length + 1]; // +1 for termination
+    byte _Serial_buffer_index;
     char _prompt[Serial_prompt_length + 1];
     boolean _change = false; // for save
     unsigned long _previous_command_millis = 0; // for autosave
