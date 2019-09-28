@@ -27,12 +27,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   when first used, because minutes and/or hours of the old record may exceed
   the limits (23 h 59 min) when interpreted as the new format.
 - Serial CLI now requires commands (messages) to be terminated by CR, LF or CRLF
+- Serial CLI error codes reworked
 
 ### Removed
 
 ### Fixed
 - Snooze count being offset by 1 (2 meant 1,
   0 wasn't handled properly ('last ringing' feature did not trigger))
+- `dow0;1` not failing although it should
 
 ## [0.0.1] - 2019-09-02
 First working version
