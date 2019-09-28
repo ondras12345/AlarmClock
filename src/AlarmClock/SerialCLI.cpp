@@ -7,42 +7,70 @@
 void SerialCLIClass::loop(DateTime __time)
 {
     _now = __time;
-    boolean new_message = false;
-    if (Serial.available()) delay(60); // wait for the whole message to arrive
+    boolean complete_message = false;
 
-    if (Serial.available() > Serial_buffer_length) {
-        Serial.print(F("Cmd too long: "));
-        while (Serial.available())
-            Serial.print(char(Serial.read()));
-    }
-    else {
-        if (Serial.available() > 0) {
-            byte index = 0;
-            while (Serial.available() > 0) {
-                new_message = true;
-                _Serial_buffer[index] = tolower(Serial.read());
-                //DEBUG_print(F("Index: "));
-                //DEBUG_println(index);
-                if (_Serial_buffer[index] != '\n' && _Serial_buffer[index] != '\r') // ignore CRLF
-                    if (index < Serial_buffer_length - 1) // to prevent array overflow when a new message comes during processing
-                        index++;
-            }
-            _Serial_buffer[index] = '\0';
-            Serial.print("> ");
-            Serial.println(_Serial_buffer);
-#ifdef DEBUG
-            char *ptr = &_Serial_buffer[0];
-            while (*ptr != '\0') {
-                Serial.print(byte(*ptr), HEX);
-                Serial.print(' ');
-                ptr++;
-            }
-            Serial.println();
+    while (Serial.available() && !complete_message) {
+        // !complete_message - this prevents the _Serial_buffer being rewritten
+        // by new data when 2 messages are sent with very little delay (index
+        // is set to 0 when complete_message is received).
+        // I need to process the data before I receive the next message.
+
+        _Serial_buffer[_Serial_buffer_index] = tolower(Serial.read());
+
+        if (_Serial_buffer[_Serial_buffer_index] == '\n' || _Serial_buffer[_Serial_buffer_index] == '\r') {
+            //  CR/LF
+            if (_Serial_buffer_index != 0) {
+                // ignore if it is the first character (to avoid problems with CR+LF/LF)
+
+                _Serial_buffer[_Serial_buffer_index] = '\0';  // rewrite CR/LF
+                complete_message = true;
+                _Serial_buffer_index = 0;
+                Serial.println();
+
+#if defined(DEBUG) && defined(DEBUG_Serial_CLI)
+                Serial.println();
+                Serial.print(">> ");
+                Serial.println(_Serial_buffer);
+
+                char *ptr = &_Serial_buffer[0];
+                while (*ptr != '\0') {
+                    Serial.print(byte(*ptr), HEX);
+                    Serial.print(' ');
+                    ptr++;
+                }
+                Serial.println();
 #endif // DEBUG
+            }
+        }
+        else {
+            // Character playback - this needs to be before index++ and should
+            // not happen when the character is CR/LF
+            Serial.print(_Serial_buffer[_Serial_buffer_index]);
+
+            if (_Serial_buffer_index < Serial_buffer_length - 1) {
+                _Serial_buffer_index++;
+            }
+            else {
+                Serial.println();
+                Serial.print(F("Cmd too long: "));
+                for (byte i = 0; i <= _Serial_buffer_index; i++)
+                    Serial.print(_Serial_buffer[i]);
+
+                delay(40);  // to receive the rest of the message
+                while (Serial.available())
+                    Serial.print(char(Serial.read()));
+
+                Serial.println();
+
+                _Serial_buffer_index = 0;
+                _Serial_buffer[0] = '\0';  // this is currently not necessary
+            }
         }
     }
 
-    if (new_message) {
+
+    if (complete_message) {
+        DEBUG_println();
         DEBUG_println(F("Processing"));
         if (!strcmp(_Serial_buffer, "help")) { // ! - strcmp returns 0 if matches
             _printHelp();
@@ -124,6 +152,8 @@ void SerialCLIClass::loop(DateTime __time)
         }
 
         _previous_command_millis = millis();
+
+        // Prompt will be missing after reboot, but this can't be easily fixed.
         Serial.println();
         Serial.print(_prompt);
     }
