@@ -34,7 +34,7 @@ protected:
 
 
     // utils
-    void _printHelp();
+    void _print_help();
     byte _strbyte(char *str);
     char * _find_digit(char *str);
     char * _find_next_digit(char *str);

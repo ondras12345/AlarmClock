@@ -73,7 +73,7 @@ void SerialCLIClass::loop(DateTime __time)
         DEBUG_println();
         DEBUG_println(F("Processing"));
         if (!strcmp(_Serial_buffer, "help")) { // ! - strcmp returns 0 if matches
-            _printHelp();
+            _print_help();
         }
         else if (strstr(_Serial_buffer, "sel") != NULL) {
             char *index = strstr(_Serial_buffer, "sel");
@@ -129,7 +129,7 @@ void SerialCLIClass::loop(DateTime __time)
         }
         else {
             Serial.println(F("? SYNTAX ERROR"));
-            _printHelp();
+            _print_help();
         }
 
         _previous_command_millis = millis();
@@ -151,7 +151,7 @@ SerialCLIClass::SerialCLIClass(AlarmClass *__alarms, void(*__writeEEPROM)(), RTC
     strcpy(_prompt, _prompt_default);
 }
 
-void SerialCLIClass::_printHelp()
+void SerialCLIClass::_print_help()
 {
     Serial.println();
     Serial.println(F("Help:"));
