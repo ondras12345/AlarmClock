@@ -24,19 +24,22 @@ DEBUG
 #define DEBUG_println(x)
 #endif // DEBUG
 
+
 /*
 String constants
 */
 // 1 = Monday, 7 = Sunday
 static const char* days_of_the_week_names_short[] = { "", "Mo", "Tu", "We", "Th", "Fr", "Sa", "Su" };
 
+
 /*
-Error codes
+POST error codes
 */
 #define error_I2C_ping_DS3231 1
 #define error_time_lost 2
 #define error_EEPROM 4
 #define error_critical_mask 0b1111111111111101 // time_lost is not critical
+
 
 /*
 EEPROM
@@ -46,11 +49,17 @@ EEPROM
 #define EEPROM_alarms_identificator 0xFE
 #define EEPROM_DEBUG_dump_length 100
 
+
 /*
 Serial CLI
 */
 #define Serial_buffer_length 12
 #define Serial_prompt_length 5
+
+#define Serial_error_argument 1
+#define Serial_error_select 2  // nothing selected
+#define Serial_error_useless_save 4  // nothing to save
+
 
 /*
 Button debounce

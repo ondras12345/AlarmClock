@@ -18,7 +18,7 @@ boolean DaysOfWeekClass::getDayOfWeek_Adafruit(byte num)
 
 boolean DaysOfWeekClass::setDayOfWeek(byte num, boolean status)
 {
-    if (num > 7) return false;
+    if (num > 7 || num == 0) return false;
     bitWrite(DaysOfWeek, num, status);
     return true;
 }

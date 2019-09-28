@@ -16,6 +16,8 @@
 class SerialCLIClass
 {
 protected:
+    typedef byte error_t;  // error codes are defined in Constants.h
+
     AlarmClass *_alarms;
     DateTime _now;
     RTC_DS3231 *_rtc;
@@ -30,23 +32,28 @@ protected:
     const byte _selected_alarm_index_none = 255;
     byte _selected_alarm_index = _selected_alarm_index_none;
 
-    void _printHelp();
+
+    // utils
+    void _print_help();
     byte _strbyte(char *str);
     char * _find_digit(char *str);
     char * _find_next_digit(char *str);
     void _indent(byte level);
+    void _print_error(error_t error_code);
 
-    boolean _select_alarm(byte index);
-    boolean _list_selected_alarm();
-    boolean _set_enabled(AlarmEnabled __en);
-    boolean _set_time(char *time);
-    boolean _set_day_of_week(char *dow);
-    boolean _set_snooze(char *snooze);
-    boolean _set_signalization(char *sig);
-    boolean _save(); // check if something changed, save if true
-    boolean _rtc_time(char *time);
-    boolean _rtc_date(char *date);
-    void _rtc_get();
+
+    // commands
+    error_t _select_alarm(byte index);
+    error_t _list_selected_alarm();
+    error_t _set_enabled(AlarmEnabled __en);
+    error_t _set_time(char *time);
+    error_t _set_day_of_week(char *dow);
+    error_t _set_snooze(char *snooze);
+    error_t _set_signalization(char *sig);
+    error_t _save(); // check if something changed, save if true
+    error_t _rtc_time(char *time);
+    error_t _rtc_date(char *date);
+    error_t _rtc_get();
 
 public:
     void loop(DateTime time);
