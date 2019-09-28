@@ -42,6 +42,7 @@ Do not modify `src/AlarmClock/Constants.h`
 | button_long_press               | 1000               | ms    | Minimal duration of a 'long press'          |
 
 **Notes:**  
+Individual DEBUG_* options have no effect if main DEBUG is disabled  
 1000UL - normal 16bit int would overflow, so this needs to be an unsigned long  
 Button debouncing theory: [Allaboutcircuits' article][Allaboutcircuits debounce]
 
@@ -89,6 +90,16 @@ Serial monitor). Select the correct COM port and baudrate (9600).
 Individual commands (messages) must be terminated with CR or LF or both.
 
 For info about available commands, type `help`.
+
+## Error codes
+When a command is executed, it prints an error code. If everything is ok,
+'err 0: OK' should be printed. If something fails, 'err {n}: {explanation}'
+is printed. The explanation always matches the error code, but error codes
+should be easier to decode in scripts.
+
+Error code meanings can be found in `src/AlarmClock/Constants.h` (do not
+modify!), the #defines represent individual bits in the error code. (An error
+code can contain multiple errors.)
 
 ## Autosave
 There is an autosave feature that saves the changes after long inactivity
