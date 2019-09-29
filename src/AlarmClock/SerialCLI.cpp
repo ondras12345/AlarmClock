@@ -140,7 +140,11 @@ void SerialCLIClass::loop(DateTime __time)
     }
 
     // autosave
-    if ((unsigned long)(millis() - _previous_command_millis) >= Serial_autosave_interval) _save();
+    if ((unsigned long)(millis() - _previous_command_millis) >= Serial_autosave_interval && _change) {
+        Serial.println();
+        Serial.println(F("Autosaving"));
+        _print_error(_save());
+    }
 }
 
 SerialCLIClass::SerialCLIClass(AlarmClass *__alarms, void(*__writeEEPROM)(), RTC_DS3231 *__rtc)
