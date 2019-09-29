@@ -111,9 +111,14 @@ void setup() {
 void loop() {
     if ((unsigned long)(millis() - loop_rtc_previous_millis) >= 800UL) {
         now = rtc.now(); // # TODO + summer_time
-        CLI.loop(now);
+        loop_rtc_previous_millis = millis();
     }
+    CLI.loop(now);
+    for (byte i = 0; i < alarms_count; i++) alarms[i].loop(now);
+    //countdownTimer.loop();  // # TODO implement CountdownTimer
+    ambientFader.loop();
 
+    // buttons
     for (byte i = 0; i < button_count; i++) buttons[i].update();
     if (buttons[button_index_snooze].fell()) {
         for (byte i = 0; i < alarms_count; i++) alarms[i].button_snooze();
@@ -134,11 +139,6 @@ void loop() {
     if (inhibit && (unsigned long)(millis() - inhibit_previous_millis) >= Alarm_inhibit_duration) {
         set_inhibit(false);
     }
-
-    for (byte i = 0; i < alarms_count; i++) alarms[i].loop(now);
-    //countdownTimer.loop();  // # TODO implement CountdownTimer
-    ambientFader.loop();
-
 }
 
 void init_hardware() {
