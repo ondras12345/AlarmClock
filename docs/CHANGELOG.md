@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Snooze count being offset by 1 (2 meant 1,
   0 wasn't handled properly ('last ringing' feature did not trigger))
 - `dow0;1` not failing although it should
+- Arduino requesting current time from the DS3231 with very small intervals
 
 ## [0.0.1] - 2019-09-02
 First working version
