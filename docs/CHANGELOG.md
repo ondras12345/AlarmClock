@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Serial CLI error codes reworked
 
 ### Removed
+- Long forms of some commands in Serial CLI
 
 ### Fixed
 - Snooze count being offset by 1 (2 meant 1,
