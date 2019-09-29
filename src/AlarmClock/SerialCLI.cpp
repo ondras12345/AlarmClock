@@ -85,7 +85,7 @@ void SerialCLIClass::loop(DateTime __time)
             }
 
         }
-        else if (!strcmp(_Serial_buffer, "ls") || !strcmp(_Serial_buffer, "list")) {
+        else if (!strcmp(_Serial_buffer, "ls")) {
             _print_error(_list_selected_alarm());
         }
         else if (!strcmp(_Serial_buffer, "en-sgl")) {
@@ -94,7 +94,7 @@ void SerialCLIClass::loop(DateTime __time)
         else if (!strcmp(_Serial_buffer, "en-rpt")) {
             _print_error(_set_enabled(Repeat));
         }
-        else if (!strcmp(_Serial_buffer, "dis") || !strcmp(_Serial_buffer, "disable")) {
+        else if (!strcmp(_Serial_buffer, "dis")) {
             _print_error(_set_enabled(Off));
         }
         else if (strstr(_Serial_buffer, "time") != NULL) {
