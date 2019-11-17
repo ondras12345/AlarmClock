@@ -41,7 +41,8 @@ Alarms
 Pins
 */
 // 0, 1 - Serial
-// 2, 3 - reserved for buttons / rotary encoder
+#define pin_encoder_clk 2
+#define pin_encoder_dt 3
 #define pin_button_snooze 4
 #define pin_button_stop 5
 #define pin_ambient 6  // PWM
@@ -50,6 +51,7 @@ Pins
 #define pin_buzzer 9  // PWM, TimerOne
 #define pin_lamp 10  // (PWM)
 // 11, 12, 13, A0, A1 - reserved for 2 SPI devices (eg. ethernet)
+#define pin_encoder_sw A2  // rotary encoder button
 // A4, A5 - I2C
 
 /*
