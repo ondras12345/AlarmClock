@@ -64,8 +64,26 @@ Serial CLI
 /*
 Button debounce
 */
-#define button_count 2
+#define button_count 3
 #define button_index_snooze 0
 #define button_index_stop 1
+#define button_index_encoder 2
+
+/*
+LCD
+*/
+// The arrays are in LCD-chars.h
+// The numbers cannot start from 0 because '\0' has a special meaning (string
+// termination)
+#define LCD_char_home_index 1
+#define LCD_char_bell_index 2
+#define LCD_char_timer_index 3
+
+
+/*
+LCD dimensions
+*/
+#define LCD_width 16
+#define LCD_height 2
 
 #endif

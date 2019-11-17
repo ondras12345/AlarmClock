@@ -115,6 +115,7 @@ public:
     boolean set_days_of_week(DaysOfWeekClass __days_of_week);
     boolean set_day_of_week(byte __day, boolean __status);
     DaysOfWeekClass get_days_of_week() { return _days_of_week; };
+    boolean get_day_of_week(byte __day) { return _days_of_week.getDayOfWeek(__day); }
 
     boolean set_snooze(byte __time_minutes, byte __count);
     Snooze get_snooze() { return _snooze; };

@@ -23,6 +23,7 @@ DEBUG
 //#define DEBUG_EEPROM_writes // very long messages when writing
 //#define DEBUG_ambient  // very long messages when calculating
 //#define DEBUG_Serial_CLI  // HEX dumps of received data, ...
+//#define DEBUG_GUI
 
 /*
 Alarms
@@ -61,12 +62,6 @@ I2C
 #define I2C_DS3231_address 0x68
 
 /*
-LCD dimensions
-*/
-#define LCD_width 16
-#define LCD_height 2
-
-/*
 Serial CLI
 */
 #define Serial_indentation_width 2
@@ -77,5 +72,10 @@ Buttons
 */
 #define button_debounce_interval 25  // ms
 #define button_long_press 1000  // ms
+
+/*
+Rotary encoder
+*/
+#define encoder_step 4
 
 #endif

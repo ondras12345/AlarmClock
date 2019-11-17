@@ -57,7 +57,7 @@ protected:
 
 public:
     void loop(DateTime time);
-    SerialCLIClass(AlarmClass *alarms, void(*__writeEEPROM)(), RTC_DS3231 *__rtc);
+    SerialCLIClass(AlarmClass *__alarms, void(*__writeEEPROM)(), RTC_DS3231 *__rtc);
 };
 
 #endif

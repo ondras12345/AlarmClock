@@ -18,15 +18,14 @@ Code directives:
      if ((unsigned long)(millis() - previousMillis) >= interval)
 
  - returning array: https://www.tutorialspoint.com/cplusplus/cpp_return_arrays_from_functions.htm
+
+ - custom lcd characters: https://maxpromer.github.io/LCD-Character-Creator/
 */
 
+#include "GUI.h"
 #include "Settings.h"
 #include "Constants.h"
 
-enum SpinDirection { // for rotary encoder
-    left = 1,
-    right = 2
-};
 
 enum SelfTest_level {
     POST,
@@ -36,14 +35,15 @@ enum SelfTest_level {
 
 #include <EEPROM.h>
 #include <Wire.h>
-//#include <LiquidCrystal_I2C.h>  // # TODO implement LCD
+#include <LiquidCrystal_I2C.h>
 #include <RTClib.h>
 #include <Bounce2.h>
+#include <Encoder.h>
 #include "Alarm.h"
 //#include "CountdownTimer.h"  // # TODO implement CountdownTimer
 #include "PWMfade.h"
 #include "SerialCLI.h"
-
+#include "LCD-chars.h"
 
 // function prototypes
 #ifdef VisualStudio
@@ -58,15 +58,18 @@ void writeEEPROM(); // Arduino IDE needs it before SerialCLI definition
 
 
 // Global variables
-//LiquidCrystal_I2C lcd(I2C_LCD_address, LCD_width, LCD_height);  // # TODO implement LCD
+LiquidCrystal_I2C lcd(I2C_LCD_address, LCD_width, LCD_height);
 RTC_DS3231 rtc; // DS3231
+Bounce buttons[button_count];
+boolean button_stop_new_press = false;
+Encoder encoder(pin_encoder_clk, pin_encoder_dt);
 AlarmClass alarms[alarms_count];
 //CountdownTimerClass countdownTimer;  // # TODO implement CountdownTimer
 PWMfadeClass ambientFader(pin_ambient);
 DateTime now;
 SerialCLIClass CLI(alarms, writeEEPROM, &rtc);
-Bounce buttons[button_count];
-boolean button_stop_new_press = false;
+GUIClass GUI(alarms, writeEEPROM, &rtc, &encoder, &buttons[button_index_encoder], &lcd);
+
 
 unsigned long loop_rtc_previous_millis = 0;
 
@@ -79,10 +82,11 @@ void setup() {
     pinMode(pin_lamp, OUTPUT);
     pinMode(pin_buzzer, OUTPUT);
     pinMode(pin_LED, OUTPUT);
-    //pinMode(pin_LCD_enable, OUTPUT);  // # TODO implement LCD
+    pinMode(pin_LCD_enable, OUTPUT);
 
     buttons[button_index_snooze].attach(pin_button_snooze, INPUT_PULLUP); // # TODO DEBUG only, then switch to external pull-ups
     buttons[button_index_stop].attach(pin_button_stop, INPUT_PULLUP);
+    buttons[button_index_encoder].attach(pin_encoder_sw);  // The module already has its own pull-up
     for (byte i = 0; i < button_count; i++) buttons[i].interval(button_debounce_interval);
 
     init_hardware();
@@ -90,7 +94,7 @@ void setup() {
     Wire.begin();
     Serial.begin(9600);
 
-    //lcd_on();  // # TODO implement LCD
+    lcd_on();
 
     unsigned int error = SelfTest(POST);
     if ((error & error_critical_mask) == 0) error |= (readEEPROM() ? 0 : error_EEPROM);
@@ -114,6 +118,7 @@ void loop() {
         loop_rtc_previous_millis = millis();
     }
     CLI.loop(now);
+    GUI.loop(now);
     for (byte i = 0; i < alarms_count; i++) alarms[i].loop(now);
     //countdownTimer.loop();  // # TODO implement CountdownTimer
     ambientFader.loop();
@@ -226,12 +231,17 @@ void factory_reset() {
 /*
 LCD
 */
-/*
 boolean lcd_on() {
     digitalWrite(pin_LCD_enable, HIGH);
     delay(100);
     if (I2C_ping(I2C_LCD_address)) {
         lcd.init();
+        lcd.backlight();
+        // Add custom characters
+        lcd.createChar(LCD_char_home_index, LCD_char_home);
+        lcd.createChar(LCD_char_bell_index, LCD_char_bell);
+        lcd.createChar(LCD_char_timer_index, LCD_char_timer);
+
         return true;
     }
     else return false;
@@ -240,7 +250,6 @@ boolean lcd_on() {
 void lcd_off() {
     digitalWrite(pin_LCD_enable, LOW);
 }
-*/  // # TODO implement LCD
 
 
 /*
