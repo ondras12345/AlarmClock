@@ -69,12 +69,14 @@ void GUIClass::loop(DateTime __time)
                     // ranges in switch-case
                     // https://geeksforgeeks.org/using-range-switch-case-cc/
                 case cpa_alarm_day_1 ... (cpa_alarm_day_1 + 6):
-                    byte day = _cursor_position - cpa_alarm_day_1;
+                    // 1 = Monday; 7 = Sunday
+                    byte day = (_cursor_position - cpa_alarm_day_1) + 1;
                     _selected_alarm->set_day_of_week(day,
                         !_selected_alarm->get_day_of_week(day));
                     break;
 
                 case cpa_alarm_sig_a:
+                    // # TODO set value 0-255
                     _selected_alarm->set_signalization(!prev_sig.ambient,
                                                        prev_sig.lamp,
                                                        prev_sig.buzzer);
