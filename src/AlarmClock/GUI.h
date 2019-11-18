@@ -23,7 +23,7 @@ enum Screen {
     screen_alarms = 1,
     screen_LAST  // Must be the last item in the enum
 };
-#define Screen_count 2
+#define Screens_count 2
 
 struct cursor_position_t {
     byte column;
@@ -64,16 +64,16 @@ class GUIClass
      AlarmClass *_selected_alarm = _alarms;  // set when switching alarms
 
      Screen _current_screen = screen_home;
-     char _line_buffer[LCD_width];
+     char _line_buffer[LCD_width + 1];  // +1 for null termination
 
-     const byte _selectables_count[Screen_count] = { 1, 17 };
+     const byte _selectables_count[Screens_count] = { 1, 17 };
     #define Selectables_count_max 17
      
      byte _cursor_position = 0;
      // _current_screen, _cursor_position
      // This array translates _current_screen and _cursor_position to
      // the display's coordinates
-     const cursor_position_t _cursor_positions[Screen_count][Selectables_count_max] = {
+     const cursor_position_t _cursor_positions[Screens_count][Selectables_count_max] = {
         { {0,1} },
         { {0,0}, {1,0}, {5,0}, {6,0}, {7,0}, {8,0}, {9,0}, {10,0}, {11,0}, {13,0},
           {1,0}, {1,3}, {1,6}, {1,9}, {1,13}, {1,14}, {1,15} },
