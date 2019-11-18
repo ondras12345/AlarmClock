@@ -61,7 +61,7 @@ class GUIClass
      LiquidCrystal_I2C *_lcd;
 
      byte _selected_alarm_index = 0;
-     AlarmClass *_selected_alarm = _alarms;  // set when switching alarms
+     AlarmClass *_selected_alarm;  // set when switching alarms
 
      Screen _current_screen = screen_home;
      char _line_buffer[LCD_width + 1];  // +1 for null termination

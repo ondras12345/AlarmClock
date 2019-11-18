@@ -246,11 +246,6 @@ void GUIClass::_update()
         case Repeat:
             strcpy(enabled, "RPT");
             break;
-#if defined(DEBUG) && defined(DEBUG_GUI)
-        default:
-            strcpy(enabled, "err");
-            break;
-#endif
         }
 
         sprintf(_line_buffer, "%c%d/%d %s %s",
@@ -288,4 +283,8 @@ GUIClass::GUIClass(AlarmClass *__alarms, void(*__writeEEPROM)(), RTC_DS3231 * __
     _encoder = __encoder;
     _encoder_button = __encoder_button;
     _lcd = __lcd;
+
+    // First alarm. I can't initialize it in the header because the compiler
+    // doesn't know the address yet.
+    _selected_alarm = _alarms;
 }
