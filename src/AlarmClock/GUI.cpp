@@ -180,12 +180,10 @@ void GUIClass::loop(DateTime __time)
 #if defined(DEBUG) && defined(DEBUG_GUI)
             Serial.print("cpos: ");
             Serial.println(_cursor_position);
-
-            Serial.print("sc: ");
-            Serial.println(_selectables_count[_current_screen] - 1);
-
-            Serial.print("cs: ");
-            Serial.println(_current_screen);
+            //Serial.print("sc: ");
+            //Serial.println(_selectables_count[_current_screen] - 1);
+            //Serial.print("cs: ");
+            //Serial.println(_current_screen);
 #endif
         }
         _update();
@@ -254,10 +252,6 @@ void GUIClass::_update()
             break;
 #endif
         }
-#if defined(DEBUG) && defined(DEBUG_GUI)
-        Serial.print(F("enabled: "));
-        Serial.println(enabled);
-#endif
 
         sprintf(_line_buffer, "%c%d/%d %s %s",
                 char(LCD_char_home_index), _selected_alarm_index + 1, alarms_count,
