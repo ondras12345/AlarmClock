@@ -38,7 +38,12 @@ enum cursor_position_alarms {
     cpa_home_button = 0,
     cpa_alarm_index = 1,
     cpa_alarm_day_1 = 2,
-    // ...
+    cpa_alarm_day_2 = 3,
+    cpa_alarm_day_3 = 4,
+    cpa_alarm_day_4 = 5,
+    cpa_alarm_day_5 = 6,
+    cpa_alarm_day_6 = 7,
+    cpa_alarm_day_7 = 8,
     cpa_alarm_enabled = 9,
     cpa_alarm_time_h = 10,
     cpa_alarm_time_m = 11,

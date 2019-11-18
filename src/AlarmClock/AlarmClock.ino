@@ -19,6 +19,8 @@ Code directives:
 
  - returning array: https://www.tutorialspoint.com/cplusplus/cpp_return_arrays_from_functions.htm
 
+ - declaring variables in switch - case: https://forum.arduino.cc/index.php?topic=64407.0
+
  - custom lcd characters: https://maxpromer.github.io/LCD-Character-Creator/
 */
 
