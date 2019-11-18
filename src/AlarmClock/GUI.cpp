@@ -120,7 +120,7 @@ void GUIClass::loop(DateTime __time)
     if (abs(encoder_position) >= encoder_step) {
         float encoder_steps = encoder_position / encoder_step;
         int encoder_full_steps = int(encoder_steps);
-#if defined(DEBUG) && defined(DEBUG_GUI)
+#if defined(DEBUG) && defined(DEBUG_encoder)
         Serial.print("enc_f_steps: ");
         Serial.println(encoder_full_steps);
 #endif
@@ -196,7 +196,7 @@ void GUIClass::loop(DateTime __time)
             // Move the cursor
             _cursor_position = _apply_limits(_cursor_position,
                 encoder_full_steps, 0, _selectables_count[_current_screen] - 1);
-#if defined(DEBUG) && defined(DEBUG_GUI)
+#if defined(DEBUG) && defined(DEBUG_encoder)
             Serial.print("cpos: ");
             Serial.println(_cursor_position);
             //Serial.print("sc: ");

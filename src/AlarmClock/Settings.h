@@ -24,6 +24,7 @@ DEBUG
 //#define DEBUG_ambient  // very long messages when calculating
 //#define DEBUG_Serial_CLI  // HEX dumps of received data, ...
 //#define DEBUG_GUI
+//#define DEBUG_encoder
 
 /*
 Alarms
