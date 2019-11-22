@@ -45,7 +45,7 @@ enum SelfTest_level {
 //#include "CountdownTimer.h"  // # TODO implement CountdownTimer
 #include "PWMfade.h"
 #include "SerialCLI.h"
-#include "LCD-chars.h"
+#include "LCDchars.h"
 
 // function prototypes
 #ifdef VisualStudio

@@ -120,7 +120,7 @@
     <ClInclude Include="CountdownTimer.h" />
     <ClInclude Include="DaysOfWeek.h" />
     <ClInclude Include="GUI.h" />
-    <ClInclude Include="LCD-chars.h" />
+    <ClInclude Include="LCDchars.h" />
     <ClInclude Include="PWMfade.h" />
     <ClInclude Include="SerialCLI.h" />
     <ClInclude Include="__vm\.AlarmClock.vsarduino.h" />

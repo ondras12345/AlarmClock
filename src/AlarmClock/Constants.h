@@ -72,7 +72,7 @@ Button debounce
 /*
 LCD
 */
-// The arrays are in LCD-chars.h
+// The arrays are in LCDchars.h
 // The numbers cannot start from 0 because '\0' has a special meaning (string
 // termination)
 #define LCD_char_home_index 1

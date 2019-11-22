@@ -4,16 +4,6 @@
 
 #include "GUI.h"
 
-/*
-Screen GUIClass::_next_screen(Screen screen)
-{
-    screen = Screen(screen + 1);
-    if (screen == LAST) screen = Screen(0);
-
-    return(screen);
-}
-*/
-
 void GUIClass::loop(DateTime __time)
 {
     _now = __time;

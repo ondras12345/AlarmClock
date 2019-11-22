@@ -21,7 +21,7 @@
 enum Screen {
     screen_home = 0,
     screen_alarms = 1,
-    screen_LAST  // Must be the last item in the enum
+    //screen_LAST  // Must be the last item in the enum. Not needed yet.
 };
 #define Screens_count 2
 
@@ -71,6 +71,9 @@ class GUIClass
      AlarmClass *_selected_alarm;  // set when switching alarms
 
      Screen _current_screen = screen_home;
+
+     // It is faster and causes less flicker when you send the LCD complete
+     // lines instead of multiple pieces.
      char _line_buffer[LCD_width + 1];  // +1 for null termination
 
      const byte _selectables_count[Screens_count] = { 1, 17 };
@@ -99,7 +102,7 @@ class GUIClass
      // has to have a button to go back to home screen
      void _goto_screen_home();
 
-     //Screen _next_screen(Screen screen);
+
      void _update();
 
 
