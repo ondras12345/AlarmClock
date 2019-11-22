@@ -19,10 +19,10 @@ Enabled for all days of the week
 Only rings once, then disables itself (SGL). Other possible values: Off, RPT
 Rings at 6:20
 Snooze: 5 * 5 minutes
-Signalization: ambient, lamp, buzzer
+Signalization: ambient: 25x, lamp, buzzer
 ```
 
 |      |0|1|2|3|4|5|6|7|8|9|A|B|C|D|E|F|
 |-----|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
 |__0__|h|1|/|6| |1|2|3|4|5|6|7| |S|G|L|
-|__1__|0|6|:|2|0|+|0|5|*|5| | | |A|L|B|
+|__1__|0|6|:|2|0|+|0|5|*|5| | |2|5|L|B|

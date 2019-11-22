@@ -65,12 +65,7 @@ void GUIClass::loop(DateTime __time)
                 }
                     break;
 
-                case cpa_alarm_sig_a:
-                    // # TODO set value 0-255
-                    _selected_alarm->set_signalization(!prev_sig.ambient,
-                                                       prev_sig.lamp,
-                                                       prev_sig.buzzer);
-                    break;
+                //case cpa_alarm_sig_a: // has multiple steps - uses the encoder
 
                 case cpa_alarm_sig_l:
                     _selected_alarm->set_signalization(prev_sig.ambient,
@@ -169,6 +164,18 @@ void GUIClass::loop(DateTime __time)
                     _selected_alarm->set_snooze(snooze.time_minutes, snooze.count);
                 }
                     break;
+
+                case cpa_alarm_sig_a:
+                {
+                    Signalization prev_sig = _selected_alarm->get_signalization();
+                    prev_sig.ambient = _apply_limits(prev_sig.ambient,
+                        encoder_full_steps * 10, 0, 255);
+                    _selected_alarm->set_signalization(prev_sig.ambient,
+                                                       prev_sig.lamp,
+                                                       prev_sig.buzzer);
+                }
+                    break;
+
                 }
                 break;
             }
@@ -269,12 +276,12 @@ void GUIClass::_update()
         _lcd->print(_line_buffer);
 
         _lcd->setCursor(0, 1);
-        sprintf(_line_buffer, "%02d:%02d+%02d*%d   %c%c%c",
+        sprintf(_line_buffer, "%02d:%02d+%02d*%d  %02d%c%c",
                 _selected_alarm->get_time().hours,
                 _selected_alarm->get_time().minutes, 
                 _selected_alarm->get_snooze().time_minutes,
                 _selected_alarm->get_snooze().count,
-                _selected_alarm->get_signalization().ambient ? 'A' : ' ',
+                _selected_alarm->get_signalization().ambient / 10,
                 _selected_alarm->get_signalization().lamp ? 'L' : ' ', 
                 _selected_alarm->get_signalization().buzzer ? 'B' : ' ' );
         _lcd->print(_line_buffer);

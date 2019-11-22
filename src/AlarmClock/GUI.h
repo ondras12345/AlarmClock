@@ -86,7 +86,7 @@ class GUIClass
      const cursor_position_t _cursor_positions[Screens_count][Selectables_count_max] = {
         { {0,1} },
         { {0,0}, {1,0}, {5,0}, {6,0}, {7,0}, {8,0}, {9,0}, {10,0}, {11,0}, {13,0},
-          {0,1}, {3,1}, {6,1}, {9,1}, {13,1}, {14,1}, {15,1} },
+          {0,1}, {3,1}, {6,1}, {9,1}, {12,1}, {14,1}, {15,1} },
      };
      boolean _cursor_clicked = false;
      boolean _change = false;  // for EEPROM write
