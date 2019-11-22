@@ -88,9 +88,16 @@ class GUIClass
      boolean _cursor_clicked = false;
      boolean _change = false;  // for EEPROM write
      
-     // Utility functions
+     /*
+     Utility functions
+     */
      // Apply limits for the rotary encoder. The limits are inclusive.
      byte _apply_limits(byte value, int step, byte limit_low, byte limit_high);
+
+     // Go to home screen
+     // This function is here to remove duplicate code, because each screen
+     // has to have a button to go back to home screen
+     void _goto_screen_home();
 
      //Screen _next_screen(Screen screen);
      void _update();

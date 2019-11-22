@@ -53,17 +53,7 @@ void GUIClass::loop(DateTime __time)
 
                 switch (_cursor_position) {
                 case cpa_home_button:
-                    // # TODO make this a function
-                    _current_screen = screen_home;
-                    _cursor_position = 0;
-                    _encoder->write(0);
-
-                    if (_change) {
-                        // Data is written to the EEPROM when returning to home
-                        // screen.
-                        _change = false;
-                        _writeEEPROM();
-                    }
+                    _goto_screen_home();
                     break;
 
                 // Visual Studio will complain here, but gcc should handle
@@ -219,6 +209,19 @@ byte GUIClass::_apply_limits(byte value, int step, byte limit_low, byte limit_hi
         if ((value + step) > limit_high)
             return limit_high;
         else return byte(value + step);
+    }
+}
+
+void GUIClass::_goto_screen_home()
+{
+    _current_screen = screen_home;
+    _cursor_position = 0;
+    _encoder->write(0);
+
+    if (_change) {
+        // Data is written to the EEPROM when returning to home screen.
+        _change = false;
+        _writeEEPROM();
     }
 }
 
