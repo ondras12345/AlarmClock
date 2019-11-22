@@ -29,7 +29,10 @@ void GUIClass::loop(DateTime __time)
         }
         else {
             if (_current_screen == screen_alarms &&
-                _cursor_position != cpa_home_button) _change = true;
+                _cursor_position != cpa_home_button &&
+                _cursor_position != cpa_alarm_index
+                )
+                _change = true;
 
             switch (_current_screen) {
                 // Each screen should have its own switch (_cursor_position)
@@ -93,7 +96,6 @@ void GUIClass::loop(DateTime __time)
 
                 default:
                     _cursor_clicked = true;
-                    _change = true;
                     break;
                 }
                 break;
