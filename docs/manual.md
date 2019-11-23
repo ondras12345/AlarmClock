@@ -34,12 +34,11 @@ Do not modify `src/AlarmClock/Constants.h`
 | Alarm_last_ringing_period       | 250                | ms    | Buzzer on/off time length (last ringing)    |
 | Alarm_inhibit_duration          | 60 * 60UL * 1000UL | ms    | Duration of the 'inhibit' function          |
 | I2C_LCD_address                 | 0x27               |       | I2C address of the LCD                      |
-| LCD_width                       | 16                 | cols  | Number of chars per line                    |
-| LCD_height                      | 2                  | rows  | Number of lines                             |
 | Serial_indentation_width        | 2                  | chars | Indentation width for the Serial CLI        |
 | Serial_autosave_interval        | 60 * 1000UL        | ms    | Inactivity length after for autosave        |
 | button_debounce_interval        | 25                 | ms    | Debounce interval for buttons.              |
 | button_long_press               | 1000               | ms    | Minimal duration of a 'long press'          |
+| encoder_step                    | 4                  |       | Number of pulses the encoder send per step  |
 
 **Notes:**  
 Individual DEBUG_* options have no effect if main DEBUG is disabled  
@@ -56,8 +55,9 @@ supports all the functions used (eg. [PWM][Arduino PWM], TimerOne, ...)
 RTC time can be set using the Serial CLI. Use the commands `sd` and `st` (type
 `help` for more information).
 
-TODO LCD
-
+Use the RTC screen to set date and time from the GUI. The changes are applied
+once you press the apply button, so you can set the time to now + 10 s
+and press the button on time to set it precisely.
 
 ## Alarms
 
@@ -80,8 +80,12 @@ Ambient LED strip dimming: [PWM][Wikipedia PWM]
 
 
 # LCD
-TODO implement
+Use the encoder to move the cursor under the item you want to change,
+then press the encoder button. Boolean type values and buttons react
+immediately, otherwise the cursor starts blinking and you should be able to set
+the value by turning the encoder. To stop changing it, press the button again.
 
+See [screens.md](./screens.md) for more details.
 
 # Serial CLI
 There is a CLI (command line interface) available. To access it, connect to
