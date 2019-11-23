@@ -78,6 +78,8 @@ LCD
 #define LCD_char_home_index 1
 #define LCD_char_bell_index 2
 #define LCD_char_timer_index 3
+#define LCD_char_apply_index 4
+#define LCD_char_cancel_index 5
 
 
 /*

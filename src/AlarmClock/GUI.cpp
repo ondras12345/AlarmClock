@@ -33,20 +33,29 @@ void GUIClass::loop(DateTime __time)
             case screen_home:
                 switch (_cursor_position) {
                 case cph_alarms_button:
-                    _current_screen = screen_alarms;
-                    _cursor_position = 0;
-                    _encoder->write(0);
+                    _switch_screen(screen_alarms);
+                    break;
+
+                case cph_RTC_button:
+                    _switch_screen(screen_RTC);
+                    _RTC_set = _now;
                     break;
                 }
                 break;
 
 
             case screen_alarms:
+            {
                 Signalization prev_sig = _selected_alarm->get_signalization();
 
                 switch (_cursor_position) {
                 case cpa_home_button:
-                    _goto_screen_home();
+                    _switch_screen(screen_home);
+                    if (_change) {
+                        // Data is written to the EEPROM when returning to home screen.
+                        _change = false;
+                        _writeEEPROM();
+                    }
                     break;
 
                 // Visual Studio will complain here, but gcc should handle
@@ -83,9 +92,34 @@ void GUIClass::loop(DateTime __time)
                     _cursor_clicked = true;
                     break;
                 }
+            }
+                break;
+
+
+            case screen_RTC:
+                switch (_cursor_position) {
+                case cpr_apply_button:
+                    _rtc->adjust(_RTC_set);
+                    //_goto_screen_home();  // I don't need to write the EEPROM
+                    _switch_screen(screen_home);
+                    break;
+
+                case cpr_cancel_button:
+                    _switch_screen(screen_home);
+                    break;
+
+                default:
+                    _cursor_clicked = true;
+                    break;
+                }
                 break;
             }
         }
+#if defined(DEBUG) && defined(DEBUG_encoder)
+        Serial.print("cc: ");
+        Serial.println(_cursor_clicked);
+#endif
+
         _update();
     }
 
@@ -178,6 +212,67 @@ void GUIClass::loop(DateTime __time)
 
                 }
                 break;
+
+
+            case screen_RTC:
+                switch (_cursor_position) {
+                case cpr_time_h:
+                    _RTC_set = DateTime(_RTC_set.year(), _RTC_set.month(),
+                        _RTC_set.day(),
+                        _apply_limits(_RTC_set.hour(),
+                                      encoder_full_steps, 0, 23),
+                        _RTC_set.minute(), _RTC_set.second());
+                    break;
+
+                case cpr_time_m:
+                    _RTC_set = DateTime(_RTC_set.year(), _RTC_set.month(),
+                        _RTC_set.day(), _RTC_set.hour(),
+                        _apply_limits(_RTC_set.minute(),
+                                      encoder_full_steps, 0, 59),
+                        _RTC_set.second());
+                    break;
+
+                case cpr_time_s:
+                    _RTC_set = DateTime(_RTC_set.year(), _RTC_set.month(),
+                        _RTC_set.day(), _RTC_set.hour(), _RTC_set.minute(),
+                        _apply_limits(_RTC_set.second(),
+                            encoder_full_steps, 0, 59));
+                    break;
+
+                case cpr_date_d:
+                    // If incorrect date is entered (31. 2., 31.4., ...), it
+                    // shouldn't break anything (I tested it).
+                    // RTClib doesn't handle it.
+                    _RTC_set = DateTime(_RTC_set.year(),
+                        _RTC_set.month(),
+                        _apply_limits(_RTC_set.day(),
+                            encoder_full_steps, 1, 31),
+                        _RTC_set.hour(), _RTC_set.minute(),
+                        _RTC_set.second());
+
+                    break;
+
+                case cpr_date_m:
+                    _RTC_set = DateTime(_RTC_set.year(),
+                        _apply_limits(_RTC_set.month(),
+                            encoder_full_steps, 1, 12),
+                        _RTC_set.day(),
+                        _RTC_set.hour(), _RTC_set.minute(),
+                        _RTC_set.second());
+                    break;
+
+                case cpr_date_y:
+                    _RTC_set = DateTime(
+                        _apply_limits(_RTC_set.year() - 2000,
+                            encoder_full_steps, 0, 99),
+                        _RTC_set.month(),
+                        _RTC_set.day(),
+                        _RTC_set.hour(), _RTC_set.minute(),
+                        _RTC_set.second());
+                    break;
+
+                }
+                break;
             }
 
         }
@@ -214,33 +309,27 @@ byte GUIClass::_apply_limits(byte value, int step, byte limit_low, byte limit_hi
     return byte(value + step);
 }
 
-void GUIClass::_goto_screen_home()
+void GUIClass::_switch_screen(Screen screen)
 {
-    _current_screen = screen_home;
+    _current_screen = screen;
     _cursor_position = 0;
     _encoder->write(0);
-
-    if (_change) {
-        // Data is written to the EEPROM when returning to home screen.
-        _change = false;
-        _writeEEPROM();
-    }
 }
 
 void GUIClass::_update()
 {
     _lcd->noCursor();
     _lcd->noBlink();
+    _lcd->setCursor(0, 0);
     switch (_current_screen) {
     case screen_home:
-        _lcd->setCursor(0, 0);
         sprintf(_line_buffer, "%02d.%02d %d %02d:%02d:%02d",
                 _now.day(), _now.month(),
                 _now.dayOfTheWeek() == 0 ? 7 : _now.dayOfTheWeek(),
                 _now.hour(), _now.minute(), _now.second());
         _lcd->print(_line_buffer);
         _lcd->setCursor(0, 1);
-        sprintf(_line_buffer, "%c               ", char(LCD_char_bell_index));
+        sprintf(_line_buffer, "%c  RTC          ", char(LCD_char_bell_index));
         _lcd->print(_line_buffer);
 
         break;
@@ -248,8 +337,6 @@ void GUIClass::_update()
 
     case screen_alarms:
     {
-        _lcd->setCursor(0, 0);
-
         char days_of_week[8] = "";  // 7 + \0
         days_of_week[7] = '\0';
         for (byte i = 1; i <= 7; i++) {
@@ -290,6 +377,22 @@ void GUIClass::_update()
         _lcd->print(_line_buffer);
     }
         break;
+
+
+    case screen_RTC:
+    {
+        sprintf(_line_buffer, "%c%cRTC %d %02d:%02d:%02d",
+                LCD_char_apply_index, LCD_char_cancel_index,
+                _RTC_set.dayOfTheWeek() == 0 ? 7 : _RTC_set.dayOfTheWeek(),
+                _RTC_set.hour(), _RTC_set.minute(), _RTC_set.second());
+        _lcd->print(_line_buffer);
+
+        _lcd->setCursor(0, 1);
+        sprintf(_line_buffer, "%02d.%02d.%04d      ",
+                _RTC_set.day(), _RTC_set.month(), _RTC_set.year());
+        _lcd->print(_line_buffer);
+    }
+    break;
 
 
     }

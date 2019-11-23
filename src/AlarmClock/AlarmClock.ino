@@ -244,6 +244,8 @@ boolean lcd_on() {
         lcd.createChar(LCD_char_home_index, LCD_char_home);
         lcd.createChar(LCD_char_bell_index, LCD_char_bell);
         lcd.createChar(LCD_char_timer_index, LCD_char_timer);
+        lcd.createChar(LCD_char_apply_index, LCD_char_apply);
+        lcd.createChar(LCD_char_cancel_index, LCD_char_cancel);
 
         return true;
     }

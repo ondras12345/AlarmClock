@@ -21,9 +21,10 @@
 enum Screen {
     screen_home = 0,
     screen_alarms = 1,
+    screen_RTC = 2
     //screen_LAST  // Must be the last item in the enum. Not needed yet.
 };
-#define Screens_count 2
+#define Screens_count 3
 
 struct cursor_position_t {
     byte column;
@@ -31,7 +32,8 @@ struct cursor_position_t {
 };
 
 enum cursor_position_home {
-    cph_alarms_button = 0
+    cph_alarms_button = 0,
+    cph_RTC_button = 1
 };
 
 enum cursor_position_alarms {
@@ -56,6 +58,17 @@ enum cursor_position_alarms {
     cpa_alarm_sig_b = 16
 };
 
+enum cursor_position_RTC {
+    cpr_apply_button = 0,
+    cpr_cancel_button = 1,
+    cpr_time_h = 2,
+    cpr_time_m = 3,
+    cpr_time_s = 4,
+    cpr_date_d = 5,
+    cpr_date_m = 6,
+    cpr_date_y = 7
+};
+
 class GUIClass
 {
  protected:
@@ -72,11 +85,13 @@ class GUIClass
 
      Screen _current_screen = screen_home;
 
+     DateTime _RTC_set;
+
      // It is faster and causes less flicker when you send the LCD complete
      // lines instead of multiple pieces.
      char _line_buffer[LCD_width + 1];  // +1 for null termination
 
-     const byte _selectables_count[Screens_count] = { 1, 17 };
+     const byte _selectables_count[Screens_count] = { 2, 17, 8 };
     #define Selectables_count_max 17
      
      byte _cursor_position = 0;
@@ -84,9 +99,13 @@ class GUIClass
      // This array translates _current_screen and _cursor_position to
      // the display's coordinates
      const cursor_position_t _cursor_positions[Screens_count][Selectables_count_max] = {
-        { {0,1} },
+        { {0,1}, {3,1} },
+
         { {0,0}, {1,0}, {5,0}, {6,0}, {7,0}, {8,0}, {9,0}, {10,0}, {11,0}, {13,0},
           {0,1}, {3,1}, {6,1}, {9,1}, {12,1}, {14,1}, {15,1} },
+
+        { {0,0}, {1,0}, {8,0}, {11,0}, {14,0},
+          {0,1}, {3,1}, {6,1} }
      };
      boolean _cursor_clicked = false;
      boolean _change = false;  // for EEPROM write
@@ -97,10 +116,8 @@ class GUIClass
      // Apply limits for the rotary encoder. The limits are inclusive.
      byte _apply_limits(byte value, int step, byte limit_low, byte limit_high);
 
-     // Go to home screen
-     // This function is here to remove duplicate code, because each screen
-     // has to have a button to go back to home screen
-     void _goto_screen_home();
+     // This does not handle setting variables such as _RTC_set_time
+     void _switch_screen(Screen screen);
 
 
      void _update();
