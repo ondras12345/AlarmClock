@@ -89,6 +89,10 @@ then press the encoder button. Boolean type values and buttons react
 immediately, otherwise the cursor starts blinking and you should be able to set
 the value by turning the encoder. To stop changing it, press the button again.
 
+On the alarms screen, the change is applied immediately. This can lead to an
+alarm activating while you are setting it. The changes are written to
+the EEPROM once you return to the home screen.
+
 See [screens.md](./screens.md) for more details.
 
 # Serial CLI
