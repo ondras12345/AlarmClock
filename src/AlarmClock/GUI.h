@@ -82,11 +82,9 @@ class GUIClass
 
      byte _selected_alarm_index = 0;
      AlarmClass *_selected_alarm;  // set when switching alarms
-
      Screen _current_screen = screen_home;
-
      DateTime _RTC_set;
-
+     unsigned long _update_previous_millis = 0;
      // It is faster and causes less flicker when you send the LCD complete
      // lines instead of multiple pieces.
      char _line_buffer[LCD_width + 1];  // +1 for null termination

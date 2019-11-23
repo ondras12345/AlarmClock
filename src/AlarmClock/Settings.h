@@ -69,6 +69,11 @@ Serial CLI
 #define Serial_autosave_interval 60 * 1000UL // time elapsed since last command
 
 /*
+GUI
+*/
+#define GUI_update_interval 9000
+
+/*
 Buttons
 */
 #define button_debounce_interval 25  // ms

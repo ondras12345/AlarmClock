@@ -291,6 +291,15 @@ void GUIClass::loop(DateTime __time)
         }
         _update();
     }
+
+
+    if ((unsigned long)(millis() - _update_previous_millis) >=
+        GUI_update_interval &&
+        _now.second() % 10 == 0)
+    {
+        _update_previous_millis = millis();
+        _update();
+    }
 }
 
 byte GUIClass::_apply_limits(byte value, int step, byte limit_low, byte limit_high)
