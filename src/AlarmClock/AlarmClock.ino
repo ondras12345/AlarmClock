@@ -24,7 +24,7 @@ Code directives:
  - custom lcd characters: https://maxpromer.github.io/LCD-Character-Creator/
 */
 
-#include "GUI.h"
+
 #include "Settings.h"
 #include "Constants.h"
 
@@ -45,6 +45,7 @@ enum SelfTest_level {
 //#include "CountdownTimer.h"  // # TODO implement CountdownTimer
 #include "PWMfade.h"
 #include "SerialCLI.h"
+#include "GUI.h"
 #include "LCDchars.h"
 
 // function prototypes

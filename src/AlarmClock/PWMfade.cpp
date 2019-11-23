@@ -34,10 +34,15 @@ void PWMfadeClass::loop()
 {
     if (_active && ((unsigned long)(millis() - _previousChangeMillis) >= _interval)) {
         if (_value == _stop) {
-            // <10 and >250 is necessary fir the GUI, because it only displays
-            // the value divided by 10
+            // <10 and >250 is necessary for the GUI, because it only displays
+            // the value divided by 10:
+            // real ....... GUI
+            // 0 - 9 ....... 0
+            // 10 - 19 ..... 1
+            // ...
+            // 250 - 255 ... 25
             if (_value < 10) digitalWrite(_pin, LOW);
-            else if (_value > 250) digitalWrite(_pin, HIGH);
+            else if (_value >= 250) digitalWrite(_pin, HIGH);
             _active = false; // not fading
         }
         else {
