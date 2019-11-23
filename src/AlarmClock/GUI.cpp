@@ -202,13 +202,16 @@ byte GUIClass::_apply_limits(byte value, int step, byte limit_low, byte limit_hi
 {
     // Byte cannot be lower than 0, so I have to check before adding step to
     // the value to be able to detect limit_low
-    if (step < 0 && -step > value)
+    if (value < limit_low)
         return limit_low;
-    else {
-        if ((value + step) > limit_high)
-            return limit_high;
-        else return byte(value + step);
-    }
+
+    if (step < 0 && -step > (value - limit_low))
+        return limit_low;
+
+    if ((value + step) > limit_high)
+        return limit_high;
+
+    return byte(value + step);
 }
 
 void GUIClass::_goto_screen_home()
