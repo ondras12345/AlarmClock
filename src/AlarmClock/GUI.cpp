@@ -240,9 +240,17 @@ void GUIClass::loop(DateTime __time)
                     break;
 
                 case cpr_date_d:
-                    // If incorrect date is entered (31. 2., 31.4., ...), it
-                    // shouldn't break anything (I tested it).
+                    // If incorrect date is entered (31. 2., 31.4., ...), the
+                    // operation is undefined (
+                    // https://datasheets.maximintegrated.com/en/ds/DS3231.pdf
+                    // page 12)
                     // RTClib doesn't handle it.
+                    // I would have to check because of leap years.
+                    // I added a warning to the manual,
+                    // # TODO implement
+                    // I opened an issue
+                    // https://github.com/adafruit/RTClib/issues/127
+                    // so it could possibly be fixed in the library itself.
                     _RTC_set = DateTime(_RTC_set.year(),
                         _RTC_set.month(),
                         _apply_limits(_RTC_set.day(),

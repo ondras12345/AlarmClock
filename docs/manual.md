@@ -93,6 +93,12 @@ On the alarms screen, the change is applied immediately. This can lead to an
 alarm activating while you are setting it. The changes are written to
 the EEPROM once you return to the home screen.
 
+From the DS3231 datasheet: "Illogical time and date entries result in undefined
+operation". The software does user input checking, but I couldn't implement it
+for days of the month, so please do not set dates such as 31. 11. 2019, because
+November only has 30 days. This may eventually get fixed in the RTClib library,
+see https://github.com/adafruit/RTClib/issues/127 . It also applies to the CLI.
+
 See [screens.md](./screens.md) for more details.
 
 # Serial CLI
