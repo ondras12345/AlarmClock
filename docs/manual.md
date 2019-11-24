@@ -1,9 +1,11 @@
 # Arduino-alarm-clock
-This project's source code and electronic designs are available on [Github][Github repo].
+This project's source code and electronic designs are available
+on [Github][Github repo].
 
+# Date and time format
+All the dates and times are in the `dd.mm.yyyy hh:mm:ss` format.
 
 # Features
-TODO this should be in README
 ## Inhibit
 This feature allows you to inhibit all alarms for a set time (see the
 Alarm_inhibit_duration compile-time option). I plan to use it when I get up
