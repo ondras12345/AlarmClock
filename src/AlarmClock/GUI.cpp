@@ -1,7 +1,3 @@
-// 
-// 
-// 
-
 #include "GUI.h"
 
 void GUIClass::loop(DateTime __time)
@@ -39,6 +35,10 @@ void GUIClass::loop(DateTime __time)
                 case cph_RTC_button:
                     _switch_screen(screen_RTC);
                     _RTC_set = _now;
+                    break;
+
+                case cph_inhibit_button:
+                    _set_inhibit(!_get_inhibit());
                     break;
                 }
                 break;
@@ -138,8 +138,7 @@ void GUIClass::loop(DateTime __time)
         _encoder->write(encoder_position - (encoder_full_steps * 4));
 
         if (_cursor_clicked) {
-            // This section handles encoder rotations that should change some
-            // values.
+            // Handle encoder rotations that should change some values.
             switch (_current_screen) {
             case screen_home:
                 break;
@@ -346,7 +345,8 @@ void GUIClass::_update()
                 _now.hour(), _now.minute(), _now.second());
         _lcd->print(_line_buffer);
         _lcd->setCursor(0, 1);
-        sprintf(_line_buffer, "%c  RTC          ", char(LCD_char_bell_index));
+        sprintf(_line_buffer, "%c  RTC %c        ", char(LCD_char_bell_index),
+                _get_inhibit() ? 'I' : 'i');
         _lcd->print(_line_buffer);
 
         break;
@@ -420,7 +420,10 @@ void GUIClass::_update()
     if (_cursor_clicked) _lcd->blink();
 }
 
-GUIClass::GUIClass(AlarmClass *__alarms, void(*__writeEEPROM)(), RTC_DS3231 * __rtc, Encoder * __encoder, Bounce * __encoder_button, LiquidCrystal_I2C *__lcd)
+GUIClass::GUIClass(AlarmClass *__alarms, void(*__writeEEPROM)(),
+        RTC_DS3231 * __rtc, Encoder * __encoder, Bounce * __encoder_button,
+        LiquidCrystal_I2C *__lcd,
+        void(*__set_inhibit)(boolean), boolean(*__get_inhibit)())
 {
     _alarms = __alarms;
     _writeEEPROM = __writeEEPROM;
@@ -428,6 +431,8 @@ GUIClass::GUIClass(AlarmClass *__alarms, void(*__writeEEPROM)(), RTC_DS3231 * __
     _encoder = __encoder;
     _encoder_button = __encoder_button;
     _lcd = __lcd;
+    _set_inhibit = __set_inhibit;
+    _get_inhibit = __get_inhibit;
 
     // First alarm. I can't initialize it in the header because the compiler
     // doesn't know the address yet.

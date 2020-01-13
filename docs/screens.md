@@ -4,12 +4,16 @@
 Date: 11. 6. 2019
 Time: 23:14:11
 Day of the week: 2 - Tuesday
+Buttons:
+- b - alarms
+- RTC
+- i - inhibit (Off: i; On: I)
 ```
 
 |     |0|1|2|3|4|5|6|7|8|9|A|B|C|D|E|F|
 |-----|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
 |__0__|1|1|.|0|6| |2| |2|3|:|1|4|:|1|1|
-|__1__|b|t| |R|T|C| | | | | | | | | | |
+|__1__|b|t| |R|T|C| |i| | | | | | | | |
 
 
 ## Alarm
@@ -35,8 +39,8 @@ Date: 11. 6. 2019
 Time: 23:14:11
 Day of the week: 2 - Tuesday
 Buttons:
-    a - apply
-    c - cancel
+- a - apply
+- c - cancel
 ```
 |     |0|1|2|3|4|5|6|7|8|9|A|B|C|D|E|F|
 |-----|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|

@@ -57,21 +57,25 @@ unsigned int SelfTest(SelfTest_level level);
 void buzzerTone(unsigned int freq, unsigned long duration = 0); // specifies default duration=0
 //void buzzerNoTone();
 //void ambient(byte intensity);
-void writeEEPROM(); // Arduino IDE needs it before SerialCLI definition
+
+// Arduino IDE needs these before SerialCLI definition:
+void writeEEPROM();
+void set_inhibit(boolean status);
+boolean get_inhibit();
 
 
 // Global variables
 LiquidCrystal_I2C lcd(I2C_LCD_address, LCD_width, LCD_height);
 RTC_DS3231 rtc; // DS3231
 Bounce buttons[button_count];
-boolean button_stop_new_press = false;
 Encoder encoder(pin_encoder_clk, pin_encoder_dt);
 AlarmClass alarms[alarms_count];
 //CountdownTimerClass countdownTimer;  // # TODO implement CountdownTimer
 PWMfadeClass ambientFader(pin_ambient);
 DateTime now;
 SerialCLIClass CLI(alarms, writeEEPROM, &rtc);
-GUIClass GUI(alarms, writeEEPROM, &rtc, &encoder, &buttons[button_index_encoder], &lcd);
+GUIClass GUI(alarms, writeEEPROM, &rtc, &encoder,
+             &buttons[button_index_encoder], &lcd, &set_inhibit, &get_inhibit);
 
 
 unsigned long loop_rtc_previous_millis = 0;
@@ -84,7 +88,6 @@ void setup() {
     pinMode(pin_ambient, OUTPUT);
     pinMode(pin_lamp, OUTPUT);
     pinMode(pin_buzzer, OUTPUT);
-    pinMode(pin_LED, OUTPUT);
     pinMode(pin_LCD_enable, OUTPUT);
 
     buttons[button_index_snooze].attach(pin_button_snooze, INPUT_PULLUP); // # TODO DEBUG only, then switch to external pull-ups
@@ -135,14 +138,6 @@ void loop() {
     if (buttons[button_index_stop].fell()) {
         for (byte i = 0; i < alarms_count; i++) alarms[i].button_stop();
         DEBUG_println(F("stop pressed"));
-        button_stop_new_press = true;
-    }
-    if (buttons[button_index_stop].duration() >= button_long_press && buttons[button_index_stop].read() == LOW && !inhibit && button_stop_new_press) {
-        set_inhibit(true);
-    }
-    if (buttons[button_index_stop].duration() >= button_long_press * 4UL && buttons[button_index_stop].read() == LOW && inhibit && button_stop_new_press) {
-        set_inhibit(false);
-        button_stop_new_press = false;
     }
     if (inhibit && (unsigned long)(millis() - inhibit_previous_millis) >= Alarm_inhibit_duration) {
         set_inhibit(false);
@@ -358,5 +353,5 @@ void set_inhibit(boolean status) {
     for (byte i = 0; i < alarms_count; i++) alarms[i].set_inhibit(status);
     if (status) DEBUG_println(F("inhibit enabled"));
     else DEBUG_println(F("inhibit disabled"));
-    digitalWrite(pin_LED, status);
 }
+boolean get_inhibit() { return inhibit; }

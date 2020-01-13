@@ -48,7 +48,6 @@ Pins
 #define pin_button_snooze 4
 #define pin_button_stop 5
 #define pin_ambient 6  // PWM
-#define pin_LED 7  // inhibit indicator
 #define pin_LCD_enable 8
 #define pin_buzzer 9  // PWM, TimerOne
 #define pin_lamp 10  // (PWM)
@@ -77,7 +76,7 @@ GUI
 Buttons
 */
 #define button_debounce_interval 25  // ms
-#define button_long_press 1000  // ms
+//#define button_long_press 1000  // ms, not needed right now
 
 /*
 Rotary encoder

@@ -15,11 +15,11 @@ nor disable it (I know that I'd forget to re-enable it).
 If an alarm with option 'Enabled: Single' is inhibited, it gets disabled
 the same as if it started ringing normally.
 
-This feature can by enabled by holding the 'stop' button (long press duration
-is defined by button_long_press compile-time option). It disables automatically
-after the set time, but it can be manually disabled by holding the 'stop' button
-4x longer than for a normal
-It is indicated by the LED.
+This feature can by enabled by clicking on the `i` button in the GUI. The
+button should change to uppercase `I`, indicating that the feature is on. It
+disables automatically after the set time, but it can be manually disabled by
+pressing the same button again.
+
 
 # Configuration
 ## Compile-time
@@ -40,7 +40,7 @@ Do not modify `src/AlarmClock/Constants.h`
 | Serial_autosave_interval        | 60 * 1000UL        | ms    | Inactivity length after for autosave        |
 | GUI_update_interval             | 9000               | ms    | Delay between screen updates - see note     |
 | button_debounce_interval        | 25                 | ms    | Debounce interval for buttons.              |
-| button_long_press               | 1000               | ms    | Minimal duration of a 'long press'          |
+| button_long_press               | 1000               | ms    | Unused: Minimal duration of a 'long press'  |
 | encoder_step                    | 4                  |       | Number of pulses the encoder send per step  |
 
 **Notes:**  
