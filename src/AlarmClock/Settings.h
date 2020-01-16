@@ -37,7 +37,7 @@ Alarms
 #define Alarm_last_ringing_frequency 2000 // in Hz
 #define Alarm_last_ringing_period 250 // in ms
 
-#define Alarm_inhibit_duration 60 * 60UL * 1000UL  // in ms
+#define Alarm_inhibit_duration 120 * 60UL * 1000UL  // in ms
 
 /*
 Pins

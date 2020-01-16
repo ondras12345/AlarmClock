@@ -26,22 +26,22 @@ pressing the same button again.
 Edit the file `src/AlarmClock/Settings.h`  
 Do not modify `src/AlarmClock/Constants.h`
 
-| Option                          | Default            | Unit  | Meaning                                     |
-| ------------------------------- | ------------------ | ----- | ------------------------------------------- |
-| DEBUG                           | disabled           |       | Enables debug messages if uncommented       |
-| alarms_count                    | 6                  |       | Number of configurable alarms. Must be <255 |
-| Alarm_regular_ringing_frequency | 1000               | Hz    | Buzzer tone frequency (regular ringing)     |
-| Alarm_regular_ringing_period    | 500                | ms    | Buzzer on/off time length (regular ringing) |
-| Alarm_last_ringing_frequency    | 2000               | Hz    | Buzzer tone frequency (last ringing)        |
-| Alarm_last_ringing_period       | 250                | ms    | Buzzer on/off time length (last ringing)    |
-| Alarm_inhibit_duration          | 60 * 60UL * 1000UL | ms    | Duration of the 'inhibit' function          |
-| I2C_LCD_address                 | 0x27               |       | I2C address of the LCD                      |
-| Serial_indentation_width        | 2                  | chars | Indentation width for the Serial CLI        |
-| Serial_autosave_interval        | 60 * 1000UL        | ms    | Inactivity length after for autosave        |
-| GUI_update_interval             | 9000               | ms    | Delay between screen updates - see note     |
-| button_debounce_interval        | 25                 | ms    | Debounce interval for buttons.              |
-| button_long_press               | 1000               | ms    | Unused: Minimal duration of a 'long press'  |
-| encoder_step                    | 4                  |       | Number of pulses the encoder send per step  |
+| Option                          | Default             | Unit  | Meaning                                     |
+| ------------------------------- | ------------------- | ----- | ------------------------------------------- |
+| DEBUG                           | disabled            |       | Enables debug messages if uncommented       |
+| alarms_count                    | 6                   |       | Number of configurable alarms. Must be <255 |
+| Alarm_regular_ringing_frequency | 1000                | Hz    | Buzzer tone frequency (regular ringing)     |
+| Alarm_regular_ringing_period    | 500                 | ms    | Buzzer on/off time length (regular ringing) |
+| Alarm_last_ringing_frequency    | 2000                | Hz    | Buzzer tone frequency (last ringing)        |
+| Alarm_last_ringing_period       | 250                 | ms    | Buzzer on/off time length (last ringing)    |
+| Alarm_inhibit_duration          | 120 * 60UL * 1000UL | ms    | Duration of the 'inhibit' function          |
+| I2C_LCD_address                 | 0x27                |       | I2C address of the LCD                      |
+| Serial_indentation_width        | 2                   | chars | Indentation width for the Serial CLI        |
+| Serial_autosave_interval        | 60 * 1000UL         | ms    | Inactivity length after for autosave        |
+| GUI_update_interval             | 9000                | ms    | Delay between screen updates - see note     |
+| button_debounce_interval        | 25                  | ms    | Debounce interval for buttons.              |
+| button_long_press               | 1000                | ms    | Unused: Minimal duration of a 'long press'  |
+| encoder_step                    | 4                   |       | Number of pulses the encoder send per step  |
 
 **Notes:**  
 Individual DEBUG_* options have no effect if main DEBUG is disabled  
