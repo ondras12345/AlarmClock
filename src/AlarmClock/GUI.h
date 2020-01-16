@@ -60,8 +60,8 @@ enum cursor_position_alarms {
 };
 
 enum cursor_position_RTC {
-    cpr_apply_button = 0,
-    cpr_cancel_button = 1,
+    cpr_cancel_button = 0,
+    cpr_apply_button = 1,
     cpr_time_h = 2,
     cpr_time_m = 3,
     cpr_time_s = 4,

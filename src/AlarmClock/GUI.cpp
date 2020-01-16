@@ -98,13 +98,13 @@ void GUIClass::loop(DateTime __time)
 
             case screen_RTC:
                 switch (_cursor_position) {
-                case cpr_apply_button:
-                    _rtc->adjust(_RTC_set);
-                    //_goto_screen_home();  // I don't need to write the EEPROM
+                case cpr_cancel_button:
                     _switch_screen(screen_home);
                     break;
 
-                case cpr_cancel_button:
+                case cpr_apply_button:
+                    _rtc->adjust(_RTC_set);
+                    //_goto_screen_home();  // I don't need to write the EEPROM
                     _switch_screen(screen_home);
                     break;
 
@@ -399,7 +399,7 @@ void GUIClass::_update()
     case screen_RTC:
     {
         sprintf(_line_buffer, "%c%cRTC %d %02d:%02d:%02d",
-                LCD_char_apply_index, LCD_char_cancel_index,
+                LCD_char_cancel_index, LCD_char_apply_index,
                 _RTC_set.dayOfTheWeek() == 0 ? 7 : _RTC_set.dayOfTheWeek(),
                 _RTC_set.hour(), _RTC_set.minute(), _RTC_set.second());
         _lcd->print(_line_buffer);
