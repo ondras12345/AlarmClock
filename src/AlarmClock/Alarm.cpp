@@ -47,11 +47,17 @@ void AlarmClass::loop(DateTime time)
                     set_current_snooze_count(_snooze.count);
                     set_current_snooze_status(false);
 
-                    // safety feature - if ambient() got stuck:
+                    // safety feature - in case ambientFader got stuck:
                     if (_signalization.buzzer) buzzerTone(Alarm_regular_ringing_frequency, 0);
 
                     // Do events - can only switch on
-                    if (_signalization.ambient > 0) ambient(0, _signalization.ambient, 900000UL); // 15 minutes
+                    if (_signalization.ambient > ambientFader->get_value()) {
+                        ambientFader->set_from_duration(
+                                ambientFader->get_value(),
+                                _signalization.ambient,
+                                Alarm_ambient_fade_duration);
+                        ambientFader->start();
+                    }
                     if (_signalization.lamp) lamp(true);
                     DEBUG_println(F("Alarm activated"));
                 }
@@ -60,10 +66,13 @@ void AlarmClass::loop(DateTime time)
     }
 }
 
-void AlarmClass::set_hardware(void(*lamp_)(boolean), void(*ambient_)(byte, byte, unsigned long), void(*buzzerTone_)(unsigned int, unsigned long), void(*buzzerNoTone_)(), void(*writeEEPROM_)())
+void AlarmClass::set_hardware(void(*lamp_)(boolean),
+                              PWMfadeClass *ambientFader_,
+                              void(*buzzerTone_)(unsigned int, unsigned long),
+                              void(*buzzerNoTone_)(), void(*writeEEPROM_)())
 {
     lamp = lamp_;
-    ambient = ambient_;
+    ambientFader = ambientFader_;
     buzzerTone = buzzerTone_;
     buzzerNoTone = buzzerNoTone_;
     writeEEPROM_all = writeEEPROM_;
@@ -78,7 +87,7 @@ void AlarmClass::button_snooze()
             set_current_snooze_count(get_current_snooze_count() - 1);
             previous_millis = millis();
 
-            // ambient(0, 0, 0);
+            // not changing ambient
             lamp(false);
             buzzerNoTone();
             set_current_beeping_status(false);
@@ -91,7 +100,8 @@ void AlarmClass::button_stop()
 {
     current_snooze_count = AlarmClass_current_snooze_count_none;
 
-    ambient(0, 0, 0);
+    ambientFader->set_from_duration(ambientFader->get_value(), 0,
+                                    Alarm_ambient_fade_out_duration);
     lamp(false);
     buzzerNoTone();
     //set_current_beeping_status(false); // this would break it (alarm would wake from snooze)

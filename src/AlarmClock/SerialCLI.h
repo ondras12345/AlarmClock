@@ -12,6 +12,7 @@
 #include "Settings.h"
 #include "Constants.h"
 #include "Alarm.h"
+#include "PWMfade.h"
 
 class SerialCLIClass
 {
@@ -22,6 +23,8 @@ protected:
     DateTime _now;
     RTC_DS3231 *_rtc;
     void(*_writeEEPROM)();
+    PWMfadeClass * _ambientFader;
+
     const char _prompt_default[2 + 1] = "> ";
     char _Serial_buffer[Serial_buffer_length + 1]; // +1 for termination
     byte _Serial_buffer_index;
@@ -43,6 +46,7 @@ protected:
 
 
     // commands
+    error_t _set_ambient(char *duty);
     error_t _select_alarm(byte index);
     error_t _list_selected_alarm();
     error_t _set_enabled(AlarmEnabled __en);
@@ -57,7 +61,8 @@ protected:
 
 public:
     void loop(DateTime time);
-    SerialCLIClass(AlarmClass *__alarms, void(*__writeEEPROM)(), RTC_DS3231 *__rtc);
+    SerialCLIClass(AlarmClass *alarms, void(*writeEEPROM)(), RTC_DS3231 *rtc,
+                   PWMfadeClass *ambientFader);
 };
 
 #endif

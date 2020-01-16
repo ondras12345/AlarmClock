@@ -56,7 +56,6 @@ unsigned int SelfTest(SelfTest_level level);
 //void lamp(boolean status);
 void buzzerTone(unsigned int freq, unsigned long duration = 0); // specifies default duration=0
 //void buzzerNoTone();
-//void ambient(byte intensity);
 
 // Arduino IDE needs these before SerialCLI definition:
 void writeEEPROM();
@@ -73,9 +72,9 @@ AlarmClass alarms[alarms_count];
 //CountdownTimerClass countdownTimer;  // # TODO implement CountdownTimer
 PWMfadeClass ambientFader(pin_ambient);
 DateTime now;
-SerialCLIClass CLI(alarms, writeEEPROM, &rtc);
+SerialCLIClass CLI(alarms, writeEEPROM, &rtc, &ambientFader);
 GUIClass GUI(alarms, writeEEPROM, &rtc, &encoder,
-             &buttons[button_index_encoder], &lcd, &set_inhibit, &get_inhibit);
+             &buttons[button_index_encoder], &lcd, set_inhibit, get_inhibit);
 
 
 unsigned long loop_rtc_previous_millis = 0;
@@ -145,8 +144,11 @@ void loop() {
 }
 
 void init_hardware() {
-    for (byte i = 0; i < alarms_count; i++) alarms[i].set_hardware(lamp, ambient, buzzerTone, buzzerNoTone, writeEEPROM);
-    //countdownTimer.set_hardware(lamp, ambient, buzzerTone, buzzerNoTone);  // # TODO implement CountdownTimer
+    for (byte i = 0; i < alarms_count; i++)
+        alarms[i].set_hardware(lamp, &ambientFader, buzzerTone, buzzerNoTone, writeEEPROM);
+
+    // # TODO implement CountdownTimer WARNING: ambient implementation changed.
+    //countdownTimer.set_hardware(lamp, ambient, buzzerTone, buzzerNoTone);
 }
 
 
@@ -292,56 +294,6 @@ Included classes can control the hardware trough these functions
 void lamp(boolean status) { digitalWrite(pin_lamp, status); }
 void buzzerTone(unsigned int freq, unsigned long duration) { tone(pin_buzzer, freq, duration); } // default value duration=0 specified in prototype
 void buzzerNoTone() { noTone(pin_buzzer); }
-void ambient(byte start, byte stop, unsigned long duration) {
-    int step_sign = (start > stop) ? -1 : 1;
-    byte diff = abs(stop - start);
-    int _step = 0;
-    unsigned long _interval = 250;
-    unsigned long _duration = duration;
-
-    if (duration < 1000) _duration = 1000;
-
-    _interval = _choose_interval(_duration, diff);
-    _step = step_sign * ((_interval * diff) / _duration);
-    if (_step == 0) _step = step_sign; // step must not be 0
-
-#if defined(DEBUG) && defined(DEBUG_ambient)
-    DEBUG_print("ambient - diff: ");
-    DEBUG_println(diff);
-
-    DEBUG_print("ambient - duration: ");
-    DEBUG_println(_duration);
-
-    DEBUG_print("ambient - interval: ");
-    DEBUG_println(_interval);
-
-    DEBUG_print("ambient - step: ");
-    DEBUG_println(_step);
-#endif
-
-
-    ambientFader.set(start, stop, _step, _interval);
-    ambientFader.start();
-}
-
-unsigned long _choose_interval(unsigned long duration, byte diff) {
-    // prefered interval >= 250
-    unsigned long interval = duration;
-    unsigned long previousInterval = duration;
-    int step;
-
-    if (diff == 0) return interval;
-
-    do {
-        step = (interval * diff) / duration;
-        previousInterval = interval;
-        interval = interval / 2;
-    } while (step > 1 && interval > 250);
-
-    if (interval < 250) interval = previousInterval;
-
-    return interval;
-}
 
 
 /*

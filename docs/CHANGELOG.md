@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GUI - 16x2 LCD display and rotary encoder  
   __WARNING__: New pinout: 2, 3, A2 - encoder; lamp is now on pin 10
     - Inhibit function (see manual)
+- CLI commands for controlling the ambient LED, fading reworked
 
 ### Changed
 - Repository tree (source is now in `src` directory, ...)
@@ -37,6 +38,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   0 wasn't handled properly ('last ringing' feature did not trigger))
 - `dow0;1` not failing although it should
 - Arduino requesting current time from the DS3231 with very small intervals
+- Comparison of results of floating point math using `==` in PWMfade
+- PWMfade (ambient LED dimmer) should now be more fluent
+
 
 ## [0.0.1] - 2019-09-02
 First working version

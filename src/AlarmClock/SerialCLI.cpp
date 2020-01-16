@@ -1,7 +1,3 @@
-// 
-// 
-// 
-
 #include "SerialCLI.h"
 
 void SerialCLIClass::loop(DateTime __time)
@@ -85,6 +81,10 @@ void SerialCLIClass::loop(DateTime __time)
             }
 
         }
+        else if (strstr(_Serial_buffer, "amb") != NULL) {
+            char *duty = strstr(_Serial_buffer, "amb");
+            _print_error(_set_ambient(duty));
+        }
         else if (!strcmp(_Serial_buffer, "ls")) {
             _print_error(_list_selected_alarm());
         }
@@ -147,11 +147,14 @@ void SerialCLIClass::loop(DateTime __time)
     }
 }
 
-SerialCLIClass::SerialCLIClass(AlarmClass *__alarms, void(*__writeEEPROM)(), RTC_DS3231 *__rtc)
+SerialCLIClass::SerialCLIClass(AlarmClass *__alarms, void(*__writeEEPROM)(),
+                               RTC_DS3231 *__rtc,
+                               PWMfadeClass * __ambientFader)
 {
     _alarms = __alarms;
     _writeEEPROM = __writeEEPROM;
     _rtc = __rtc;
+    _ambientFader = __ambientFader;
     strcpy(_prompt, _prompt_default);
 }
 
@@ -159,6 +162,10 @@ void SerialCLIClass::_print_help()
 {
     Serial.println();
     Serial.println(F("Help:"));
+    _indent(1);
+    Serial.println(F("amb - get ambient 0-255"));
+    _indent(1);
+    Serial.println(F("amb{nnn} - ambient 0-255"));
     _indent(1);
     Serial.println(F("sel{i} - select alarm{i}"));
     _indent(1);
@@ -237,6 +244,23 @@ void SerialCLIClass::_print_error(error_t error_code)
 
     if (error_code & Serial_error_useless_save)
         Serial.println(F("Nothing to save"));
+}
+
+SerialCLIClass::error_t SerialCLIClass::_set_ambient(char * duty)
+{
+    byte ambient;
+
+    duty = _find_next_digit(duty);
+    if (*duty == '\0') {
+        Serial.print(F("amb: "));
+        Serial.println(_ambientFader->get_value());
+        return 0;
+    }
+    ambient = _strbyte(duty);
+    _ambientFader->set_from_duration(_ambientFader->get_value(), ambient,
+                                    Serial_ambient_fade_duration);
+    _ambientFader->start();
+    return 0;
 }
 
 SerialCLIClass::error_t SerialCLIClass::_select_alarm(byte __index)

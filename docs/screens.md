@@ -24,7 +24,8 @@ Enabled for all days of the week
 Only rings once, then disables itself (SGL). Other possible values: Off, RPT
 Rings at 6:20
 Snooze: 5 * 5 minutes
-Signalization: ambient: 25x, lamp, buzzer
+Signalization: ambient: 25x (range 0-255 --> 0-25 on this screen);
+               lamp: 1, buzzer: 1
 ```
 
 |     |0|1|2|3|4|5|6|7|8|9|A|B|C|D|E|F|
