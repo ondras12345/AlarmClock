@@ -35,16 +35,22 @@ void PWMDimmerClass::set_from_duration(byte start, byte stop, unsigned long dura
     if (_step == 0) _step = step_sign; // step must not be 0
 
 #if defined(DEBUG) && defined(DEBUG_dimmer)
-    DEBUG_print("dimmer - diff: ");
+    DEBUG_print(F("dimmer - start: "));
+    DEBUG_println(start);
+
+    DEBUG_print(F("dimmer - stop: "));
+    DEBUG_println(stop);
+
+    DEBUG_print(F("dimmer - diff: "));
     DEBUG_println(diff);
 
-    DEBUG_print("dimmer - duration: ");
+    DEBUG_print(F("dimmer - duration: "));
     DEBUG_println(_duration);
 
-    DEBUG_print("dimmer - interval: ");
+    DEBUG_print(F("dimmer - interval: "));
     DEBUG_println(_interval);
 
-    DEBUG_print("dimmer - step: ");
+    DEBUG_print(F("dimmer - step: "));
     DEBUG_println(_step);
 #endif
 

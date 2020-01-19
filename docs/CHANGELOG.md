@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   __WARNING__: New pinout: 2, 3, A2 - encoder; lamp is now on pin 10
     - Inhibit function (see manual)
 - CLI commands for controlling the ambient LED, fading reworked
+- GUI interface for controlling the ambient LED
 
 ### Changed
 - Repository tree (source is now in `src` directory, ...)

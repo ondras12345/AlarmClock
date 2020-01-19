@@ -72,7 +72,8 @@ Serial CLI
 /*
 GUI
 */
-#define GUI_update_interval 9000
+#define GUI_update_interval 9000UL
+#define GUI_ambient_dimming_duration 500UL  // in ms
 
 /*
 Buttons

@@ -2,8 +2,10 @@
 This project's source code and electronic designs are available
 on [Github][Github repo].
 
+
 # Date and time format
 All the dates and times are in the `dd.mm.yyyy hh:mm:ss` format.
+
 
 # Features
 ## Inhibit
@@ -41,7 +43,8 @@ Do not modify `src/AlarmClock/Constants.h`
 | Serial_indentation_width        | 2                   | chars | Indentation width for the Serial CLI        |
 | Serial_autosave_interval        | 60 * 1000UL         | ms    | Inactivity length after for autosave        |
 | Serial_ambient_dimming_duration | 1000UL              | ms    | Time before ambient LED reaches set value   |
-| GUI_update_interval             | 9000                | ms    | Delay between screen updates - see note     |
+| GUI_update_interval             | 9000UL              | ms    | Delay between screen updates - see note     |
+| GUI_ambient_dimming_duration    | 500UL               | ms    | Time before ambient LED reaches set value   |
 | button_debounce_interval        | 25                  | ms    | Debounce interval for buttons.              |
 | button_long_press               | 1000                | ms    | Unused: Minimal duration of a 'long press'  |
 | encoder_step                    | 4                   |       | Number of pulses the encoder send per step  |
@@ -52,7 +55,7 @@ Individual DEBUG_* options have no effect if main DEBUG is disabled
 GUI_update_interval - the screen only updates if seconds % 10 = 0, but I need
                       this parameter to avoid updating it multiple times during
                       the same second.  
-Button debouncing theory: [Allaboutcircuits' article][Allaboutcircuits debounce
+Button debouncing theory: [Allaboutcircuits' article][Allaboutcircuits debounce]
 
 ### Pins
 There should be no need to change the pins used.
@@ -105,6 +108,7 @@ November only has 30 days. This may eventually get fixed in the RTClib library,
 see https://github.com/adafruit/RTClib/issues/127 . It also applies to the CLI.
 
 See [screens.md](./screens.md) for more details.
+
 
 # Serial CLI
 There is a CLI (command line interface) available. To access it, connect to

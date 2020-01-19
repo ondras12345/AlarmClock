@@ -44,6 +44,8 @@ class PWMDimmerClass
      void loop();
 
      byte get_value() const { return byte(_value); }
+
+     byte get_stop() const { return byte(_stop); }
 };
 
 

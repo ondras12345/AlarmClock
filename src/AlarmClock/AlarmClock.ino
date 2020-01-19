@@ -74,7 +74,8 @@ PWMDimmerClass ambientDimmer(pin_ambient);
 DateTime now;
 SerialCLIClass CLI(alarms, writeEEPROM, &rtc, &ambientDimmer);
 GUIClass GUI(alarms, writeEEPROM, &rtc, &encoder,
-             &buttons[button_index_encoder], &lcd, set_inhibit, get_inhibit);
+             &buttons[button_index_encoder], &lcd, set_inhibit, get_inhibit,
+             &ambientDimmer);
 
 
 unsigned long loop_rtc_previous_millis = 0;
