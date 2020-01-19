@@ -21,7 +21,7 @@ DEBUG
 //#define DEBUG
 //#define DEBUG_EEPROM_alarms // extra EEPROM messages
 //#define DEBUG_EEPROM_writes // very long messages when writing
-//#define DEBUG_fade  // very long messages when calculating
+//#define DEBUG_dimmer  // very long messages when calculating
 //#define DEBUG_Serial_CLI  // HEX dumps of received data, ...
 //#define DEBUG_GUI
 //#define DEBUG_encoder
@@ -38,7 +38,7 @@ Alarms
 #define Alarm_last_ringing_period 250 // in ms
 
 #define Alarm_inhibit_duration 120 * 60UL * 1000UL  // in ms
-#define Alarm_ambient_fade_duration 15 * 60UL * 1000UL  // in ms
+#define Alarm_ambient_dimming_duration 15 * 60UL * 1000UL  // in ms
 #define Alarm_ambient_fade_out_duration 2000UL  // in ms
 
 /*
@@ -68,8 +68,7 @@ Serial CLI
 */
 #define Serial_indentation_width 2
 #define Serial_autosave_interval 60 * 1000UL // in ms; time elapsed since last command
-#define Serial_ambient_fade_duration 1000UL  // in ms; ambient LED fade duration
-
+#define Serial_ambient_dimming_duration 1000UL  // in ms
 /*
 GUI
 */

@@ -1,7 +1,7 @@
-// PWMfade.h
+// PWMdimmer.h
 
-#ifndef _PWMFADE_h
-#define _PWMFADE_h
+#ifndef _PWMDIMMER_h
+#define _PWMDIMMER_h
 
 #if defined(ARDUINO) && ARDUINO >= 100
     #include "arduino.h"
@@ -12,7 +12,7 @@
 #include "Settings.h"
 #include "Constants.h"
 
-class PWMfadeClass
+class PWMDimmerClass
 {
  protected:
      unsigned long _previousChangeMillis = 0;
@@ -29,7 +29,7 @@ class PWMfadeClass
 
 
  public:
-     PWMfadeClass(byte pin);
+     PWMDimmerClass(byte pin);
 
      void set(byte start, byte stop, int step, unsigned long interval);
 

@@ -1,12 +1,12 @@
-#include "PWMfade.h"
+#include "PWMDimmer.h"
 
-PWMfadeClass::PWMfadeClass(byte pin)
+PWMDimmerClass::PWMDimmerClass(byte pin)
 {
     _pin = pin;
 }
 
 
-void PWMfadeClass::set(byte start, byte stop, int step, unsigned long interval)
+void PWMDimmerClass::set(byte start, byte stop, int step, unsigned long interval)
 {
     _start = start;
     _stop = stop;
@@ -15,7 +15,7 @@ void PWMfadeClass::set(byte start, byte stop, int step, unsigned long interval)
 }
 
 
-void PWMfadeClass::set_from_duration(byte start, byte stop, unsigned long duration)
+void PWMDimmerClass::set_from_duration(byte start, byte stop, unsigned long duration)
 {
     int step_sign = (start > stop) ? -1 : 1;
     byte diff = abs(stop - start);
@@ -34,17 +34,17 @@ void PWMfadeClass::set_from_duration(byte start, byte stop, unsigned long durati
     _step = step_sign * ((_interval * diff) / _duration);
     if (_step == 0) _step = step_sign; // step must not be 0
 
-#if defined(DEBUG) && defined(DEBUG_fade)
-    DEBUG_print("fade - diff: ");
+#if defined(DEBUG) && defined(DEBUG_dimmer)
+    DEBUG_print("dimmer - diff: ");
     DEBUG_println(diff);
 
-    DEBUG_print("fade - duration: ");
+    DEBUG_print("dimmer - duration: ");
     DEBUG_println(_duration);
 
-    DEBUG_print("fade - interval: ");
+    DEBUG_print("dimmer - interval: ");
     DEBUG_println(_interval);
 
-    DEBUG_print("fade - step: ");
+    DEBUG_print("dimmer - step: ");
     DEBUG_println(_step);
 #endif
 
@@ -53,14 +53,14 @@ void PWMfadeClass::set_from_duration(byte start, byte stop, unsigned long durati
 }
 
 
-void PWMfadeClass::start()
+void PWMDimmerClass::start()
 {
     _active = true;
     _value = _start;
 }
 
 
-void PWMfadeClass::stop()
+void PWMDimmerClass::stop()
 {
     _active = false;
     _value = 0;
@@ -68,7 +68,7 @@ void PWMfadeClass::stop()
 }
 
 
-void PWMfadeClass::loop()
+void PWMDimmerClass::loop()
 {
     if (_active && ((unsigned long)(millis() - _previousChangeMillis) >= _interval)) {
         if ((_step > 0 && _value >= _stop) || (_step < 0 && _value <= _stop)) {

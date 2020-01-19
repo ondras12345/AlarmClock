@@ -47,16 +47,16 @@ void AlarmClass::loop(DateTime time)
                     set_current_snooze_count(_snooze.count);
                     set_current_snooze_status(false);
 
-                    // safety feature - in case ambientFader got stuck:
+                    // safety feature - in case ambientDimmer got stuck:
                     if (_signalization.buzzer) buzzerTone(Alarm_regular_ringing_frequency, 0);
 
                     // Do events - can only switch on
-                    if (_signalization.ambient > ambientFader->get_value()) {
-                        ambientFader->set_from_duration(
-                                ambientFader->get_value(),
+                    if (_signalization.ambient > ambientDimmer->get_value()) {
+                        ambientDimmer->set_from_duration(
+                                ambientDimmer->get_value(),
                                 _signalization.ambient,
-                                Alarm_ambient_fade_duration);
-                        ambientFader->start();
+                                Alarm_ambient_dimming_duration);
+                        ambientDimmer->start();
                     }
                     if (_signalization.lamp) lamp(true);
                     DEBUG_println(F("Alarm activated"));
@@ -67,12 +67,12 @@ void AlarmClass::loop(DateTime time)
 }
 
 void AlarmClass::set_hardware(void(*lamp_)(boolean),
-                              PWMfadeClass *ambientFader_,
+                              PWMDimmerClass *ambientDimmer_,
                               void(*buzzerTone_)(unsigned int, unsigned long),
                               void(*buzzerNoTone_)(), void(*writeEEPROM_)())
 {
     lamp = lamp_;
-    ambientFader = ambientFader_;
+    ambientDimmer = ambientDimmer_;
     buzzerTone = buzzerTone_;
     buzzerNoTone = buzzerNoTone_;
     writeEEPROM_all = writeEEPROM_;
@@ -100,7 +100,7 @@ void AlarmClass::button_stop()
 {
     current_snooze_count = AlarmClass_current_snooze_count_none;
 
-    ambientFader->set_from_duration(ambientFader->get_value(), 0,
+    ambientDimmer->set_from_duration(ambientDimmer->get_value(), 0,
                                     Alarm_ambient_fade_out_duration);
     lamp(false);
     buzzerNoTone();

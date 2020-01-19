@@ -12,7 +12,7 @@
 #include "Settings.h"
 #include "Constants.h"
 #include "Alarm.h"
-#include "PWMfade.h"
+#include "PWMDimmer.h"
 
 class SerialCLIClass
 {
@@ -23,7 +23,7 @@ protected:
     DateTime _now;
     RTC_DS3231 *_rtc;
     void(*_writeEEPROM)();
-    PWMfadeClass * _ambientFader;
+    PWMDimmerClass * _ambientDimmer;
 
     const char _prompt_default[2 + 1] = "> ";
     char _Serial_buffer[Serial_buffer_length + 1]; // +1 for termination
@@ -62,7 +62,7 @@ protected:
 public:
     void loop(DateTime time);
     SerialCLIClass(AlarmClass *alarms, void(*writeEEPROM)(), RTC_DS3231 *rtc,
-                   PWMfadeClass *ambientFader);
+                   PWMDimmerClass *ambientDimmer);
 };
 
 #endif

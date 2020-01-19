@@ -11,7 +11,7 @@
 
 #include "Settings.h"
 #include "Constants.h"
-#include "PWMfade.h"
+#include "PWMDimmer.h"
 #include "DaysOfWeek.h"
 #include <RTClib.h> // for datetime
 
@@ -59,7 +59,7 @@ protected:
     boolean inhibit;
 
     void(*lamp)(boolean);
-    PWMfadeClass *ambientFader;
+    PWMDimmerClass *ambientDimmer;
     void(*buzzerTone)(unsigned int, unsigned long); // freq, duration
     void(*buzzerNoTone)();
     void(*writeEEPROM_all)();
@@ -102,7 +102,7 @@ public:
 
     void loop(DateTime time);
     void set_hardware(void(*lamp)(boolean),
-                      PWMfadeClass *ambientFader,
+                      PWMDimmerClass *ambientDimmer,
                       void(*buzzerTone)(unsigned int, unsigned long),
                       void(*buzzerNoTone)(), void(*writeEEPROM)());
     void button_snooze();

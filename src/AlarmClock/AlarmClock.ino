@@ -43,7 +43,7 @@ enum SelfTest_level {
 #include <Encoder.h>
 #include "Alarm.h"
 //#include "CountdownTimer.h"  // # TODO implement CountdownTimer
-#include "PWMfade.h"
+#include "PWMDimmer.h"
 #include "SerialCLI.h"
 #include "GUI.h"
 #include "LCDchars.h"
@@ -70,9 +70,9 @@ Bounce buttons[button_count];
 Encoder encoder(pin_encoder_clk, pin_encoder_dt);
 AlarmClass alarms[alarms_count];
 //CountdownTimerClass countdownTimer;  // # TODO implement CountdownTimer
-PWMfadeClass ambientFader(pin_ambient);
+PWMDimmerClass ambientDimmer(pin_ambient);
 DateTime now;
-SerialCLIClass CLI(alarms, writeEEPROM, &rtc, &ambientFader);
+SerialCLIClass CLI(alarms, writeEEPROM, &rtc, &ambientDimmer);
 GUIClass GUI(alarms, writeEEPROM, &rtc, &encoder,
              &buttons[button_index_encoder], &lcd, set_inhibit, get_inhibit);
 
@@ -126,7 +126,7 @@ void loop() {
     GUI.loop(now);
     for (byte i = 0; i < alarms_count; i++) alarms[i].loop(now);
     //countdownTimer.loop();  // # TODO implement CountdownTimer
-    ambientFader.loop();
+    ambientDimmer.loop();
 
     // buttons
     for (byte i = 0; i < button_count; i++) buttons[i].update();
@@ -145,7 +145,7 @@ void loop() {
 
 void init_hardware() {
     for (byte i = 0; i < alarms_count; i++)
-        alarms[i].set_hardware(lamp, &ambientFader, buzzerTone, buzzerNoTone, writeEEPROM);
+        alarms[i].set_hardware(lamp, &ambientDimmer, buzzerTone, buzzerNoTone, writeEEPROM);
 
     // # TODO implement CountdownTimer WARNING: ambient implementation changed.
     //countdownTimer.set_hardware(lamp, ambient, buzzerTone, buzzerNoTone);

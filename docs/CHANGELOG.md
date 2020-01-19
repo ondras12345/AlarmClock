@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Arduino requesting current time from the DS3231 with very small intervals
 - Comparison of results of floating point math using `==` in PWMfade
 - PWMfade (ambient LED dimmer) should now be more fluent
+- PWMfade renamed to PWMDimmer
 
 
 ## [0.0.1] - 2019-09-02

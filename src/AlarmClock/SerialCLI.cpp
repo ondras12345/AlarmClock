@@ -149,12 +149,12 @@ void SerialCLIClass::loop(DateTime __time)
 
 SerialCLIClass::SerialCLIClass(AlarmClass *__alarms, void(*__writeEEPROM)(),
                                RTC_DS3231 *__rtc,
-                               PWMfadeClass * __ambientFader)
+                               PWMDimmerClass * __ambientDimmer)
 {
     _alarms = __alarms;
     _writeEEPROM = __writeEEPROM;
     _rtc = __rtc;
-    _ambientFader = __ambientFader;
+    _ambientDimmer = __ambientDimmer;
     strcpy(_prompt, _prompt_default);
 }
 
@@ -253,13 +253,13 @@ SerialCLIClass::error_t SerialCLIClass::_set_ambient(char * duty)
     duty = _find_next_digit(duty);
     if (*duty == '\0') {
         Serial.print(F("amb: "));
-        Serial.println(_ambientFader->get_value());
+        Serial.println(_ambientDimmer->get_value());
         return 0;
     }
     ambient = _strbyte(duty);
-    _ambientFader->set_from_duration(_ambientFader->get_value(), ambient,
-                                    Serial_ambient_fade_duration);
-    _ambientFader->start();
+    _ambientDimmer->set_from_duration(_ambientDimmer->get_value(), ambient,
+                                    Serial_ambient_dimming_duration);
+    _ambientDimmer->start();
     return 0;
 }
 
