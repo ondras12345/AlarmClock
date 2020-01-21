@@ -263,13 +263,6 @@ Self test
 unsigned int SelfTest(SelfTest_level level) {
     unsigned int error = 0; // each bit signalizes an error
 
-    if (level == POST) {
-        //digitalWrite(..., HIGH);  // # TODO
-        buzzerTone(1000, 100);
-        delay(400);
-        //digitalWrite(..., LOW);
-    }
-
     if (level == POST || level == time) {
         if (!I2C_ping(I2C_DS3231_address)) error |= error_I2C_ping_DS3231;
 
@@ -280,6 +273,13 @@ unsigned int SelfTest(SelfTest_level level) {
             if (rtc.lostPower()) error |= error_time_lost;
             if (rtc.now().year() == 2000) error |= error_time_lost;
         }
+    }
+
+    if (level == POST) {
+        //digitalWrite(..., HIGH);  // # TODO
+        delay(400);
+        //digitalWrite(..., LOW);
+        buzzerTone(1000, 100);
     }
 
     return error;
