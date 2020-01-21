@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Inhibit function (see manual)  
   __WARNING__: This required pins swap - lamp is now on pin 10  
   __HARDWARE__: A new LED should be added
+- Mode for active buzzers
 
 ### Changed
 - Repository tree (source is now in `src` directory, ...)
