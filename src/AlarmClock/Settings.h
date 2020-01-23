@@ -40,6 +40,15 @@ Alarms
 #define Alarm_inhibit_duration 120 * 60UL * 1000UL  // in ms
 
 /*
+Hardware
+*/
+// Active buzzer mode. pin_buzzer is only switched on or off instead of
+// being switched at the beeping frequency.
+// Do not use with passive buzzers or speakers.
+//#define active_buzzer
+
+
+/*
 Pins
 */
 // 0, 1 - Serial

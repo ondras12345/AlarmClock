@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GUI - 16x2 LCD display and rotary encoder  
   __WARNING__: New pinout: 2, 3, A2 - encoder; lamp is now on pin 10
     - Inhibit function (see manual)
+- Mode for active buzzers
 
 ### Changed
 - Repository tree (source is now in `src` directory, ...)

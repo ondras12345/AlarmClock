@@ -29,6 +29,7 @@ Do not modify `src/AlarmClock/Constants.h`
 | Option                          | Default             | Unit  | Meaning                                     |
 | ------------------------------- | ------------------- | ----- | ------------------------------------------- |
 | DEBUG                           | disabled            |       | Enables debug messages if uncommented       |
+| active_buzzer                   | disabled            |       | Active buzzer mode. Uncomment to enable     |
 | alarms_count                    | 6                   |       | Number of configurable alarms. Must be <255 |
 | Alarm_regular_ringing_frequency | 1000                | Hz    | Buzzer tone frequency (regular ringing)     |
 | Alarm_regular_ringing_period    | 500                 | ms    | Buzzer on/off time length (regular ringing) |
@@ -45,6 +46,8 @@ Do not modify `src/AlarmClock/Constants.h`
 
 **Notes:**  
 Individual DEBUG_* options have no effect if main DEBUG is disabled  
+Active buzzer - a buzzer that makes noise on its own without the need to feed
+                it with AC signal (tone) - DC power is enough.  
 1000UL - normal 16bit int would overflow, so this needs to be an unsigned long  
 GUI_update_interval - the screen only updates if seconds % 10 = 0, but I need
                       this parameter to avoid updating it multiple times during
