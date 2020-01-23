@@ -73,6 +73,12 @@ unsigned long loop_rtc_previous_millis = 0;
 boolean inhibit = false;
 unsigned long inhibit_previous_millis = 0;
 
+#ifdef active_buzzer
+unsigned long active_buzzer_previous_millis = 0;
+unsigned long active_buzzer_duration = 0;
+boolean active_buzzer_status = false;
+#endif
+
 
 void setup() {
     pinMode(pin_ambient, OUTPUT);
@@ -139,6 +145,14 @@ void loop() {
     if (inhibit && (unsigned long)(millis() - inhibit_previous_millis) >= Alarm_inhibit_duration) {
         set_inhibit(false);
     }
+
+    // active buzzer
+#ifdef active_buzzer
+    if (active_buzzer_status && active_buzzer_duration > 0 &&
+        (unsigned long)(millis() - active_buzzer_previous_millis) >= active_buzzer_duration) {
+        buzzerNoTone();
+    }
+#endif
 }
 
 void init_hardware() {
@@ -249,13 +263,6 @@ Self test
 unsigned int SelfTest(SelfTest_level level) {
     unsigned int error = 0; // each bit signalizes an error
 
-    if (level == POST) {
-        //digitalWrite(..., HIGH);  // # TODO
-        tone(pin_buzzer, 1000, 100);
-        delay(400);
-        //digitalWrite(..., LOW);
-    }
-
     if (level == POST || level == time) {
         if (!I2C_ping(I2C_DS3231_address)) error |= error_I2C_ping_DS3231;
 
@@ -266,6 +273,13 @@ unsigned int SelfTest(SelfTest_level level) {
             if (rtc.lostPower()) error |= error_time_lost;
             if (rtc.now().year() == 2000) error |= error_time_lost;
         }
+    }
+
+    if (level == POST) {
+        //digitalWrite(..., HIGH);  // # TODO
+        delay(400);
+        //digitalWrite(..., LOW);
+        buzzerTone(1000, 100);
     }
 
     return error;
@@ -281,8 +295,32 @@ Hardware
 Included classes can control the hardware trough these functions
 */
 void lamp(boolean status) { digitalWrite(pin_lamp, status); }
-void buzzerTone(unsigned int freq, unsigned long duration) { tone(pin_buzzer, freq, duration); } // default value duration=0 specified in prototype
-void buzzerNoTone() { noTone(pin_buzzer); }
+
+void buzzerTone(unsigned int freq, unsigned long duration)
+{
+    // default value duration=0 specified in prototype
+#ifdef active_buzzer
+    active_buzzer_duration = duration;
+    active_buzzer_previous_millis = millis();
+    active_buzzer_status = true;
+    digitalWrite(pin_buzzer, HIGH);
+
+#else
+    tone(pin_buzzer, freq, duration);
+#endif
+}
+
+void buzzerNoTone()
+{
+#ifdef active_buzzer
+    active_buzzer_status = false;
+    digitalWrite(pin_buzzer, LOW);
+
+#else
+    noTone(pin_buzzer);
+#endif
+}
+
 void ambient(byte start, byte stop, unsigned long duration) {
     int step_sign = (start > stop) ? -1 : 1;
     byte diff = abs(stop - start);
