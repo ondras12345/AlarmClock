@@ -118,7 +118,9 @@ class GUIClass
      Utility functions
      */
      // Apply limits for the rotary encoder. The limits are inclusive.
-     byte _apply_limits(byte value, int step, byte limit_low, byte limit_high);
+     // loop - allow the user to move from limit_high to limit_low
+     byte _apply_limits(byte value, int step, byte limit_low, byte limit_high,
+                        boolean loop = false);
 
      // This does not handle setting variables such as _RTC_set_time
      void _switch_screen(Screen screen);

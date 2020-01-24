@@ -150,7 +150,8 @@ void GUIClass::loop(DateTime __time)
                     _ambientDimmer->set_from_duration(
                             _ambientDimmer->get_value(),
                             _apply_limits(_ambientDimmer->get_stop(),
-                                encoder_full_steps * 10, 0, 255),
+                                encoder_full_steps * 10, 0, 255,
+                                encoder_loop_ambient),
                             GUI_ambient_dimming_duration);
                     _ambientDimmer->start();
                 }
@@ -165,7 +166,7 @@ void GUIClass::loop(DateTime __time)
                 case cpa_alarm_index:
                     _selected_alarm_index = _apply_limits(
                         _selected_alarm_index, encoder_full_steps, 0,
-                        alarms_count - 1);
+                        alarms_count - 1, encoder_loop_alarm);
                     _selected_alarm = (_alarms + _selected_alarm_index);
                     break;
 
@@ -182,7 +183,7 @@ void GUIClass::loop(DateTime __time)
                 {
                     hours_minutes time = _selected_alarm->get_time();
                     time.hours = _apply_limits(time.hours, encoder_full_steps,
-                                               0, 23);
+                                               0, 23, encoder_loop_time);
                     _selected_alarm->set_time(time.hours, time.minutes);
                 }
                     break;
@@ -191,7 +192,8 @@ void GUIClass::loop(DateTime __time)
                 {
                     hours_minutes time = _selected_alarm->get_time();
                     time.minutes = _apply_limits(time.minutes,
-                        encoder_full_steps, 0, 59);
+                                                 encoder_full_steps,
+                                                 0, 59, encoder_loop_time);
                     _selected_alarm->set_time(time.hours, time.minutes);
                 }
                     break;
@@ -200,7 +202,7 @@ void GUIClass::loop(DateTime __time)
                 {
                     Snooze snooze = _selected_alarm->get_snooze();
                     snooze.time_minutes = _apply_limits(snooze.time_minutes,
-                        encoder_full_steps, 0, 99);
+                        encoder_full_steps, 0, 99, encoder_loop_snooze);
                     _selected_alarm->set_snooze(snooze.time_minutes, snooze.count);
                 }
                     break;
@@ -218,7 +220,7 @@ void GUIClass::loop(DateTime __time)
                 {
                     Signalization prev_sig = _selected_alarm->get_signalization();
                     prev_sig.ambient = _apply_limits(prev_sig.ambient,
-                        encoder_full_steps * 10, 0, 255);
+                        encoder_full_steps * 10, 0, 255, encoder_loop_ambient);
                     _selected_alarm->set_signalization(prev_sig.ambient,
                                                        prev_sig.lamp,
                                                        prev_sig.buzzer);
@@ -235,23 +237,26 @@ void GUIClass::loop(DateTime __time)
                     _RTC_set = DateTime(_RTC_set.year(), _RTC_set.month(),
                         _RTC_set.day(),
                         _apply_limits(_RTC_set.hour(),
-                                      encoder_full_steps, 0, 23),
-                                      _RTC_set.minute(), _RTC_set.second());
+                                      encoder_full_steps, 0, 23,
+                                      encoder_loop_time),
+                        _RTC_set.minute(), _RTC_set.second());
                     break;
 
                 case cpr_time_m:
                     _RTC_set = DateTime(_RTC_set.year(), _RTC_set.month(),
                         _RTC_set.day(), _RTC_set.hour(),
                         _apply_limits(_RTC_set.minute(),
-                                      encoder_full_steps, 0, 59),
-                                      _RTC_set.second());
+                                      encoder_full_steps, 0, 59,
+                                      encoder_loop_time),
+                        _RTC_set.second());
                     break;
 
                 case cpr_time_s:
                     _RTC_set = DateTime(_RTC_set.year(), _RTC_set.month(),
                         _RTC_set.day(), _RTC_set.hour(), _RTC_set.minute(),
                         _apply_limits(_RTC_set.second(),
-                            encoder_full_steps, 0, 59));
+                                      encoder_full_steps, 0, 59,
+                                      encoder_loop_time));
                     break;
 
                 case cpr_date_d:
@@ -302,7 +307,9 @@ void GUIClass::loop(DateTime __time)
         else {
             // Move the cursor
             _cursor_position = _apply_limits(_cursor_position,
-                encoder_full_steps, 0, _selectables_count[_current_screen] - 1);
+                encoder_full_steps,
+                0, _selectables_count[_current_screen] - 1,
+                encoder_loop_cursor);
 #if defined(DEBUG) && defined(DEBUG_encoder)
             Serial.print("cpos: ");
             Serial.println(_cursor_position);
@@ -325,18 +332,25 @@ void GUIClass::loop(DateTime __time)
     }
 }
 
-byte GUIClass::_apply_limits(byte value, int step, byte limit_low, byte limit_high)
+byte GUIClass::_apply_limits(byte value, int step, byte limit_low,
+                             byte limit_high, boolean loop)
 {
     // Byte cannot be lower than 0, so I have to check before adding step to
     // the value to be able to detect limit_low
     if (value < limit_low)
         return limit_low;
 
-    if (step < 0 && -step > (value - limit_low))
-        return limit_low;
+    if (step < 0 && -step > (value - limit_low)) {
+        if (loop)
+            return limit_high - (-step - (value - limit_low) - 1);
+        else return limit_low;
+    }
 
-    if ((value + step) > limit_high)
-        return limit_high;
+    if (step > (limit_high - value)) {
+        if (loop)
+            return limit_low + ((value + step) - limit_high - 1);
+        else return limit_high;
+    }
 
     return byte(value + step);
 }

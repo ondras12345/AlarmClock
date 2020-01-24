@@ -95,4 +95,13 @@ Rotary encoder
 */
 #define encoder_step 4
 
+// Encoder loop
+// When a value reaches its max, next step takes it to the min and vice versa
+#define encoder_loop_time true
+//#define encoder_loop_date  // waits for date user input checking
+#define encoder_loop_cursor false  // cursor movement
+#define encoder_loop_ambient false
+#define encoder_loop_alarm false  // selected alarm
+#define encoder_loop_snooze true  // snooze time
+
 #endif

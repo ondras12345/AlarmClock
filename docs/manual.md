@@ -56,6 +56,7 @@ Do not modify `src/AlarmClock/Constants.h`
 | button_debounce_interval        | 25                  | ms    | Debounce interval for buttons.              |
 | button_long_press               | 1000                | ms    | Unused: Minimal duration of a 'long press'  |
 | encoder_step                    | 4                   |       | Number of pulses the encoder send per step  |
+| encoder_loop_                   | multiple settings   | bool  | Move from max to min and vice versa         |
 
 **Notes:**  
 Individual DEBUG_* options have no effect if main DEBUG is disabled  
