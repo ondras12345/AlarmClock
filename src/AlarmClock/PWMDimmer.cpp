@@ -69,6 +69,7 @@ void PWMDimmerClass::start()
 void PWMDimmerClass::stop()
 {
     _active = false;
+    _stop = 0;  // get_remaining needs it to work correctly
     _value = 0;
     digitalWrite(_pin, LOW);
 }

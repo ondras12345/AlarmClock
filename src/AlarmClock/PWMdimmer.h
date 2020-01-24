@@ -22,7 +22,7 @@ class PWMDimmerClass
      // I need to initialize these variables with values bacause start() can be
      // executed before set()
      byte _start = 0;
-     byte _stop = 255;
+     byte _stop = 0;
      unsigned long _interval = 100;
      int _step = 10; // can be negative
      boolean _active = false;
@@ -46,6 +46,14 @@ class PWMDimmerClass
      byte get_value() const { return byte(_value); }
 
      byte get_stop() const { return byte(_stop); }
+
+     boolean get_active() const { return _active; }
+
+     unsigned long get_remaining() const {
+         if (!_active) return 0;
+         byte diff_remaining = abs(_stop - _value);
+         return (unsigned long)(diff_remaining * _interval) / _step;
+     }
 };
 
 

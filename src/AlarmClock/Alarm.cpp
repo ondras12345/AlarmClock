@@ -51,13 +51,17 @@ void AlarmClass::loop(DateTime time)
                     if (_signalization.buzzer) buzzerTone(Alarm_regular_ringing_frequency, 0);
 
                     // Do events - can only switch on
-                    if (_signalization.ambient > ambientDimmer->get_value()) {
-                        ambientDimmer->set_from_duration(
-                                ambientDimmer->get_value(),
-                                _signalization.ambient,
-                                Alarm_ambient_dimming_duration);
-                        ambientDimmer->start();
-                    }
+                    ambientDimmer->set_from_duration(
+                            ambientDimmer->get_value(),
+                            _signalization.ambient > ambientDimmer->get_stop() ?
+                            _signalization.ambient : ambientDimmer->get_stop(),
+                            (ambientDimmer->get_remaining() > 0 &&
+                             ambientDimmer->get_remaining() <
+                             Alarm_ambient_dimming_duration) ?
+                            ambientDimmer->get_remaining() :
+                            Alarm_ambient_dimming_duration);
+                    ambientDimmer->start();
+
                     if (_signalization.lamp) lamp(true);
                     DEBUG_println(F("Alarm activated"));
                 }
@@ -102,6 +106,7 @@ void AlarmClass::button_stop()
 
     ambientDimmer->set_from_duration(ambientDimmer->get_value(), 0,
                                     Alarm_ambient_fade_out_duration);
+    ambientDimmer->start();
     lamp(false);
     buzzerNoTone();
     //set_current_beeping_status(false); // this would break it (alarm would wake from snooze)
