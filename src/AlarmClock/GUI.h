@@ -12,6 +12,7 @@
 #include "Settings.h"
 #include "Constants.h"
 #include "Alarm.h"
+#include "PWMDimmer.h"
 #include <Encoder.h>
 #include <Bounce2.h>
 #include <LiquidCrystal_I2C.h>
@@ -34,7 +35,8 @@ struct cursor_position_t {
 enum cursor_position_home {
     cph_alarms_button = 0,
     cph_RTC_button = 1,
-    cph_inhibit_button = 2
+    cph_inhibit_button = 2,
+    cph_ambient = 3
 };
 
 enum cursor_position_alarms {
@@ -82,6 +84,7 @@ class GUIClass
      LiquidCrystal_I2C *_lcd;
      void(*_set_inhibit)(boolean);
      boolean(*_get_inhibit)();
+     PWMDimmerClass * _ambientDimmer;
 
      byte _selected_alarm_index = 0;
      AlarmClass *_selected_alarm;  // set when switching alarms
@@ -92,7 +95,7 @@ class GUIClass
      // lines instead of multiple pieces.
      char _line_buffer[LCD_width + 1];  // +1 for null termination
 
-     const byte _selectables_count[Screens_count] = { 3, 17, 8 };
+     const byte _selectables_count[Screens_count] = { 4, 17, 8 };
     #define Selectables_count_max 17
 
      byte _cursor_position = 0;
@@ -100,7 +103,7 @@ class GUIClass
      // This array translates _current_screen and _cursor_position to
      // the display's coordinates
      const cursor_position_t _cursor_positions[Screens_count][Selectables_count_max] = {
-        { {0,1}, {3,1}, {7,1} },
+        { {0,1}, {3,1}, {7,1}, {14,1} },
 
         { {0,0}, {1,0}, {5,0}, {6,0}, {7,0}, {8,0}, {9,0}, {10,0}, {11,0}, {13,0},
           {0,1}, {3,1}, {6,1}, {9,1}, {12,1}, {14,1}, {15,1} },
@@ -129,7 +132,8 @@ class GUIClass
      GUIClass(AlarmClass *alarms, void(*writeEEPROM)(), RTC_DS3231 *rtc,
               Encoder *encoder, Bounce *encoder_button,
               LiquidCrystal_I2C *lcd,
-              void(*set_inhibit)(boolean), boolean(*get_inhibit)());
+              void(*set_inhibit)(boolean), boolean(*get_inhibit)(),
+              PWMDimmerClass *ambientDimmer);
 };
 
 #endif

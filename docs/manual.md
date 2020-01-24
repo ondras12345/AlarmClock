@@ -2,8 +2,10 @@
 This project's source code and electronic designs are available
 on [Github][Github repo].
 
+
 # Date and time format
 All the dates and times are in the `dd.mm.yyyy hh:mm:ss` format.
+
 
 # Features
 ## Inhibit
@@ -21,6 +23,13 @@ disables automatically after the set time, but it can be manually disabled by
 pressing the same button again.
 
 
+## Ambient LED strip
+A LED strip can be connected to the device. It slowly lights up when the
+alarm enables it. [PWM][Wikipedia PWM] is used for dimming. It can also be
+controlled manually trough the [Serial CLI](#Serial-CLI) and
+the LCD GUI (home screen).
+
+
 # Configuration
 ## Compile-time
 Edit the file `src/AlarmClock/Settings.h`  
@@ -36,10 +45,14 @@ Do not modify `src/AlarmClock/Constants.h`
 | Alarm_last_ringing_frequency    | 2000                | Hz    | Buzzer tone frequency (last ringing)        |
 | Alarm_last_ringing_period       | 250                 | ms    | Buzzer on/off time length (last ringing)    |
 | Alarm_inhibit_duration          | 120 * 60UL * 1000UL | ms    | Duration of the 'inhibit' function          |
+| Alarm_ambient_dimming_duration  | 15 * 60UL * 1000UL  | ms    | Time before ambient LED reaches set value   |
+| Alarm_ambient_fade_out_duration | 2000UL              | ms    | Ambient fade-out time                       |
 | I2C_LCD_address                 | 0x27                |       | I2C address of the LCD                      |
 | Serial_indentation_width        | 2                   | chars | Indentation width for the Serial CLI        |
 | Serial_autosave_interval        | 60 * 1000UL         | ms    | Inactivity length after for autosave        |
-| GUI_update_interval             | 9000                | ms    | Delay between screen updates - see note     |
+| Serial_ambient_dimming_duration | 1000UL              | ms    | Time before ambient LED reaches set value   |
+| GUI_update_interval             | 9000UL              | ms    | Delay between screen updates - see note     |
+| GUI_ambient_dimming_duration    | 500UL               | ms    | Time before ambient LED reaches set value   |
 | button_debounce_interval        | 25                  | ms    | Debounce interval for buttons.              |
 | button_long_press               | 1000                | ms    | Unused: Minimal duration of a 'long press'  |
 | encoder_step                    | 4                   |       | Number of pulses the encoder send per step  |
@@ -52,7 +65,7 @@ Active buzzer - a buzzer that makes noise on its own without the need to feed
 GUI_update_interval - the screen only updates if seconds % 10 = 0, but I need
                       this parameter to avoid updating it multiple times during
                       the same second.  
-Button debouncing theory: [Allaboutcircuits' article][Allaboutcircuits debounce
+Button debouncing theory: [Allaboutcircuits' article][Allaboutcircuits debounce]
 
 ### Pins
 There should be no need to change the pins used.
@@ -105,6 +118,7 @@ November only has 30 days. This may eventually get fixed in the RTClib library,
 see https://github.com/adafruit/RTClib/issues/127 . It also applies to the CLI.
 
 See [screens.md](./screens.md) for more details.
+
 
 # Serial CLI
 There is a CLI (command line interface) available. To access it, connect to

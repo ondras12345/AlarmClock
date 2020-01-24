@@ -40,6 +40,10 @@ void GUIClass::loop(DateTime __time)
                 case cph_inhibit_button:
                     _set_inhibit(!_get_inhibit());
                     break;
+
+                default:
+                    _cursor_clicked = true;
+                    break;
                 }
                 break;
 
@@ -104,7 +108,6 @@ void GUIClass::loop(DateTime __time)
 
                 case cpr_apply_button:
                     _rtc->adjust(_RTC_set);
-                    //_goto_screen_home();  // I don't need to write the EEPROM
                     _switch_screen(screen_home);
                     break;
 
@@ -141,6 +144,19 @@ void GUIClass::loop(DateTime __time)
             // Handle encoder rotations that should change some values.
             switch (_current_screen) {
             case screen_home:
+                switch (_cursor_position) {
+                case cph_ambient:
+                {
+                    _ambientDimmer->set_from_duration(
+                            _ambientDimmer->get_value(),
+                            _apply_limits(_ambientDimmer->get_stop(),
+                                encoder_full_steps * 10, 0, 255),
+                            GUI_ambient_dimming_duration);
+                    _ambientDimmer->start();
+                }
+                    break;
+
+                }
                 break;
 
 
@@ -220,7 +236,7 @@ void GUIClass::loop(DateTime __time)
                         _RTC_set.day(),
                         _apply_limits(_RTC_set.hour(),
                                       encoder_full_steps, 0, 23),
-                        _RTC_set.minute(), _RTC_set.second());
+                                      _RTC_set.minute(), _RTC_set.second());
                     break;
 
                 case cpr_time_m:
@@ -228,7 +244,7 @@ void GUIClass::loop(DateTime __time)
                         _RTC_set.day(), _RTC_set.hour(),
                         _apply_limits(_RTC_set.minute(),
                                       encoder_full_steps, 0, 59),
-                        _RTC_set.second());
+                                      _RTC_set.second());
                     break;
 
                 case cpr_time_s:
@@ -345,8 +361,9 @@ void GUIClass::_update()
                 _now.hour(), _now.minute(), _now.second());
         _lcd->print(_line_buffer);
         _lcd->setCursor(0, 1);
-        sprintf(_line_buffer, "%c  RTC %c        ", char(LCD_char_bell_index),
-                _get_inhibit() ? 'I' : 'i');
+        sprintf(_line_buffer, "%c  RTC %c      %02d",
+                char(LCD_char_bell_index), _get_inhibit() ? 'I' : 'i',
+                _ambientDimmer->get_stop() / 10);
         _lcd->print(_line_buffer);
 
         break;
@@ -423,7 +440,8 @@ void GUIClass::_update()
 GUIClass::GUIClass(AlarmClass *__alarms, void(*__writeEEPROM)(),
         RTC_DS3231 * __rtc, Encoder * __encoder, Bounce * __encoder_button,
         LiquidCrystal_I2C *__lcd,
-        void(*__set_inhibit)(boolean), boolean(*__get_inhibit)())
+        void(*__set_inhibit)(boolean), boolean(*__get_inhibit)(),
+        PWMDimmerClass *__ambientDimmer)
 {
     _alarms = __alarms;
     _writeEEPROM = __writeEEPROM;
@@ -433,6 +451,7 @@ GUIClass::GUIClass(AlarmClass *__alarms, void(*__writeEEPROM)(),
     _lcd = __lcd;
     _set_inhibit = __set_inhibit;
     _get_inhibit = __get_inhibit;
+    _ambientDimmer = __ambientDimmer;
 
     // First alarm. I can't initialize it in the header because the compiler
     // doesn't know the address yet.

@@ -121,7 +121,7 @@
     <ClInclude Include="DaysOfWeek.h" />
     <ClInclude Include="GUI.h" />
     <ClInclude Include="LCDchars.h" />
-    <ClInclude Include="PWMfade.h" />
+    <ClInclude Include="PWMDimmer.h" />
     <ClInclude Include="SerialCLI.h" />
     <ClInclude Include="__vm\.AlarmClock.vsarduino.h" />
   </ItemGroup>
@@ -131,7 +131,7 @@
     <ClCompile Include="CountdownTimer.cpp" />
     <ClCompile Include="DaysOfWeek.cpp" />
     <ClCompile Include="GUI.cpp" />
-    <ClCompile Include="PWMfade.cpp" />
+    <ClCompile Include="PWMDimmer.cpp" />
     <ClCompile Include="SerialCLI.cpp" />
     <ClCompile Include="Settings.h" />
   </ItemGroup>

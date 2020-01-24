@@ -1,5 +1,7 @@
 # Checklist for tests
 - [ ] Serial CLI
+    - [ ] `amb` - get ambient LED
+    - [ ] `amb{nn}` - set ambient LED
     - [ ] `sel{i}` - select
     - [ ] `sel` - deselect
     - [ ] `ls`
@@ -20,7 +22,6 @@
 - [ ] Buttons
     - [ ] 'snooze' button (with DEBUG on)
     - [ ] 'stop' button (with DEBUG on)
-    - [ ] 'stop' button hold (with DEBUG on)
 
 - [ ] Alarms
     - [ ] Trigger

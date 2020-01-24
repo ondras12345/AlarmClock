@@ -4,8 +4,12 @@
 Date: 11. 6. 2019
 Time: 23:14:11
 Day of the week: 2 - Tuesday
+Ambient LED: 25x (range 0-255 --> 0-25 on this screen). This indicates the
+    stop value of PWMDimmer instead of the current value to avoid confusion
+    when setting.
 Buttons:
 - b - alarms
+- t - timer (not implemented yet)
 - RTC
 - i - inhibit (Off: i; On: I)
 ```
@@ -13,7 +17,7 @@ Buttons:
 |     |0|1|2|3|4|5|6|7|8|9|A|B|C|D|E|F|
 |-----|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
 |__0__|1|1|.|0|6| |2| |2|3|:|1|4|:|1|1|
-|__1__|b|t| |R|T|C| |i| | | | | | | | |
+|__1__|b|t| |R|T|C| |i| | | | | | |2|5|
 
 
 ## Alarm
@@ -24,7 +28,8 @@ Enabled for all days of the week
 Only rings once, then disables itself (SGL). Other possible values: Off, RPT
 Rings at 6:20
 Snooze: 5 * 5 minutes
-Signalization: ambient: 25x, lamp, buzzer
+Signalization: ambient: 25x (range 0-255 --> 0-25 on this screen);
+               lamp: 1, buzzer: 1
 ```
 
 |     |0|1|2|3|4|5|6|7|8|9|A|B|C|D|E|F|
