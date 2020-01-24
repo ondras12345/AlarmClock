@@ -23,6 +23,13 @@ disables automatically after the set time, but it can be manually disabled by
 pressing the same button again.
 
 
+## Ambient LED strip
+A LED strip can be connected to the device. It slowly lights up when the
+alarm enables it. [PWM][Wikipedia PWM] is used for dimming. It can also be
+controlled manually trough the [Serial CLI](#Serial-CLI) and
+the LCD GUI (home screen).
+
+
 # Configuration
 ## Compile-time
 Edit the file `src/AlarmClock/Settings.h`  
