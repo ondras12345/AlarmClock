@@ -30,6 +30,11 @@ controlled manually trough the [Serial CLI](#Serial-CLI) and
 the LCD GUI (home screen).
 
 
+## Lamp
+An output pin that can be used to control a lamp. It can be controlled from
+the GUI (home screen).
+
+
 # Configuration
 ## Compile-time
 Edit the file `src/AlarmClock/Settings.h`  
