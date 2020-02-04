@@ -71,6 +71,8 @@ void GUIClass::loop(DateTime __time)
                     // https://forum.arduino.cc/index.php?topic=64407.0 )
                     // It was causing all the other cases not to execute
                     // without the block.
+                    // Code block is necessary if local variables are declared
+                    // within a case
                 {
                     byte day = (_cursor_position - cpa_alarm_day_1) + 1;
                     _selected_alarm->set_day_of_week(day,
@@ -146,7 +148,6 @@ void GUIClass::loop(DateTime __time)
             case screen_home:
                 switch (_cursor_position) {
                 case cph_ambient:
-                {
                     _ambientDimmer->set_from_duration(
                             _ambientDimmer->get_value(),
                             _apply_limits(_ambientDimmer->get_stop(),
@@ -154,7 +155,6 @@ void GUIClass::loop(DateTime __time)
                                 encoder_loop_ambient),
                             GUI_ambient_dimming_duration);
                     _ambientDimmer->start();
-                }
                     break;
 
                 }
@@ -428,7 +428,6 @@ void GUIClass::_update()
 
 
     case screen_RTC:
-    {
         sprintf(_line_buffer, "%c%cRTC %d %02d:%02d:%02d",
                 LCD_char_cancel_index, LCD_char_apply_index,
                 _RTC_set.dayOfTheWeek() == 0 ? 7 : _RTC_set.dayOfTheWeek(),
@@ -439,7 +438,6 @@ void GUIClass::_update()
         sprintf(_line_buffer, "%02d.%02d.%04d      ",
                 _RTC_set.day(), _RTC_set.month(), _RTC_set.year());
         _lcd->print(_line_buffer);
-    }
     break;
 
 
