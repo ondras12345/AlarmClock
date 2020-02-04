@@ -36,7 +36,8 @@ enum cursor_position_home {
     cph_alarms_button = 0,
     cph_RTC_button = 1,
     cph_inhibit_button = 2,
-    cph_ambient = 3
+    cph_ambient = 3,
+    cph_lamp = 4
 };
 
 enum cursor_position_alarms {
@@ -85,6 +86,8 @@ class GUIClass
      void(*_set_inhibit)(boolean);
      boolean(*_get_inhibit)();
      PWMDimmerClass * _ambientDimmer;
+     void(*_lamp)(boolean);
+     boolean(*_get_lamp)();
 
      byte _selected_alarm_index = 0;
      AlarmClass *_selected_alarm;  // set when switching alarms
@@ -95,7 +98,7 @@ class GUIClass
      // lines instead of multiple pieces.
      char _line_buffer[LCD_width + 1];  // +1 for null termination
 
-     const byte _selectables_count[Screens_count] = { 4, 17, 8 };
+     const byte _selectables_count[Screens_count] = { 5, 17, 8 };
     #define Selectables_count_max 17
 
      byte _cursor_position = 0;
@@ -103,7 +106,7 @@ class GUIClass
      // This array translates _current_screen and _cursor_position to
      // the display's coordinates
      const cursor_position_t _cursor_positions[Screens_count][Selectables_count_max] = {
-        { {0,1}, {3,1}, {7,1}, {14,1} },
+        { {0,1}, {3,1}, {7,1}, {12,1}, {14,1} },
 
         { {0,0}, {1,0}, {5,0}, {6,0}, {7,0}, {8,0}, {9,0}, {10,0}, {11,0}, {13,0},
           {0,1}, {3,1}, {6,1}, {9,1}, {12,1}, {14,1}, {15,1} },
@@ -135,7 +138,8 @@ class GUIClass
               Encoder *encoder, Bounce *encoder_button,
               LiquidCrystal_I2C *lcd,
               void(*set_inhibit)(boolean), boolean(*get_inhibit)(),
-              PWMDimmerClass *ambientDimmer);
+              PWMDimmerClass *ambientDimmer, void(*lamp)(boolean),
+              boolean(*get_lamp)());
 };
 
 #endif

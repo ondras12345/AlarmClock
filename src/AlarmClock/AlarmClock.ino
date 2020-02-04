@@ -53,7 +53,8 @@ enum SelfTest_level {
 unsigned int SelfTest(SelfTest_level level);
 #endif
 // Hardware
-//void lamp(boolean status);
+void lamp(boolean status);
+boolean get_lamp();
 void buzzerTone(unsigned int freq, unsigned long duration = 0); // specifies default duration=0
 //void buzzerNoTone();
 
@@ -72,16 +73,18 @@ AlarmClass alarms[alarms_count];
 //CountdownTimerClass countdownTimer;  // # TODO implement CountdownTimer
 PWMDimmerClass ambientDimmer(pin_ambient);
 DateTime now;
-SerialCLIClass CLI(alarms, writeEEPROM, &rtc, &ambientDimmer);
+SerialCLIClass CLI(alarms, writeEEPROM, &rtc, &ambientDimmer, lamp, get_lamp);
 GUIClass GUI(alarms, writeEEPROM, &rtc, &encoder,
              &buttons[button_index_encoder], &lcd, set_inhibit, get_inhibit,
-             &ambientDimmer);
+             &ambientDimmer, lamp, get_lamp);
 
 
 unsigned long loop_rtc_previous_millis = 0;
 
 boolean inhibit = false;
 unsigned long inhibit_previous_millis = 0;
+
+boolean lamp_status = false;
 
 #ifdef active_buzzer
 unsigned long active_buzzer_previous_millis = 0;
@@ -306,7 +309,13 @@ boolean I2C_ping(byte addr) {
 Hardware
 Included classes can control the hardware trough these functions
 */
-void lamp(boolean status) { digitalWrite(pin_lamp, status); }
+void lamp(boolean status)
+{
+    digitalWrite(pin_lamp, status);
+    lamp_status = status;
+}
+
+boolean get_lamp() { return lamp_status; }
 
 void buzzerTone(unsigned int freq, unsigned long duration)
 {
