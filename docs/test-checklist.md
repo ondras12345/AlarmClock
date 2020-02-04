@@ -1,5 +1,7 @@
 # Checklist for tests
 - [ ] Serial CLI
+    - [ ] `lamp` - get lamp pin status
+    - [ ] `lamp{l}` - set lamp pin status
     - [ ] `amb` - get ambient LED
     - [ ] `amb{nn}` - set ambient LED
     - [ ] `sel{i}` - select
@@ -43,7 +45,7 @@
         - Press 'stop' button - alarm should stop
 
     - [ ] Inhibit
-        - Enable the 'inhibit' function by holding the 'stop' button
+        - Enable the 'inhibit' function (GUI)
         - Do the 'Trigger' steps. The alarm shouldn't trigger
 
 - [ ] RTC

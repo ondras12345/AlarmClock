@@ -1,4 +1,6 @@
 # Screens
+Lowercase characters usually indicate disabled functions.
+
 ## Home
 ```
 Date: 11. 6. 2019
@@ -8,8 +10,8 @@ Ambient LED: 25x (range 0-255 --> 0-25 on this screen). This indicates the
     stop value of PWMDimmer instead of the current value to avoid confusion
     when setting.
 Buttons:
-- b - alarms
-- t - timer (not implemented yet)
+- b - (bell symbol) alarms
+- t - (timer symbol) timer (not implemented yet)
 - RTC
 - i - inhibit (Off: i; On: I)
 - L - lamp (Off: l; On: L)
@@ -31,6 +33,8 @@ Rings at 6:20
 Snooze: 5 * 5 minutes
 Signalization: ambient: 25x (range 0-255 --> 0-25 on this screen);
                lamp: 1, buzzer: 1
+Buttons:
+- h - (home symbol) - home screen
 ```
 
 |     |0|1|2|3|4|5|6|7|8|9|A|B|C|D|E|F|
@@ -45,8 +49,8 @@ Date: 11. 6. 2019
 Time: 23:14:11
 Day of the week: 2 - Tuesday
 Buttons:
-- a - apply
-- c - cancel
+- a - (apply symbol) - apply
+- c - (cancel symbol) - cancel
 ```
 |     |0|1|2|3|4|5|6|7|8|9|A|B|C|D|E|F|
 |-----|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|

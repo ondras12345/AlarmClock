@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Mode for active buzzers
 - CLI commands for controlling the ambient LED, fading reworked
 - GUI interface for controlling the ambient LED
+- CLI commands for controlling the lamp pin
+- GUI button for controlling the lamp pin
 
 ### Changed
 - Repository tree (source is now in `src` directory, ...)

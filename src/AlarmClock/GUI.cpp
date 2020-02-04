@@ -421,12 +421,12 @@ void GUIClass::_update()
         _lcd->setCursor(0, 1);
         sprintf(_line_buffer, "%02d:%02d+%02d*%d  %02d%c%c",
                 _selected_alarm->get_time().hours,
-                _selected_alarm->get_time().minutes, 
+                _selected_alarm->get_time().minutes,
                 _selected_alarm->get_snooze().time_minutes,
                 _selected_alarm->get_snooze().count,
                 _selected_alarm->get_signalization().ambient / 10,
-                _selected_alarm->get_signalization().lamp ? 'L' : ' ', 
-                _selected_alarm->get_signalization().buzzer ? 'B' : ' ' );
+                _selected_alarm->get_signalization().lamp ? 'L' : 'l',
+                _selected_alarm->get_signalization().buzzer ? 'B' : 'b' );
         _lcd->print(_line_buffer);
     }
         break;

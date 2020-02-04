@@ -12,8 +12,9 @@ Constants like error codes are in Constants.h
 For more info about these options see docs/manual.md
 */
 
-
-#define VisualStudio // support for visual studio (aditional function prototypes required)
+// Support for Visual studio (aditional function prototypes required).
+// This feature is currently not maintained because I don't use VS anymore.
+#define VisualStudio
 
 /*
 DEBUG
