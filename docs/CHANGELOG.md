@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GUI interface for controlling the ambient LED
 - CLI commands for controlling the lamp pin
 - GUI button for controlling the lamp pin
+- CLI commands for controlling alarm inhibit
 
 ### Changed
 - Repository tree (source is now in `src` directory, ...)

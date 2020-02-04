@@ -4,6 +4,8 @@
     - [ ] `lamp{l}` - set lamp pin status
     - [ ] `amb` - get ambient LED
     - [ ] `amb{nn}` - set ambient LED
+    - [ ] `inh{i}` (with DEBUG on) - inhibit enabled|disabled
+    - [ ] `inh` - inhibit: {i}
     - [ ] `sel{i}` - select
     - [ ] `sel` - deselect
     - [ ] `ls`
@@ -45,7 +47,7 @@
         - Press 'stop' button - alarm should stop
 
     - [ ] Inhibit
-        - Enable the 'inhibit' function (GUI)
+        - `inh1`
         - Do the 'Trigger' steps. The alarm shouldn't trigger
 
 - [ ] RTC
