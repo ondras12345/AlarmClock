@@ -24,6 +24,8 @@ protected:
     RTC_DS3231 *_rtc;
     void(*_writeEEPROM)();
     PWMDimmerClass * _ambientDimmer;
+    void(*_lamp)(boolean);
+    boolean(*_get_lamp)();
 
     const char _prompt_default[2 + 1] = "> ";
     char _Serial_buffer[Serial_buffer_length + 1]; // +1 for termination
@@ -47,6 +49,7 @@ protected:
 
     // commands
     error_t _set_ambient(char *duty);
+    error_t _set_lamp(char *status);
     error_t _select_alarm(byte index);
     error_t _list_selected_alarm();
     error_t _set_enabled(AlarmEnabled __en);
@@ -62,7 +65,8 @@ protected:
 public:
     void loop(DateTime time);
     SerialCLIClass(AlarmClass *alarms, void(*writeEEPROM)(), RTC_DS3231 *rtc,
-                   PWMDimmerClass *ambientDimmer);
+                   PWMDimmerClass *ambientDimmer, void(*lamp)(boolean),
+                   boolean(*get_lamp)());
 };
 
 #endif

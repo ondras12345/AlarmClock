@@ -73,7 +73,7 @@ AlarmClass alarms[alarms_count];
 //CountdownTimerClass countdownTimer;  // # TODO implement CountdownTimer
 PWMDimmerClass ambientDimmer(pin_ambient);
 DateTime now;
-SerialCLIClass CLI(alarms, writeEEPROM, &rtc, &ambientDimmer);
+SerialCLIClass CLI(alarms, writeEEPROM, &rtc, &ambientDimmer, lamp, get_lamp);
 GUIClass GUI(alarms, writeEEPROM, &rtc, &encoder,
              &buttons[button_index_encoder], &lcd, set_inhibit, get_inhibit,
              &ambientDimmer, lamp, get_lamp);
