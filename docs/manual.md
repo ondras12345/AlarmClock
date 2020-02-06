@@ -85,6 +85,16 @@ be negligible compared to the timed timespan.
 The maximum time the timer can be set to is 18:12:15.
 
 
+
+## Buzzer
+### Melody
+If you have a passive buzzer connected to the alarm clock and the feature is
+enabled in Settings.h, you can define a melody that will be used. This melody
+is stored in the EEPROM and can be read or written from the Serial CLI.
+
+See [melody.md](melody.md) for more info.
+
+
 # Configuration
 ## Compile-time
 Edit `src/AlarmClock/Settings.h`.  
