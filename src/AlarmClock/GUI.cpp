@@ -26,7 +26,7 @@ void GUIClass::loop(DateTime __time)
         _backlight_previous_millis = millis();
         if (!_backlight) {
             set_backlight(true);
-            _encoder->write(0);
+            _encoder->write(_encoder->read() % encoder_step);
         }
         else {
 
