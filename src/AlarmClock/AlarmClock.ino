@@ -98,7 +98,6 @@ void setup() {
     pinMode(pin_ambient, OUTPUT);
     pinMode(pin_lamp, OUTPUT);
     pinMode(pin_buzzer, OUTPUT);
-    pinMode(pin_LCD_enable, OUTPUT);
 
     buttons[button_index_snooze].attach(pin_button_snooze, INPUT_PULLUP); // # TODO DEBUG only, then switch to external pull-ups
     buttons[button_index_stop].attach(pin_button_stop, INPUT_PULLUP);
@@ -110,7 +109,7 @@ void setup() {
     Wire.begin();
     Serial.begin(9600);
 
-    lcd_on();
+    lcd_init();
 
     unsigned int error = SelfTest(POST);
     if ((error & error_critical_mask) == 0) error |= (readEEPROM() ? 0 : error_EEPROM);
@@ -250,9 +249,7 @@ void factory_reset() {
 /*
 LCD
 */
-boolean lcd_on() {
-    digitalWrite(pin_LCD_enable, HIGH);
-    delay(100);
+boolean lcd_init() {
     if (I2C_ping(I2C_LCD_address)) {
         lcd.init();
         lcd.backlight();
@@ -266,10 +263,6 @@ boolean lcd_on() {
         return true;
     }
     else return false;
-}
-
-void lcd_off() {
-    digitalWrite(pin_LCD_enable, LOW);
 }
 
 

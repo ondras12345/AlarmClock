@@ -60,7 +60,7 @@ Pins
 #define pin_button_snooze 4
 #define pin_button_stop 5
 #define pin_ambient 6  // PWM
-#define pin_LCD_enable 8
+// 7, 8
 #define pin_buzzer 9  // PWM, TimerOne
 #define pin_lamp 10  // (PWM)
 // 11, 12, 13, A0, A1 - reserved for 2 SPI devices (eg. ethernet)
@@ -82,8 +82,9 @@ Serial CLI
 /*
 GUI
 */
-#define GUI_update_interval 9000UL
+#define GUI_update_interval 9000UL  // in ms
 #define GUI_ambient_dimming_duration 500UL  // in ms
+#define GUI_backlight_timeout 15000UL  // in ms
 
 /*
 Buttons
@@ -99,7 +100,7 @@ Rotary encoder
 // Encoder loop
 // When a value reaches its max, next step takes it to the min and vice versa
 #define encoder_loop_time true
-//#define encoder_loop_date  // waits for date user input checking
+//#define encoder_loop_date  // waits for date user input checking to be implemented
 #define encoder_loop_cursor false  // cursor movement
 #define encoder_loop_ambient false
 #define encoder_loop_alarm false  // selected alarm
