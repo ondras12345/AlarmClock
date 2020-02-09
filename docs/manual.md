@@ -58,10 +58,11 @@ Do not modify `src/AlarmClock/Constants.h`
 | Serial_ambient_dimming_duration | 1000UL              | ms    | Time before ambient LED reaches set value   |
 | GUI_update_interval             | 9000UL              | ms    | Delay between screen updates - see note     |
 | GUI_ambient_dimming_duration    | 500UL               | ms    | Time before ambient LED reaches set value   |
+| GUI_backlight_timeout           | 15000UL             | ms    | LCD backlight timeout                       |
 | button_debounce_interval        | 25                  | ms    | Debounce interval for buttons.              |
 | button_long_press               | 1000                | ms    | Unused: Minimal duration of a 'long press'  |
 | encoder_step                    | 4                   |       | Number of pulses the encoder send per step  |
-| encoder_loop_                   | multiple settings   | bool  | Move from max to min and vice versa         |
+| encoder_loop_x                  | multiple settings   | bool  | Move from max to min and vice versa         |
 
 **Notes:**  
 Individual DEBUG_* options have no effect if main DEBUG is disabled  
@@ -108,6 +109,10 @@ Ambient LED strip dimming: [PWM][Wikipedia PWM]
 
 
 # LCD
+The backlight of the LCD turns off automatically after `GUI_backlight_timeout`
+milliseconds. To turn it on again, you need to press the rotary encoder button
+or rotate the knob.
+
 Use the encoder to move the cursor under the item you want to change,
 then press the encoder button. Boolean type values and buttons react
 immediately, otherwise the cursor starts blinking and you should be able to set
