@@ -37,48 +37,9 @@ both the GUI (home screen) and the CLI.
 
 # Configuration
 ## Compile-time
-Edit the file `src/AlarmClock/Settings.h`  
-Do not modify `src/AlarmClock/Constants.h`
+Edit `src/AlarmClock/Settings.h`.  
+Do not modify `src/AlarmClock/Constants.h` unless you know what you are doing.
 
-| Option                          | Default             | Unit  | Meaning                                     |
-| ------------------------------- | ------------------- | ----- | ------------------------------------------- |
-| DEBUG                           | disabled            |       | Enables debug messages if uncommented       |
-| active_buzzer                   | disabled            |       | Active buzzer mode. Uncomment to enable     |
-| alarms_count                    | 6                   |       | Number of configurable alarms. Must be <255 |
-| Alarm_regular_ringing_frequency | 1000                | Hz    | Buzzer tone frequency (regular ringing)     |
-| Alarm_regular_ringing_period    | 500                 | ms    | Buzzer on/off time length (regular ringing) |
-| Alarm_last_ringing_frequency    | 2000                | Hz    | Buzzer tone frequency (last ringing)        |
-| Alarm_last_ringing_period       | 250                 | ms    | Buzzer on/off time length (last ringing)    |
-| Alarm_inhibit_duration          | 120 * 60UL * 1000UL | ms    | Duration of the 'inhibit' function          |
-| Alarm_ambient_dimming_duration  | 15 * 60UL * 1000UL  | ms    | Time before ambient LED reaches set value   |
-| Alarm_ambient_fade_out_duration | 2000UL              | ms    | Ambient fade-out time                       |
-| I2C_LCD_address                 | 0x27                |       | I2C address of the LCD                      |
-| Serial_indentation_width        | 2                   | chars | Indentation width for the Serial CLI        |
-| Serial_autosave_interval        | 60 * 1000UL         | ms    | Inactivity length after for autosave        |
-| Serial_ambient_dimming_duration | 1000UL              | ms    | Time before ambient LED reaches set value   |
-| GUI_update_interval             | 9000UL              | ms    | Delay between screen updates - see note     |
-| GUI_ambient_dimming_duration    | 500UL               | ms    | Time before ambient LED reaches set value   |
-| GUI_backlight_timeout           | 15000UL             | ms    | LCD backlight timeout                       |
-| button_debounce_interval        | 25                  | ms    | Debounce interval for buttons.              |
-| button_long_press               | 1000                | ms    | Unused: Minimal duration of a 'long press'  |
-| encoder_step                    | 4                   |       | Number of pulses the encoder send per step  |
-| encoder_reset_interval          | 1000                | ms    | See note in Settigns.h                      |
-| encoder_loop_x                  | multiple settings   | bool  | Move from max to min and vice versa         |
-
-**Notes:**  
-Individual DEBUG_* options have no effect if main DEBUG is disabled  
-Active buzzer - a buzzer that makes noise on its own without the need to feed
-                it with AC signal (tone) - DC power is enough.  
-1000UL - normal 16bit int would overflow, so this needs to be an unsigned long  
-GUI_update_interval - the screen only updates if seconds % 10 = 0, but I need
-                      this parameter to avoid updating it multiple times during
-                      the same second.  
-Button debouncing theory: [Allaboutcircuits' article][Allaboutcircuits debounce]
-
-### Pins
-There should be no need to change the pins used.
-If you really need to, make sure you choose a pin that
-supports all the functions used (eg. [PWM][Arduino PWM], TimerOne, ...)
 
 ## Runtime
 ### RTC time
@@ -175,8 +136,6 @@ Explanation:
 
 
 [Github repo]: https://github.com/ondras12345/Arduino-alarm-clock
-[Arduino PWM]: https://www.arduino.cc/reference/en/language/functions/analog-io/analogwrite/
-[Allaboutcircuits debounce]: https://www.allaboutcircuits.com/technical-articles/switch-bounce-how-to-deal-with-it/
 [Wikipedia PWM]: https://en.wikipedia.org/wiki/Pulse-width_modulation
 [Wikipedia boolean]: https://en.wikipedia.org/wiki/Boolean_data_type
 [PuTTY]: https://www.putty.org/

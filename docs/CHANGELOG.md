@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the limits (23 h 59 min) when interpreted as the new format.
 - Serial CLI now requires commands (messages) to be terminated by CR, LF or CRLF
 - Serial CLI error codes reworked
+- Setting descriptions are now in `src/AlarmClock/Settings.h`
 
 ### Removed
 - Long forms of some commands in Serial CLI
