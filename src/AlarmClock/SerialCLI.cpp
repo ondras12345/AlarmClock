@@ -468,7 +468,7 @@ SerialCLIClass::error_t SerialCLIClass::_set_signalization(char * sig)
     ambient = _strbyte(sig);
     sig = _find_next_digit(sig);
     if (*sig == '\0') return Serial_error_argument;
-    lamp = _find_next_digit(sig);
+    lamp = _strbyte(sig);
     sig = _find_next_digit(sig);
     if (*sig == '\0') return Serial_error_argument;
     buzzer = _strbyte(sig);
