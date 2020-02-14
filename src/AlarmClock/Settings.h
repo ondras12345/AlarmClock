@@ -96,6 +96,11 @@ Buttons
 Rotary encoder
 */
 #define encoder_step 4
+// Idle time after which the encoder "microstep" count resets to 0.
+// This prevents problems with missed "microsteps" causing the first full step
+// in the opposite direction to be missed because the "microstep" count just
+// changes from e.g. 2 to -2 (abs(-2) < encoder_step).
+#define encoder_reset_interval 1000  // ms
 
 // Encoder loop
 // When a value reaches its max, next step takes it to the min and vice versa

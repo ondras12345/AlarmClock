@@ -18,7 +18,7 @@
 #include <LiquidCrystal_I2C.h>
 
 // Must be contiguous
-// Don't forget to update Screen_count when changing
+// Don't forget to update Screens_count when changing
 enum Screen {
     screen_home = 0,
     screen_alarms = 1,
@@ -96,6 +96,7 @@ class GUIClass
      unsigned long _update_previous_millis = 0;
      boolean _backlight = true;  // LCD backlight is turned on in setup()
      unsigned long _backlight_previous_millis = 0;
+     unsigned long _encoder_previous_millis = 0;
      // It is faster and causes less flicker if you send the LCD complete
      // lines instead of multiple pieces.
      char _line_buffer[LCD_width + 1];  // +1 for null termination

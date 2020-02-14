@@ -13,6 +13,7 @@ void GUIClass::loop(DateTime __time)
     _now = __time;
 
 
+
     /*
     LCD Backlight
     */
@@ -167,13 +168,15 @@ void GUIClass::loop(DateTime __time)
             */
             int encoder_position = _encoder->read();
             if (abs(encoder_position) >= encoder_step) {
-                float encoder_steps = encoder_position / encoder_step;
-                int encoder_full_steps = int(encoder_steps);
+                _encoder_previous_millis = millis();
+                int encoder_full_steps = encoder_position / encoder_step;
 #if defined(DEBUG) && defined(DEBUG_encoder)
-                Serial.print("enc_f_steps: ");
+                Serial.print(F("enc_pos: "));
+                Serial.println(encoder_position);
+                Serial.print(F("enc_f_steps: "));
                 Serial.println(encoder_full_steps);
 #endif
-                _encoder->write(encoder_position - (encoder_full_steps * 4));
+                _encoder->write(encoder_position - (encoder_full_steps * encoder_step));
 
                 if (_cursor_clicked) {
                     // Handle encoder rotations that should change some values.
@@ -359,6 +362,13 @@ void GUIClass::loop(DateTime __time)
                 _update();
             }
         }
+    }
+    // Encoder missed microsteps correction
+    else if ((unsigned long)(millis() - _encoder_previous_millis) >=
+             encoder_reset_interval)
+    {
+        _encoder->write(0);
+        _encoder_previous_millis = millis();
     }
 
     if ((unsigned long)(millis() - _update_previous_millis) >=
