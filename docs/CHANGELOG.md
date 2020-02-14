@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - Long forms of some commands in Serial CLI
+- Visual Studio support (I don't use it anymore, so I can't update the files)
 
 ### Fixed
 - Snooze count being offset by 1 (2 meant 1,

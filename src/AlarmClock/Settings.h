@@ -7,14 +7,11 @@
 #include "WProgram.h"
 #endif
 /*
-This file contains settings that are meant to be user changable.
+This file contains settings that are meant to be user changeable.
 Constants like error codes are in Constants.h
 For more info about these options see docs/manual.md
 */
 
-// Support for Visual studio (aditional function prototypes required).
-// This feature is currently not maintained because I don't use VS anymore.
-#define VisualStudio
 
 /*
 DEBUG

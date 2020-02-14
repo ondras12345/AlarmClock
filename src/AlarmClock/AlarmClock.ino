@@ -48,10 +48,7 @@ enum SelfTest_level {
 #include "GUI.h"
 #include "LCDchars.h"
 
-// function prototypes
-#ifdef VisualStudio
-unsigned int SelfTest(SelfTest_level level);
-#endif
+// Function prototypes
 // Hardware
 void lamp(boolean status);
 boolean get_lamp();
