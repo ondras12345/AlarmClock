@@ -167,8 +167,7 @@ void GUIClass::loop(DateTime __time)
             */
             int encoder_position = _encoder->read();
             if (abs(encoder_position) >= encoder_step) {
-                float encoder_steps = encoder_position / encoder_step;
-                int encoder_full_steps = int(encoder_steps);
+                int encoder_full_steps = encoder_position / encoder_step;
 #if defined(DEBUG) && defined(DEBUG_encoder)
                 Serial.print("enc_f_steps: ");
                 Serial.println(encoder_full_steps);
