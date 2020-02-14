@@ -18,15 +18,16 @@ Code directives:
      if ((unsigned long)(millis() - previousMillis) >= interval)
 
  - returning array: https://www.tutorialspoint.com/cplusplus/cpp_return_arrays_from_functions.htm
+
+ - declaring variables in switch - case: https://forum.arduino.cc/index.php?topic=64407.0
+
+ - custom lcd characters: https://maxpromer.github.io/LCD-Character-Creator/
 */
+
 
 #include "Settings.h"
 #include "Constants.h"
 
-enum SpinDirection { // for rotary encoder
-    left = 1,
-    right = 2
-};
 
 enum SelfTest_level {
     POST,
@@ -36,42 +37,55 @@ enum SelfTest_level {
 
 #include <EEPROM.h>
 #include <Wire.h>
-//#include <LiquidCrystal_I2C.h>  // # TODO implement LCD
+#include <LiquidCrystal_I2C.h>
 #include <RTClib.h>
 #include <Bounce2.h>
+#include <Encoder.h>
 #include "Alarm.h"
 //#include "CountdownTimer.h"  // # TODO implement CountdownTimer
-#include "PWMfade.h"
+#include "PWMDimmer.h"
 #include "SerialCLI.h"
-
+#include "GUI.h"
+#include "LCDchars.h"
 
 // function prototypes
 #ifdef VisualStudio
 unsigned int SelfTest(SelfTest_level level);
 #endif
 // Hardware
-//void lamp(boolean status);
+void lamp(boolean status);
+boolean get_lamp();
 void buzzerTone(unsigned int freq, unsigned long duration = 0); // specifies default duration=0
 //void buzzerNoTone();
-//void ambient(byte intensity);
-void writeEEPROM(); // Arduino IDE needs it before SerialCLI definition
+
+// Arduino IDE needs these before SerialCLI definition:
+void writeEEPROM();
+void set_inhibit(boolean status);
+boolean get_inhibit();
 
 
 // Global variables
-//LiquidCrystal_I2C lcd(I2C_LCD_address, LCD_width, LCD_height);  // # TODO implement LCD
+LiquidCrystal_I2C lcd(I2C_LCD_address, LCD_width, LCD_height);
 RTC_DS3231 rtc; // DS3231
+Bounce buttons[button_count];
+Encoder encoder(pin_encoder_clk, pin_encoder_dt);
 AlarmClass alarms[alarms_count];
 //CountdownTimerClass countdownTimer;  // # TODO implement CountdownTimer
-PWMfadeClass ambientFader(pin_ambient);
+PWMDimmerClass ambientDimmer(pin_ambient);
 DateTime now;
-SerialCLIClass CLI(alarms, writeEEPROM, &rtc);
-Bounce buttons[button_count];
-boolean button_stop_new_press = false;
+SerialCLIClass CLI(alarms, writeEEPROM, &rtc, &ambientDimmer, lamp, get_lamp,
+                   set_inhibit, get_inhibit);
+GUIClass GUI(alarms, writeEEPROM, &rtc, &encoder,
+             &buttons[button_index_encoder], &lcd, set_inhibit, get_inhibit,
+             &ambientDimmer, lamp, get_lamp);
+
 
 unsigned long loop_rtc_previous_millis = 0;
 
 boolean inhibit = false;
 unsigned long inhibit_previous_millis = 0;
+
+boolean lamp_status = false;
 
 #ifdef active_buzzer
 unsigned long active_buzzer_previous_millis = 0;
@@ -84,11 +98,10 @@ void setup() {
     pinMode(pin_ambient, OUTPUT);
     pinMode(pin_lamp, OUTPUT);
     pinMode(pin_buzzer, OUTPUT);
-    pinMode(pin_LED, OUTPUT);
-    //pinMode(pin_LCD_enable, OUTPUT);  // # TODO implement LCD
 
     buttons[button_index_snooze].attach(pin_button_snooze, INPUT_PULLUP); // # TODO DEBUG only, then switch to external pull-ups
     buttons[button_index_stop].attach(pin_button_stop, INPUT_PULLUP);
+    buttons[button_index_encoder].attach(pin_encoder_sw);  // The module already has its own pull-up
     for (byte i = 0; i < button_count; i++) buttons[i].interval(button_debounce_interval);
 
     init_hardware();
@@ -96,7 +109,7 @@ void setup() {
     Wire.begin();
     Serial.begin(9600);
 
-    //lcd_on();  // # TODO implement LCD
+    lcd_init();
 
     unsigned int error = SelfTest(POST);
     if ((error & error_critical_mask) == 0) error |= (readEEPROM() ? 0 : error_EEPROM);
@@ -120,9 +133,10 @@ void loop() {
         loop_rtc_previous_millis = millis();
     }
     CLI.loop(now);
+    GUI.loop(now);
     for (byte i = 0; i < alarms_count; i++) alarms[i].loop(now);
     //countdownTimer.loop();  // # TODO implement CountdownTimer
-    ambientFader.loop();
+    ambientDimmer.loop();
 
     // buttons
     for (byte i = 0; i < button_count; i++) buttons[i].update();
@@ -133,14 +147,6 @@ void loop() {
     if (buttons[button_index_stop].fell()) {
         for (byte i = 0; i < alarms_count; i++) alarms[i].button_stop();
         DEBUG_println(F("stop pressed"));
-        button_stop_new_press = true;
-    }
-    if (buttons[button_index_stop].duration() >= button_long_press && buttons[button_index_stop].read() == LOW && !inhibit && button_stop_new_press) {
-        set_inhibit(true);
-    }
-    if (buttons[button_index_stop].duration() >= button_long_press * 4UL && buttons[button_index_stop].read() == LOW && inhibit && button_stop_new_press) {
-        set_inhibit(false);
-        button_stop_new_press = false;
     }
     if (inhibit && (unsigned long)(millis() - inhibit_previous_millis) >= Alarm_inhibit_duration) {
         set_inhibit(false);
@@ -156,8 +162,11 @@ void loop() {
 }
 
 void init_hardware() {
-    for (byte i = 0; i < alarms_count; i++) alarms[i].set_hardware(lamp, ambient, buzzerTone, buzzerNoTone, writeEEPROM);
-    //countdownTimer.set_hardware(lamp, ambient, buzzerTone, buzzerNoTone);  // # TODO implement CountdownTimer
+    for (byte i = 0; i < alarms_count; i++)
+        alarms[i].set_hardware(lamp, &ambientDimmer, buzzerTone, buzzerNoTone, writeEEPROM);
+
+    // # TODO implement CountdownTimer WARNING: ambient implementation changed.
+    //countdownTimer.set_hardware(lamp, ambient, buzzerTone, buzzerNoTone);
 }
 
 
@@ -240,21 +249,21 @@ void factory_reset() {
 /*
 LCD
 */
-/*
-boolean lcd_on() {
-    digitalWrite(pin_LCD_enable, HIGH);
-    delay(100);
+boolean lcd_init() {
     if (I2C_ping(I2C_LCD_address)) {
         lcd.init();
+        lcd.backlight();
+        // Add custom characters
+        lcd.createChar(LCD_char_home_index, LCD_char_home);
+        lcd.createChar(LCD_char_bell_index, LCD_char_bell);
+        lcd.createChar(LCD_char_timer_index, LCD_char_timer);
+        lcd.createChar(LCD_char_apply_index, LCD_char_apply);
+        lcd.createChar(LCD_char_cancel_index, LCD_char_cancel);
+
         return true;
     }
     else return false;
 }
-
-void lcd_off() {
-    digitalWrite(pin_LCD_enable, LOW);
-}
-*/  // # TODO implement LCD
 
 
 /*
@@ -294,7 +303,13 @@ boolean I2C_ping(byte addr) {
 Hardware
 Included classes can control the hardware trough these functions
 */
-void lamp(boolean status) { digitalWrite(pin_lamp, status); }
+void lamp(boolean status)
+{
+    digitalWrite(pin_lamp, status);
+    lamp_status = status;
+}
+
+boolean get_lamp() { return lamp_status; }
 
 void buzzerTone(unsigned int freq, unsigned long duration)
 {
@@ -321,57 +336,6 @@ void buzzerNoTone()
 #endif
 }
 
-void ambient(byte start, byte stop, unsigned long duration) {
-    int step_sign = (start > stop) ? -1 : 1;
-    byte diff = abs(stop - start);
-    int _step = 0;
-    unsigned long _interval = 250;
-    unsigned long _duration = duration;
-
-    if (duration < 1000) _duration = 1000;
-
-    _interval = _choose_interval(_duration, diff);
-    _step = step_sign * ((_interval * diff) / _duration);
-    if (_step == 0) _step = step_sign; // step must not be 0
-
-#if defined(DEBUG) && defined(DEBUG_ambient)
-    DEBUG_print("ambient - diff: ");
-    DEBUG_println(diff);
-
-    DEBUG_print("ambient - duration: ");
-    DEBUG_println(_duration);
-
-    DEBUG_print("ambient - interval: ");
-    DEBUG_println(_interval);
-
-    DEBUG_print("ambient - step: ");
-    DEBUG_println(_step);
-#endif
-
-
-    ambientFader.set(start, stop, _step, _interval);
-    ambientFader.start();
-}
-
-unsigned long _choose_interval(unsigned long duration, byte diff) {
-    // prefered interval >= 250
-    unsigned long interval = duration;
-    unsigned long previousInterval = duration;
-    int step;
-
-    if (diff == 0) return interval;
-
-    do {
-        step = (interval * diff) / duration;
-        previousInterval = interval;
-        interval = interval / 2;
-    } while (step > 1 && interval > 250);
-
-    if (interval < 250) interval = previousInterval;
-
-    return interval;
-}
-
 
 /*
 Utils
@@ -382,5 +346,5 @@ void set_inhibit(boolean status) {
     for (byte i = 0; i < alarms_count; i++) alarms[i].set_inhibit(status);
     if (status) DEBUG_println(F("inhibit enabled"));
     else DEBUG_println(F("inhibit disabled"));
-    digitalWrite(pin_LED, status);
 }
+boolean get_inhibit() { return inhibit; }

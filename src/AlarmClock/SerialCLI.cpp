@@ -1,7 +1,3 @@
-// 
-// 
-// 
-
 #include "SerialCLI.h"
 
 void SerialCLIClass::loop(DateTime __time)
@@ -85,6 +81,18 @@ void SerialCLIClass::loop(DateTime __time)
             }
 
         }
+        else if (strstr(_Serial_buffer, "amb") != NULL) {
+            char *duty = strstr(_Serial_buffer, "amb");
+            _print_error(_set_ambient(duty));
+        }
+        else if (strstr(_Serial_buffer, "lamp") != NULL) {
+            char *status = strstr(_Serial_buffer, "lamp");
+            _print_error(_set_lamp(status));
+        }
+        else if (strstr(_Serial_buffer, "inh") != NULL) {
+            char *status = strstr(_Serial_buffer, "inh");
+            _print_error(_set_inh(status));
+        }
         else if (!strcmp(_Serial_buffer, "ls")) {
             _print_error(_list_selected_alarm());
         }
@@ -147,11 +155,22 @@ void SerialCLIClass::loop(DateTime __time)
     }
 }
 
-SerialCLIClass::SerialCLIClass(AlarmClass *__alarms, void(*__writeEEPROM)(), RTC_DS3231 *__rtc)
+SerialCLIClass::SerialCLIClass(AlarmClass *__alarms, void(*__writeEEPROM)(),
+                               RTC_DS3231 *__rtc,
+                               PWMDimmerClass * __ambientDimmer,
+                               void(*__lamp)(boolean), boolean(*__get_lamp)(),
+                               void(*__set_inhibit)(boolean),
+                               boolean(*__get_inhibit)())
 {
     _alarms = __alarms;
     _writeEEPROM = __writeEEPROM;
     _rtc = __rtc;
+    _ambientDimmer = __ambientDimmer;
+    _lamp = __lamp;
+    _get_lamp = __get_lamp;
+    _set_inhibit = __set_inhibit;
+    _get_inhibit = __get_inhibit;
+
     strcpy(_prompt, _prompt_default);
 }
 
@@ -159,6 +178,18 @@ void SerialCLIClass::_print_help()
 {
     Serial.println();
     Serial.println(F("Help:"));
+    _indent(1);
+    Serial.println(F("amb - get ambient 0-255"));
+    _indent(1);
+    Serial.println(F("amb{nnn} - ambient 0-255"));
+    _indent(1);
+    Serial.println(F("lamp - get 0|1"));
+    _indent(1);
+    Serial.println(F("lamp{l} - set 0|1"));
+    _indent(1);
+    Serial.println(F("inh - get inhibit 0|1"));
+    _indent(1);
+    Serial.println(F("inh{i} - set inhibit 0|1"));
     _indent(1);
     Serial.println(F("sel{i} - select alarm{i}"));
     _indent(1);
@@ -237,6 +268,47 @@ void SerialCLIClass::_print_error(error_t error_code)
 
     if (error_code & Serial_error_useless_save)
         Serial.println(F("Nothing to save"));
+}
+
+SerialCLIClass::error_t SerialCLIClass::_set_ambient(char * duty)
+{
+    byte ambient;
+
+    duty = _find_next_digit(duty);
+    if (*duty == '\0') {
+        Serial.print(F("amb: "));
+        Serial.println(_ambientDimmer->get_value());
+        return 0;
+    }
+    ambient = _strbyte(duty);
+    _ambientDimmer->set_from_duration(_ambientDimmer->get_value(), ambient,
+                                    Serial_ambient_dimming_duration);
+    _ambientDimmer->start();
+    return 0;
+}
+
+SerialCLIClass::error_t SerialCLIClass::_set_lamp(char *status)
+{
+    status = _find_next_digit(status);
+    if (*status == '\0') {
+        Serial.print(F("lamp: "));
+        Serial.println(_get_lamp());
+        return 0;
+    }
+    _lamp(_strbyte(status));
+    return 0;
+}
+
+SerialCLIClass::error_t SerialCLIClass::_set_inh(char *status)
+{
+    status = _find_next_digit(status);
+    if (*status == '\0') {
+        Serial.print(F("inhibit: "));
+        Serial.println(_get_inhibit());
+        return 0;
+    }
+    _set_inhibit(_strbyte(status));
+    return 0;
 }
 
 SerialCLIClass::error_t SerialCLIClass::_select_alarm(byte __index)

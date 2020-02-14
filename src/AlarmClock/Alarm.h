@@ -11,6 +11,7 @@
 
 #include "Settings.h"
 #include "Constants.h"
+#include "PWMDimmer.h"
 #include "DaysOfWeek.h"
 #include <RTClib.h> // for datetime
 
@@ -58,7 +59,7 @@ protected:
     boolean inhibit;
 
     void(*lamp)(boolean);
-    void(*ambient)(byte, byte, unsigned long);
+    PWMDimmerClass *ambientDimmer;
     void(*buzzerTone)(unsigned int, unsigned long); // freq, duration
     void(*buzzerNoTone)();
     void(*writeEEPROM_all)();
@@ -100,7 +101,10 @@ public:
     byte * writeEEPROM();
 
     void loop(DateTime time);
-    void set_hardware(void(*lamp_)(boolean), void(*ambient_)(byte, byte, unsigned long), void(*buzzerTone_)(unsigned int, unsigned long), void(*buzzerNoTone_)(), void(*writeEEPROM_)());
+    void set_hardware(void(*lamp)(boolean),
+                      PWMDimmerClass *ambientDimmer,
+                      void(*buzzerTone)(unsigned int, unsigned long),
+                      void(*buzzerNoTone)(), void(*writeEEPROM)());
     void button_snooze();
     void button_stop();
     AlarmClass();
@@ -115,6 +119,7 @@ public:
     boolean set_days_of_week(DaysOfWeekClass __days_of_week);
     boolean set_day_of_week(byte __day, boolean __status);
     DaysOfWeekClass get_days_of_week() { return _days_of_week; };
+    boolean get_day_of_week(byte __day) { return _days_of_week.getDayOfWeek(__day); }
 
     boolean set_snooze(byte __time_minutes, byte __count);
     Snooze get_snooze() { return _snooze; };

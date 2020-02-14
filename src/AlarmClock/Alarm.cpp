@@ -47,11 +47,21 @@ void AlarmClass::loop(DateTime time)
                     set_current_snooze_count(_snooze.count);
                     set_current_snooze_status(false);
 
-                    // safety feature - if ambient() got stuck:
+                    // safety feature - in case ambientDimmer got stuck:
                     if (_signalization.buzzer) buzzerTone(Alarm_regular_ringing_frequency, 0);
 
                     // Do events - can only switch on
-                    if (_signalization.ambient > 0) ambient(0, _signalization.ambient, 900000UL); // 15 minutes
+                    ambientDimmer->set_from_duration(
+                            ambientDimmer->get_value(),
+                            _signalization.ambient > ambientDimmer->get_stop() ?
+                            _signalization.ambient : ambientDimmer->get_stop(),
+                            (ambientDimmer->get_remaining() > 0 &&
+                             ambientDimmer->get_remaining() <
+                             Alarm_ambient_dimming_duration) ?
+                            ambientDimmer->get_remaining() :
+                            Alarm_ambient_dimming_duration);
+                    ambientDimmer->start();
+
                     if (_signalization.lamp) lamp(true);
                     DEBUG_println(F("Alarm activated"));
                 }
@@ -60,10 +70,13 @@ void AlarmClass::loop(DateTime time)
     }
 }
 
-void AlarmClass::set_hardware(void(*lamp_)(boolean), void(*ambient_)(byte, byte, unsigned long), void(*buzzerTone_)(unsigned int, unsigned long), void(*buzzerNoTone_)(), void(*writeEEPROM_)())
+void AlarmClass::set_hardware(void(*lamp_)(boolean),
+                              PWMDimmerClass *ambientDimmer_,
+                              void(*buzzerTone_)(unsigned int, unsigned long),
+                              void(*buzzerNoTone_)(), void(*writeEEPROM_)())
 {
     lamp = lamp_;
-    ambient = ambient_;
+    ambientDimmer = ambientDimmer_;
     buzzerTone = buzzerTone_;
     buzzerNoTone = buzzerNoTone_;
     writeEEPROM_all = writeEEPROM_;
@@ -78,7 +91,7 @@ void AlarmClass::button_snooze()
             set_current_snooze_count(get_current_snooze_count() - 1);
             previous_millis = millis();
 
-            // ambient(0, 0, 0);
+            // not changing ambient
             lamp(false);
             buzzerNoTone();
             set_current_beeping_status(false);
@@ -91,7 +104,9 @@ void AlarmClass::button_stop()
 {
     current_snooze_count = AlarmClass_current_snooze_count_none;
 
-    ambient(0, 0, 0);
+    ambientDimmer->set_from_duration(ambientDimmer->get_value(), 0,
+                                    Alarm_ambient_fade_out_duration);
+    ambientDimmer->start();
     lamp(false);
     buzzerNoTone();
     //set_current_beeping_status(false); // this would break it (alarm would wake from snooze)

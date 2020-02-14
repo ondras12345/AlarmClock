@@ -1,5 +1,11 @@
 # Checklist for tests
 - [ ] Serial CLI
+    - [ ] `lamp` - get lamp pin status
+    - [ ] `lamp{l}` - set lamp pin status
+    - [ ] `amb` - get ambient LED
+    - [ ] `amb{nn}` - set ambient LED
+    - [ ] `inh{i}` (with DEBUG on) - inhibit enabled|disabled
+    - [ ] `inh` - inhibit: {i}
     - [ ] `sel{i}` - select
     - [ ] `sel` - deselect
     - [ ] `ls`
@@ -20,7 +26,6 @@
 - [ ] Buttons
     - [ ] 'snooze' button (with DEBUG on)
     - [ ] 'stop' button (with DEBUG on)
-    - [ ] 'stop' button hold (with DEBUG on)
 
 - [ ] Alarms
     - [ ] Trigger
@@ -42,7 +47,7 @@
         - Press 'stop' button - alarm should stop
 
     - [ ] Inhibit
-        - Enable the 'inhibit' function by holding the 'stop' button
+        - `inh1`
         - Do the 'Trigger' steps. The alarm shouldn't trigger
 
 - [ ] RTC

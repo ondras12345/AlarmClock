@@ -1,9 +1,13 @@
 # Arduino-alarm-clock
-This project's source code and electronic designs are available on [Github][Github repo].
+This project's source code and electronic designs are available
+on [Github][Github repo].
+
+
+# Date and time format
+All the dates and times are in the `dd.mm.yyyy hh:mm:ss` format.
 
 
 # Features
-TODO this should be in README
 ## Inhibit
 This feature allows you to inhibit all alarms for a set time (see the
 Alarm_inhibit_duration compile-time option). I plan to use it when I get up
@@ -13,40 +17,62 @@ nor disable it (I know that I'd forget to re-enable it).
 If an alarm with option 'Enabled: Single' is inhibited, it gets disabled
 the same as if it started ringing normally.
 
-This feature can by enabled by holding the 'stop' button (long press duration
-is defined by button_long_press compile-time option). It disables automatically
-after the set time, but it can be manually disabled by holding the 'stop' button
-4x longer than for a normal
-It is indicated by the LED.
+This feature can by enabled by clicking on the `i` button in the GUI. The
+button should change to uppercase `I`, indicating that the feature is on. It
+disables automatically after the set time, but it can be manually disabled by
+pressing the same button again.
+
+
+## Ambient LED strip
+A LED strip can be connected to the device. It slowly lights up when the
+alarm enables it. [PWM][Wikipedia PWM] is used for dimming. It can also be
+controlled manually trough the [Serial CLI](#Serial-CLI) and
+the LCD GUI (home screen).
+
+
+## Lamp
+An output pin that can be used to control a lamp. It can be controlled from
+both the GUI (home screen) and the CLI.
+
 
 # Configuration
 ## Compile-time
 Edit the file `src/AlarmClock/Settings.h`  
 Do not modify `src/AlarmClock/Constants.h`
 
-| Option                          | Default            | Unit  | Meaning                                     |
-| ------------------------------- | ------------------ | ----- | ------------------------------------------- |
-| DEBUG                           | disabled           |       | Enables debug messages if uncommented       |
-| active_buzzer                   | disabled           |       | Active buzzer mode. Uncomment to enable     |
-| alarms_count                    | 6                  |       | Number of configurable alarms. Must be <255 |
-| Alarm_regular_ringing_frequency | 1000               | Hz    | Buzzer tone frequency (regular ringing)     |
-| Alarm_regular_ringing_period    | 500                | ms    | Buzzer on/off time length (regular ringing) |
-| Alarm_last_ringing_frequency    | 2000               | Hz    | Buzzer tone frequency (last ringing)        |
-| Alarm_last_ringing_period       | 250                | ms    | Buzzer on/off time length (last ringing)    |
-| Alarm_inhibit_duration          | 60 * 60UL * 1000UL | ms    | Duration of the 'inhibit' function          |
-| I2C_LCD_address                 | 0x27               |       | I2C address of the LCD                      |
-| LCD_width                       | 16                 | cols  | Number of chars per line                    |
-| LCD_height                      | 2                  | rows  | Number of lines                             |
-| Serial_indentation_width        | 2                  | chars | Indentation width for the Serial CLI        |
-| Serial_autosave_interval        | 60 * 1000UL        | ms    | Inactivity length after for autosave        |
-| button_debounce_interval        | 25                 | ms    | Debounce interval for buttons.              |
-| button_long_press               | 1000               | ms    | Minimal duration of a 'long press'          |
+| Option                          | Default             | Unit  | Meaning                                     |
+| ------------------------------- | ------------------- | ----- | ------------------------------------------- |
+| DEBUG                           | disabled            |       | Enables debug messages if uncommented       |
+| active_buzzer                   | disabled            |       | Active buzzer mode. Uncomment to enable     |
+| alarms_count                    | 6                   |       | Number of configurable alarms. Must be <255 |
+| Alarm_regular_ringing_frequency | 1000                | Hz    | Buzzer tone frequency (regular ringing)     |
+| Alarm_regular_ringing_period    | 500                 | ms    | Buzzer on/off time length (regular ringing) |
+| Alarm_last_ringing_frequency    | 2000                | Hz    | Buzzer tone frequency (last ringing)        |
+| Alarm_last_ringing_period       | 250                 | ms    | Buzzer on/off time length (last ringing)    |
+| Alarm_inhibit_duration          | 120 * 60UL * 1000UL | ms    | Duration of the 'inhibit' function          |
+| Alarm_ambient_dimming_duration  | 15 * 60UL * 1000UL  | ms    | Time before ambient LED reaches set value   |
+| Alarm_ambient_fade_out_duration | 2000UL              | ms    | Ambient fade-out time                       |
+| I2C_LCD_address                 | 0x27                |       | I2C address of the LCD                      |
+| Serial_indentation_width        | 2                   | chars | Indentation width for the Serial CLI        |
+| Serial_autosave_interval        | 60 * 1000UL         | ms    | Inactivity length after for autosave        |
+| Serial_ambient_dimming_duration | 1000UL              | ms    | Time before ambient LED reaches set value   |
+| GUI_update_interval             | 9000UL              | ms    | Delay between screen updates - see note     |
+| GUI_ambient_dimming_duration    | 500UL               | ms    | Time before ambient LED reaches set value   |
+| GUI_backlight_timeout           | 15000UL             | ms    | LCD backlight timeout                       |
+| button_debounce_interval        | 25                  | ms    | Debounce interval for buttons.              |
+| button_long_press               | 1000                | ms    | Unused: Minimal duration of a 'long press'  |
+| encoder_step                    | 4                   |       | Number of pulses the encoder send per step  |
+| encoder_reset_interval          | 1000                | ms    | See note in Settigns.h                      |
+| encoder_loop_x                  | multiple settings   | bool  | Move from max to min and vice versa         |
 
 **Notes:**  
 Individual DEBUG_* options have no effect if main DEBUG is disabled  
 Active buzzer - a buzzer that makes noise on its own without the need to feed
                 it with AC signal (tone) - DC power is enough.  
 1000UL - normal 16bit int would overflow, so this needs to be an unsigned long  
+GUI_update_interval - the screen only updates if seconds % 10 = 0, but I need
+                      this parameter to avoid updating it multiple times during
+                      the same second.  
 Button debouncing theory: [Allaboutcircuits' article][Allaboutcircuits debounce]
 
 ### Pins
@@ -59,8 +85,9 @@ supports all the functions used (eg. [PWM][Arduino PWM], TimerOne, ...)
 RTC time can be set using the Serial CLI. Use the commands `sd` and `st` (type
 `help` for more information).
 
-TODO LCD
-
+Use the RTC screen to set date and time from the GUI. The changes are applied
+once you press the apply button, so you can set the time to now + 10 s
+and press the button on time to set it precisely.
 
 ## Alarms
 
@@ -83,7 +110,26 @@ Ambient LED strip dimming: [PWM][Wikipedia PWM]
 
 
 # LCD
-TODO implement
+The backlight of the LCD turns off automatically after `GUI_backlight_timeout`
+milliseconds. To turn it on again, you need to press the rotary encoder button
+or rotate the knob.
+
+Use the encoder to move the cursor under the item you want to change,
+then press the encoder button. Boolean type values and buttons react
+immediately, otherwise the cursor starts blinking and you should be able to set
+the value by turning the encoder. To stop changing it, press the button again.
+
+On the alarms screen, the change is applied immediately. This can lead to an
+alarm activating while you are setting it. The changes are written to
+the EEPROM once you return to the home screen.
+
+From the DS3231 datasheet: "Illogical time and date entries result in undefined
+operation". The software does user input checking, but I couldn't implement it
+for days of the month, so please do not set dates such as 31. 11. 2019, because
+November only has 30 days. This may eventually get fixed in the RTClib library,
+see https://github.com/adafruit/RTClib/issues/127 . It also applies to the CLI.
+
+See [screens.md](./screens.md) for more details.
 
 
 # Serial CLI
