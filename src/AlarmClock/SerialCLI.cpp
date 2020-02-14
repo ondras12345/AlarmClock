@@ -68,12 +68,14 @@ void SerialCLIClass::loop(DateTime __time)
     if (complete_message) {
         DEBUG_println();
         DEBUG_println(F("Processing"));
+
+        char *cmd_ptr = nullptr;
+
         if (!strcmp(_Serial_buffer, "help")) { // ! - strcmp returns 0 if matches
             _print_help();
         }
-        else if (strstr(_Serial_buffer, "sel") != NULL) {
-            char *index = strstr(_Serial_buffer, "sel");
-            index = _find_digit(index);
+        else if ((cmd_ptr = strstr(_Serial_buffer, "sel")) != nullptr) {
+            char *index = _find_digit(cmd_ptr);
             if (*index == '\0') _print_error(_select_alarm(_selected_alarm_index_none));
             else {
                 byte index_num = _strbyte(index);
@@ -81,17 +83,14 @@ void SerialCLIClass::loop(DateTime __time)
             }
 
         }
-        else if (strstr(_Serial_buffer, "amb") != NULL) {
-            char *duty = strstr(_Serial_buffer, "amb");
-            _print_error(_set_ambient(duty));
+        else if ((cmd_ptr = strstr(_Serial_buffer, "amb")) != nullptr) {
+            _print_error(_set_ambient(cmd_ptr));
         }
-        else if (strstr(_Serial_buffer, "lamp") != NULL) {
-            char *status = strstr(_Serial_buffer, "lamp");
-            _print_error(_set_lamp(status));
+        else if ((cmd_ptr = strstr(_Serial_buffer, "lamp")) != nullptr) {
+            _print_error(_set_lamp(cmd_ptr));
         }
-        else if (strstr(_Serial_buffer, "inh") != NULL) {
-            char *status = strstr(_Serial_buffer, "inh");
-            _print_error(_set_inh(status));
+        else if ((cmd_ptr = strstr(_Serial_buffer, "inh")) != nullptr) {
+            _print_error(_set_inh(cmd_ptr));
         }
         else if (!strcmp(_Serial_buffer, "ls")) {
             _print_error(_list_selected_alarm());
@@ -105,35 +104,29 @@ void SerialCLIClass::loop(DateTime __time)
         else if (!strcmp(_Serial_buffer, "dis")) {
             _print_error(_set_enabled(Off));
         }
-        else if (strstr(_Serial_buffer, "time") != NULL) {
-            char *time = strstr(_Serial_buffer, "time");
-            _print_error(_set_time(time));
+        else if ((cmd_ptr = strstr(_Serial_buffer, "time")) != nullptr) {
+            _print_error(_set_time(cmd_ptr));
         }
-        else if (strstr(_Serial_buffer, "dow") != NULL) {
-            char *dow = strstr(_Serial_buffer, "dow");
-            _print_error(_set_day_of_week(dow));
+        else if ((cmd_ptr = strstr(_Serial_buffer, "dow")) != nullptr) {
+            _print_error(_set_day_of_week(cmd_ptr));
         }
-        else if (strstr(_Serial_buffer, "snz") != NULL) {
-            char *snooze = strstr(_Serial_buffer, "snz");
-            _print_error(_set_snooze(snooze));
+        else if ((cmd_ptr = strstr(_Serial_buffer, "snz")) != nullptr) {
+            _print_error(_set_snooze(cmd_ptr));
         }
-        else if (strstr(_Serial_buffer, "sig") != NULL) {
-            char *sig = strstr(_Serial_buffer, "sig");
-            _print_error(_set_signalization(sig));
+        else if ((cmd_ptr = strstr(_Serial_buffer, "sig")) != nullptr) {
+            _print_error(_set_signalization(cmd_ptr));
         }
-        else if (strstr(_Serial_buffer, "sav") != NULL) {
+        else if (!strcmp(_Serial_buffer, "sav")) {
             _print_error(_save());
         }
-        else if (strstr(_Serial_buffer, "rtc") != NULL) {
+        else if (!strcmp(_Serial_buffer, "rtc")) {
             _print_error(_rtc_get());
         }
-        else if (strstr(_Serial_buffer, "sd") != NULL) {
-            char *date = strstr(_Serial_buffer, "sd");
-            _print_error(_rtc_date(date));
+        else if ((cmd_ptr = strstr(_Serial_buffer, "sd")) != nullptr) {
+            _print_error(_rtc_date(cmd_ptr));
         }
-        else if (strstr(_Serial_buffer, "st") != NULL) {
-            char *time = strstr(_Serial_buffer, "st");
-            _print_error(_rtc_time(time));
+        else if ((cmd_ptr = strstr(_Serial_buffer, "st")) != nullptr) {
+            _print_error(_rtc_time(cmd_ptr));
         }
         else {
             Serial.println(F("? SYNTAX ERROR"));
@@ -468,7 +461,7 @@ SerialCLIClass::error_t SerialCLIClass::_set_signalization(char * sig)
     ambient = _strbyte(sig);
     sig = _find_next_digit(sig);
     if (*sig == '\0') return Serial_error_argument;
-    lamp = _find_next_digit(sig);
+    lamp = _strbyte(sig);
     sig = _find_next_digit(sig);
     if (*sig == '\0') return Serial_error_argument;
     buzzer = _strbyte(sig);
