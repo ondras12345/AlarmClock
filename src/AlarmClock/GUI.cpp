@@ -173,7 +173,7 @@ void GUIClass::loop(DateTime __time)
                 Serial.print("enc_f_steps: ");
                 Serial.println(encoder_full_steps);
 #endif
-                _encoder->write(encoder_position - (encoder_full_steps * 4));
+                _encoder->write(encoder_position - (encoder_full_steps * encoder_step));
 
                 if (_cursor_clicked) {
                     // Handle encoder rotations that should change some values.
