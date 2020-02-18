@@ -41,7 +41,7 @@ void CountdownTimerClass::loop()
     }
 }
 
-void CountdownTimerClass::set_hardware(void(*lamp_)(boolean), void(*ambient_)(byte, byte, unsigned long), void(*buzzerTone_)(unsigned int, unsigned long), void(*buzzerNoTone_)())
+void CountdownTimerClass::set_hardware(void(*lamp_)(bool), void(*ambient_)(byte, byte, unsigned long), void(*buzzerTone_)(unsigned int, unsigned long), void(*buzzerNoTone_)())
 {
     lamp = lamp_;
     ambient = ambient_;

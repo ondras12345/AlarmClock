@@ -70,7 +70,7 @@ void AlarmClass::loop(DateTime time)
     }
 }
 
-void AlarmClass::set_hardware(void(*lamp_)(boolean),
+void AlarmClass::set_hardware(void(*lamp_)(bool),
                               PWMDimmerClass *ambientDimmer_,
                               void(*buzzerTone_)(unsigned int, unsigned long),
                               void(*buzzerNoTone_)(), void(*writeEEPROM_)())
@@ -125,7 +125,7 @@ AlarmClass::AlarmClass()
     inhibit = false;
 }
 
-boolean AlarmClass::readEEPROM(byte data[EEPROM_AlarmClass_record_length])
+bool AlarmClass::readEEPROM(byte data[EEPROM_AlarmClass_record_length])
 {
 #if defined(DEBUG) && defined(DEBUG_EEPROM_alarms)
     Serial.println();
@@ -192,31 +192,31 @@ byte * AlarmClass::writeEEPROM()
 }
 
 
-boolean AlarmClass::set_enabled(AlarmEnabled __enabled)
+bool AlarmClass::set_enabled(AlarmEnabled __enabled)
 {
     _enabled = __enabled;
     return true;
 }
 
-boolean AlarmClass::set_time(byte __hours, byte __minutes)
+bool AlarmClass::set_time(byte __hours, byte __minutes)
 {
     if (__hours > 23 || __minutes > 59) return false;
     _when = { __hours, __minutes };
     return true;
 }
 
-boolean AlarmClass::set_days_of_week(DaysOfWeekClass __days_of_week)
+bool AlarmClass::set_days_of_week(DaysOfWeekClass __days_of_week)
 {
     _days_of_week = __days_of_week;
     return true;
 }
 
-boolean AlarmClass::set_day_of_week(byte __day, boolean __status)
+bool AlarmClass::set_day_of_week(byte __day, bool __status)
 {
     return _days_of_week.setDayOfWeek(__day, __status);
 }
 
-boolean AlarmClass::set_snooze(byte __time_minutes, byte __count)
+bool AlarmClass::set_snooze(byte __time_minutes, byte __count)
 {
     if (__time_minutes > 99 || __count > 9) return false;
     _snooze.time_minutes = __time_minutes;
@@ -224,7 +224,7 @@ boolean AlarmClass::set_snooze(byte __time_minutes, byte __count)
     return true;
 }
 
-boolean AlarmClass::set_signalization(byte __ambient, boolean __lamp, boolean __buzzer)
+bool AlarmClass::set_signalization(byte __ambient, bool __lamp, bool __buzzer)
 {
     _signalization.ambient = __ambient;
     _signalization.lamp = __lamp;
@@ -232,7 +232,7 @@ boolean AlarmClass::set_signalization(byte __ambient, boolean __lamp, boolean __
     return true;
 }
 
-boolean AlarmClass::set_inhibit(boolean __inhibit)
+bool AlarmClass::set_inhibit(bool __inhibit)
 {
     inhibit = __inhibit;
     return true;

@@ -21,10 +21,10 @@ protected:
 
 public:
     byte DaysOfWeek;
-    boolean getDayOfWeek(byte num);
-    boolean getDayOfWeek_Adafruit(byte num);
-    boolean setDayOfWeek(byte num, boolean status);
-    boolean setDayOfWeek_Adafruit(byte num, boolean status);
+    bool getDayOfWeek(byte num);
+    bool getDayOfWeek_Adafruit(byte num);
+    bool setDayOfWeek(byte num, bool status);
+    bool setDayOfWeek_Adafruit(byte num, bool status);
 };
 
 #endif

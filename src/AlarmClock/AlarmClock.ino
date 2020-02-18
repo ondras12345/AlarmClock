@@ -50,15 +50,15 @@ enum SelfTest_level {
 
 // Function prototypes
 // Hardware
-void lamp(boolean status);
-boolean get_lamp();
+void lamp(bool status);
+bool get_lamp();
 void buzzerTone(unsigned int freq, unsigned long duration = 0); // specifies default duration=0
 //void buzzerNoTone();
 
 // Arduino IDE needs these before SerialCLI definition:
 void writeEEPROM();
-void set_inhibit(boolean status);
-boolean get_inhibit();
+void set_inhibit(bool status);
+bool get_inhibit();
 
 
 // Global variables
@@ -79,15 +79,15 @@ GUIClass GUI(alarms, writeEEPROM, &rtc, &encoder,
 
 unsigned long loop_rtc_previous_millis = 0;
 
-boolean inhibit = false;
+bool inhibit = false;
 unsigned long inhibit_previous_millis = 0;
 
-boolean lamp_status = false;
+bool lamp_status = false;
 
 #ifdef active_buzzer
 unsigned long active_buzzer_previous_millis = 0;
 unsigned long active_buzzer_duration = 0;
-boolean active_buzzer_status = false;
+bool active_buzzer_status = false;
 #endif
 
 
@@ -170,7 +170,7 @@ void init_hardware() {
 /*
 EEPROM
 */
-boolean readEEPROM() {
+bool readEEPROM() {
 #ifdef DEBUG
     Serial.print(F("EEPROM dump"));
     byte val;
@@ -190,7 +190,7 @@ boolean readEEPROM() {
 #endif // DEBUG
 
 
-    boolean error = false;
+    bool error = false;
     // basic config:
 
     // alarms:
@@ -246,7 +246,7 @@ void factory_reset() {
 /*
 LCD
 */
-boolean lcd_init() {
+bool lcd_init() {
     if (I2C_ping(I2C_LCD_address)) {
         lcd.init();
         lcd.backlight();
@@ -291,7 +291,7 @@ unsigned int SelfTest(SelfTest_level level) {
     return error;
 }
 
-boolean I2C_ping(byte addr) {
+bool I2C_ping(byte addr) {
     Wire.beginTransmission(addr);
     return (Wire.endTransmission() == 0);
 }
@@ -300,13 +300,13 @@ boolean I2C_ping(byte addr) {
 Hardware
 Included classes can control the hardware trough these functions
 */
-void lamp(boolean status)
+void lamp(bool status)
 {
     digitalWrite(pin_lamp, status);
     lamp_status = status;
 }
 
-boolean get_lamp() { return lamp_status; }
+bool get_lamp() { return lamp_status; }
 
 void buzzerTone(unsigned int freq, unsigned long duration)
 {
@@ -337,11 +337,11 @@ void buzzerNoTone()
 /*
 Utils
 */
-void set_inhibit(boolean status) {
+void set_inhibit(bool status) {
     inhibit_previous_millis = millis();
     inhibit = status;
     for (byte i = 0; i < alarms_count; i++) alarms[i].set_inhibit(status);
     if (status) DEBUG_println(F("inhibit enabled"));
     else DEBUG_println(F("inhibit disabled"));
 }
-boolean get_inhibit() { return inhibit; }
+bool get_inhibit() { return inhibit; }

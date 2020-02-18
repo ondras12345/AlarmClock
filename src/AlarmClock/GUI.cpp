@@ -1,6 +1,6 @@
 #include "GUI.h"
 
-void GUIClass::set_backlight(boolean status)
+void GUIClass::set_backlight(bool status)
 {
     _backlight = status;
     if (status) _lcd->backlight();
@@ -381,7 +381,7 @@ void GUIClass::loop(DateTime __time)
 }
 
 byte GUIClass::_apply_limits(byte value, int step, byte limit_low,
-                             byte limit_high, boolean loop)
+                             byte limit_high, bool loop)
 {
     // Byte cannot be lower than 0, so I have to check before adding step to
     // the value to be able to detect limit_low
@@ -500,9 +500,9 @@ void GUIClass::_update()
 GUIClass::GUIClass(AlarmClass *__alarms, void(*__writeEEPROM)(),
         RTC_DS3231 * __rtc, Encoder * __encoder, Bounce * __encoder_button,
         LiquidCrystal_I2C *__lcd,
-        void(*__set_inhibit)(boolean), boolean(*__get_inhibit)(),
-        PWMDimmerClass *__ambientDimmer, void(*__lamp)(boolean),
-        boolean(*__get_lamp)())
+        void(*__set_inhibit)(bool), bool(*__get_inhibit)(),
+        PWMDimmerClass *__ambientDimmer, void(*__lamp)(bool),
+        bool(*__get_lamp)())
 {
     _alarms = __alarms;
     _writeEEPROM = __writeEEPROM;

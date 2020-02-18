@@ -42,8 +42,8 @@ struct hours_minutes {
 
 struct Signalization {
     byte ambient; // ambient light - dimmable LED strips
-    boolean lamp;
-    boolean buzzer;
+    bool lamp;
+    bool buzzer;
 };
 
 
@@ -56,9 +56,9 @@ protected:
     DateTime last_alarm; // needed in case the alarm gets canceled during the same minute it started
     byte current_snooze_count; // bit 6 - currently in snooze; bit 5 - currently beeping; bit 0,1,2,3 - actual value (max 9)
     unsigned long previous_millis;
-    boolean inhibit;
+    bool inhibit;
 
-    void(*lamp)(boolean);
+    void(*lamp)(bool);
     PWMDimmerClass *ambientDimmer;
     void(*buzzerTone)(unsigned int, unsigned long); // freq, duration
     void(*buzzerNoTone)();
@@ -81,27 +81,27 @@ protected:
     };
 
     // currently in snooze
-    boolean get_current_snooze_status() const { return current_snooze_count & AlarmClass_current_snooze_count_snooze_mask; };
+    bool get_current_snooze_status() const { return current_snooze_count & AlarmClass_current_snooze_count_snooze_mask; };
 
     // set the snooze bit
-    void set_current_snooze_status(boolean bitvalue) { bitWrite(current_snooze_count, AlarmClass_current_snooze_count_snooze_bit, bitvalue); };
+    void set_current_snooze_status(bool bitvalue) { bitWrite(current_snooze_count, AlarmClass_current_snooze_count_snooze_bit, bitvalue); };
 
     // currently beeping (for inversing buzzer)
-    boolean get_current_beeping_status() const { return current_snooze_count & AlarmClass_current_snooze_count_beeping_mask; };
+    bool get_current_beeping_status() const { return current_snooze_count & AlarmClass_current_snooze_count_beeping_mask; };
 
     // set the beeping bit (for inversing buzzer)
-    void set_current_beeping_status(boolean bitvalue) { bitWrite(current_snooze_count, AlarmClass_current_snooze_count_beeping_bit, bitvalue); };
+    void set_current_beeping_status(bool bitvalue) { bitWrite(current_snooze_count, AlarmClass_current_snooze_count_beeping_bit, bitvalue); };
 
     // true --> alarm is on (ringing or snooze)
-    boolean get_active() const { return current_snooze_count < AlarmClass_current_snooze_count_none; };
+    bool get_active() const { return current_snooze_count < AlarmClass_current_snooze_count_none; };
 
 
 public:
-    boolean readEEPROM(byte data[EEPROM_AlarmClass_record_length]);
+    bool readEEPROM(byte data[EEPROM_AlarmClass_record_length]);
     byte * writeEEPROM();
 
     void loop(DateTime time);
-    void set_hardware(void(*lamp)(boolean),
+    void set_hardware(void(*lamp)(bool),
                       PWMDimmerClass *ambientDimmer,
                       void(*buzzerTone)(unsigned int, unsigned long),
                       void(*buzzerNoTone)(), void(*writeEEPROM)());
@@ -110,25 +110,25 @@ public:
     AlarmClass();
 
 
-    boolean set_enabled(AlarmEnabled __enabled);
+    bool set_enabled(AlarmEnabled __enabled);
     AlarmEnabled get_enabled() { return _enabled; };
 
-    boolean set_time(byte __hours, byte __minutes);
+    bool set_time(byte __hours, byte __minutes);
     hours_minutes get_time() { return _when; };
 
-    boolean set_days_of_week(DaysOfWeekClass __days_of_week);
-    boolean set_day_of_week(byte __day, boolean __status);
+    bool set_days_of_week(DaysOfWeekClass __days_of_week);
+    bool set_day_of_week(byte __day, bool __status);
     DaysOfWeekClass get_days_of_week() { return _days_of_week; };
-    boolean get_day_of_week(byte __day) { return _days_of_week.getDayOfWeek(__day); }
+    bool get_day_of_week(byte __day) { return _days_of_week.getDayOfWeek(__day); }
 
-    boolean set_snooze(byte __time_minutes, byte __count);
+    bool set_snooze(byte __time_minutes, byte __count);
     Snooze get_snooze() { return _snooze; };
 
-    boolean set_signalization(byte __ambient, boolean __lamp, boolean __buzzer);
+    bool set_signalization(byte __ambient, bool __lamp, bool __buzzer);
     Signalization get_signalization() { return _signalization; };
 
-    boolean get_inhibit() { return inhibit; };
-    boolean set_inhibit(boolean __inhibit);
+    bool get_inhibit() { return inhibit; };
+    bool set_inhibit(bool __inhibit);
 };
 
 

@@ -3,7 +3,7 @@
 void SerialCLIClass::loop(DateTime __time)
 {
     _now = __time;
-    boolean complete_message = false;
+    bool complete_message = false;
 
     while (Serial.available() && !complete_message) {
         // !complete_message - this prevents the _Serial_buffer being rewritten
@@ -151,9 +151,9 @@ void SerialCLIClass::loop(DateTime __time)
 SerialCLIClass::SerialCLIClass(AlarmClass *__alarms, void(*__writeEEPROM)(),
                                RTC_DS3231 *__rtc,
                                PWMDimmerClass * __ambientDimmer,
-                               void(*__lamp)(boolean), boolean(*__get_lamp)(),
-                               void(*__set_inhibit)(boolean),
-                               boolean(*__get_inhibit)())
+                               void(*__lamp)(bool), bool(*__get_lamp)(),
+                               void(*__set_inhibit)(bool),
+                               bool(*__get_inhibit)())
 {
     _alarms = __alarms;
     _writeEEPROM = __writeEEPROM;
@@ -414,7 +414,7 @@ SerialCLIClass::error_t SerialCLIClass::_set_day_of_week(char *dow)
     if (_selected_alarm_index == _selected_alarm_index_none) return Serial_error_select;
 
     byte day;
-    boolean status;
+    bool status;
     dow = _find_next_digit(dow);
     if (*dow == '\0') return Serial_error_argument;
     day = _strbyte(dow);
@@ -454,7 +454,7 @@ SerialCLIClass::error_t SerialCLIClass::_set_signalization(char * sig)
     if (_selected_alarm_index == _selected_alarm_index_none) return Serial_error_select;
 
     byte ambient;
-    boolean lamp, buzzer;
+    bool lamp, buzzer;
 
     sig = _find_next_digit(sig);
     if (*sig == '\0') return Serial_error_argument;

@@ -24,16 +24,16 @@ protected:
     RTC_DS3231 *_rtc;
     void(*_writeEEPROM)();
     PWMDimmerClass * _ambientDimmer;
-    void(*_lamp)(boolean);
-    boolean(*_get_lamp)();
-    void(*_set_inhibit)(boolean);
-    boolean(*_get_inhibit)();
+    void(*_lamp)(bool);
+    bool(*_get_lamp)();
+    void(*_set_inhibit)(bool);
+    bool(*_get_inhibit)();
 
     const char _prompt_default[2 + 1] = "> ";
     char _Serial_buffer[Serial_buffer_length + 1]; // +1 for termination
     byte _Serial_buffer_index;
     char _prompt[Serial_prompt_length + 1];
-    boolean _change = false; // for save
+    bool _change = false; // for save
     unsigned long _previous_command_millis = 0; // for autosave
 
     const byte _selected_alarm_index_none = 255;
@@ -68,9 +68,9 @@ protected:
 public:
     void loop(DateTime time);
     SerialCLIClass(AlarmClass *alarms, void(*writeEEPROM)(), RTC_DS3231 *rtc,
-                   PWMDimmerClass *ambientDimmer, void(*lamp)(boolean),
-                   boolean(*get_lamp)(), void(*set_inhibit)(boolean),
-                   boolean(*get_inhibit)());
+                   PWMDimmerClass *ambientDimmer, void(*lamp)(bool),
+                   bool(*get_lamp)(), void(*set_inhibit)(bool),
+                   bool(*get_inhibit)());
 };
 
 #endif

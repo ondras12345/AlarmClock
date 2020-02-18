@@ -15,14 +15,14 @@
 struct TimedEvents {
     // the status after the timer times out - timers can be used for both turning off and on
     byte ambient;
-    boolean lamp;
-    boolean buzzer;
+    bool lamp;
+    bool buzzer;
 };
 
 class CountdownTimerClass
 {
 protected:
-    void(*lamp)(boolean);
+    void(*lamp)(bool);
     void(*ambient)(byte, byte, unsigned long);
     void(*buzzerTone)(unsigned int, unsigned long); // freq, duration
     void(*buzzerNoTone)();
@@ -30,15 +30,15 @@ protected:
 public:
     unsigned long previous_millis;
     unsigned int time_left; // in seconds - max >18 hours
-    boolean running;
-    boolean beeping;
+    bool running;
+    bool beeping;
 
     TimedEvents events;
     void start();
     void stop();
     void loop();
 
-    void set_hardware(void(*lamp_)(boolean), void(*ambient_)(byte, byte, unsigned long), void(*buzzerTone_)(unsigned int, unsigned long), void(*buzzerNoTone_)());
+    void set_hardware(void(*lamp_)(bool), void(*ambient_)(byte, byte, unsigned long), void(*buzzerTone_)(unsigned int, unsigned long), void(*buzzerNoTone_)());
 
     CountdownTimerClass();
 
