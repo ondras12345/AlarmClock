@@ -28,7 +28,7 @@ protected:
     void(*buzzerNoTone)();
 
 public:
-    unsigned long previous_millis;
+    unsigned long prev_millis;
     unsigned int time_left; // in seconds - max >18 hours
     bool running;
     bool beeping;

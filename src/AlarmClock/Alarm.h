@@ -55,7 +55,7 @@ protected:
     // not saved in EEPROM:
     DateTime last_alarm; // needed in case the alarm gets canceled during the same minute it started
     byte current_snooze_count; // bit 6 - currently in snooze; bit 5 - currently beeping; bit 0,1,2,3 - actual value (max 9)
-    unsigned long previous_millis;
+    unsigned long prev_millis;
     bool inhibit;
 
     void(*lamp)(bool);

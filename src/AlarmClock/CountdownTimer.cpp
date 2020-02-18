@@ -1,12 +1,8 @@
-// 
-// 
-// 
-
 #include "CountdownTimer.h"
 
 void CountdownTimerClass::start()
 {
-    previous_millis = millis();
+    prev_millis = millis();
     running = true;
 }
 
@@ -19,7 +15,7 @@ void CountdownTimerClass::stop()
 
 void CountdownTimerClass::loop()
 {
-    if ((unsigned long)(millis() - previous_millis) >= 1000 && time_left > 0) {
+    if ((unsigned long)(millis() - prev_millis) >= 1000 && time_left > 0) {
         time_left--; // subtract 1 second
         if (time_left == 0) {
             // Do events - can either switch on or off
@@ -28,15 +24,15 @@ void CountdownTimerClass::loop()
             lamp(events.lamp);
             beeping = false;
         }
-        else previous_millis += 1000;
+        else prev_millis += 1000;
     }
 
     if (time_left == 0 && running && events.buzzer) { // buzzer
-        if ((unsigned long)(millis() - previous_millis) >= CountdownTimer_period) {
+        if ((unsigned long)(millis() - prev_millis) >= CountdownTimer_period) {
             if (beeping) buzzerNoTone();
             else buzzerTone(CountdownTimer_frequency, 0);
             beeping = !beeping;
-            previous_millis = millis();
+            prev_millis = millis();
         }
     }
 }

@@ -18,13 +18,13 @@ void GUIClass::loop(DateTime __time)
     LCD Backlight
     */
     if (_backlight &&
-        (unsigned long)(millis() - _backlight_previous_millis) >= GUI_backlight_timeout)
+        (unsigned long)(millis() - _backlight_prev_millis) >= GUI_backlight_timeout)
     {
         set_backlight(false);
     }
 
     if (_encoder_button->fell() || abs(_encoder->read()) >= encoder_step) {
-        _backlight_previous_millis = millis();
+        _backlight_prev_millis = millis();
         if (!_backlight) {
             set_backlight(true);
             _encoder->write(_encoder->read() % encoder_step);
@@ -168,7 +168,7 @@ void GUIClass::loop(DateTime __time)
             */
             int encoder_position = _encoder->read();
             if (abs(encoder_position) >= encoder_step) {
-                _encoder_previous_millis = millis();
+                _encoder_prev_millis = millis();
                 int encoder_full_steps = encoder_position / encoder_step;
 #if defined(DEBUG) && defined(DEBUG_encoder)
                 Serial.print(F("enc_pos: "));
@@ -364,18 +364,18 @@ void GUIClass::loop(DateTime __time)
         }
     }
     // Encoder missed microsteps correction
-    else if ((unsigned long)(millis() - _encoder_previous_millis) >=
+    else if ((unsigned long)(millis() - _encoder_prev_millis) >=
              encoder_reset_interval)
     {
         _encoder->write(0);
-        _encoder_previous_millis = millis();
+        _encoder_prev_millis = millis();
     }
 
-    if ((unsigned long)(millis() - _update_previous_millis) >=
+    if ((unsigned long)(millis() - _update_prev_millis) >=
         GUI_update_interval &&
         _now.second() % 10 == 0)
     {
-        _update_previous_millis = millis();
+        _update_prev_millis = millis();
         _update();
     }
 }

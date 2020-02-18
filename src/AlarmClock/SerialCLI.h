@@ -34,7 +34,7 @@ protected:
     byte _Serial_buffer_index;
     char _prompt[Serial_prompt_length + 1];
     bool _change = false; // for save
-    unsigned long _previous_command_millis = 0; // for autosave
+    unsigned long _prev_command_millis = 0; // for autosave
 
     const byte _selected_alarm_index_none = 255;
     byte _selected_alarm_index = _selected_alarm_index_none;

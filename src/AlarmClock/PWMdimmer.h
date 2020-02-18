@@ -15,7 +15,7 @@
 class PWMDimmerClass
 {
  protected:
-     unsigned long _previousChangeMillis = 0;
+     unsigned long _prev_change_millis = 0;
      byte _pin;
      int _value; // int because of overflows
 

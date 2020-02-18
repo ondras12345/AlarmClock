@@ -9,7 +9,7 @@ void AlarmClass::loop(DateTime time)
 {
     if (get_active()) { // alarm is already active
         if (get_current_snooze_status()) { // alarm is NOT ringing (snooze)
-            if ((unsigned long)(millis() - previous_millis) >= (_snooze.time_minutes * 60000UL)) {
+            if ((unsigned long)(millis() - prev_millis) >= (_snooze.time_minutes * 60000UL)) {
                 set_current_snooze_status(false);
                 if (_signalization.lamp) lamp(true);
                 DEBUG_println(F("Alarm waking from snooze"));
@@ -21,8 +21,8 @@ void AlarmClass::loop(DateTime time)
             unsigned long period = (get_current_snooze_count() == 0) ? Alarm_last_ringing_period : Alarm_regular_ringing_period;
             unsigned int frequency = (get_current_snooze_count() == 0) ? Alarm_last_ringing_frequency : Alarm_regular_ringing_frequency;
 
-            if ((unsigned long)(millis() - previous_millis) >= period) { // inverse buzzer
-                previous_millis = millis();
+            if ((unsigned long)(millis() - prev_millis) >= period) { // invert buzzer
+                prev_millis = millis();
                 if (get_current_beeping_status()) buzzerNoTone();
                 else buzzerTone(frequency, 0);
                 set_current_beeping_status(!get_current_beeping_status());
@@ -89,7 +89,7 @@ void AlarmClass::button_snooze()
         if (get_current_snooze_count() >= 1) {
             set_current_snooze_status(true);
             set_current_snooze_count(get_current_snooze_count() - 1);
-            previous_millis = millis();
+            prev_millis = millis();
 
             // not changing ambient
             lamp(false);

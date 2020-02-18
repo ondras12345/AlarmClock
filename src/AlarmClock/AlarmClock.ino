@@ -77,15 +77,15 @@ GUIClass GUI(alarms, writeEEPROM, &rtc, &encoder,
              &ambientDimmer, lamp, get_lamp);
 
 
-unsigned long loop_rtc_previous_millis = 0;
+unsigned long loop_rtc_prev_millis = 0;
 
 bool inhibit = false;
-unsigned long inhibit_previous_millis = 0;
+unsigned long inhibit_prev_millis = 0;
 
 bool lamp_status = false;
 
 #ifdef active_buzzer
-unsigned long active_buzzer_previous_millis = 0;
+unsigned long active_buzzer_prev_millis = 0;
 unsigned long active_buzzer_duration = 0;
 bool active_buzzer_status = false;
 #endif
@@ -125,9 +125,9 @@ void setup() {
 }
 
 void loop() {
-    if ((unsigned long)(millis() - loop_rtc_previous_millis) >= 800UL) {
+    if ((unsigned long)(millis() - loop_rtc_prev_millis) >= 800UL) {
         now = rtc.now(); // # TODO + summer_time
-        loop_rtc_previous_millis = millis();
+        loop_rtc_prev_millis = millis();
     }
     CLI.loop(now);
     GUI.loop(now);
@@ -145,14 +145,14 @@ void loop() {
         for (byte i = 0; i < alarms_count; i++) alarms[i].button_stop();
         DEBUG_println(F("stop pressed"));
     }
-    if (inhibit && (unsigned long)(millis() - inhibit_previous_millis) >= Alarm_inhibit_duration) {
+    if (inhibit && (unsigned long)(millis() - inhibit_prev_millis) >= Alarm_inhibit_duration) {
         set_inhibit(false);
     }
 
     // active buzzer
 #ifdef active_buzzer
     if (active_buzzer_status && active_buzzer_duration > 0 &&
-        (unsigned long)(millis() - active_buzzer_previous_millis) >= active_buzzer_duration) {
+        (unsigned long)(millis() - active_buzzer_prev_millis) >= active_buzzer_duration) {
         buzzerNoTone();
     }
 #endif
@@ -313,7 +313,7 @@ void buzzerTone(unsigned int freq, unsigned long duration)
     // default value duration=0 specified in prototype
 #ifdef active_buzzer
     active_buzzer_duration = duration;
-    active_buzzer_previous_millis = millis();
+    active_buzzer_prev_millis = millis();
     active_buzzer_status = true;
     digitalWrite(pin_buzzer, HIGH);
 
@@ -338,7 +338,7 @@ void buzzerNoTone()
 Utils
 */
 void set_inhibit(bool status) {
-    inhibit_previous_millis = millis();
+    inhibit_prev_millis = millis();
     inhibit = status;
     for (byte i = 0; i < alarms_count; i++) alarms[i].set_inhibit(status);
     if (status) DEBUG_println(F("inhibit enabled"));

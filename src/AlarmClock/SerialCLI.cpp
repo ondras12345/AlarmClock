@@ -133,7 +133,7 @@ void SerialCLIClass::loop(DateTime __time)
             _print_help();
         }
 
-        _previous_command_millis = millis();
+        _prev_command_millis = millis();
 
         // Prompt will be missing after reboot, but this can't be easily fixed.
         Serial.println();
@@ -141,7 +141,7 @@ void SerialCLIClass::loop(DateTime __time)
     }
 
     // autosave
-    if ((unsigned long)(millis() - _previous_command_millis) >= Serial_autosave_interval && _change) {
+    if ((unsigned long)(millis() - _prev_command_millis) >= Serial_autosave_interval && _change) {
         Serial.println();
         Serial.println(F("Autosaving"));
         _print_error(_save());

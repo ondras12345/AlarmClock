@@ -93,10 +93,10 @@ class GUIClass
      AlarmClass *_selected_alarm;  // set when switching alarms
      Screen _current_screen = screen_home;
      DateTime _RTC_set;
-     unsigned long _update_previous_millis = 0;
+     unsigned long _update_prev_millis = 0;
      bool _backlight = true;  // LCD backlight is turned on in setup()
-     unsigned long _backlight_previous_millis = 0;
-     unsigned long _encoder_previous_millis = 0;
+     unsigned long _backlight_prev_millis = 0;
+     unsigned long _encoder_prev_millis = 0;
      // It is faster and causes less flicker if you send the LCD complete
      // lines instead of multiple pieces.
      char _line_buffer[LCD_width + 1];  // +1 for null termination
