@@ -9,7 +9,7 @@
 #include "WProgram.h"
 #endif
 
-#define CountdownTimer_frequency 3000 // in Hz
+#define CountdownTimer_freq 3000 // in Hz
 #define CountdownTimer_period 1000 // in ms
 
 struct TimedEvents {

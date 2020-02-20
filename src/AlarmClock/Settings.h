@@ -43,14 +43,14 @@ Alarms
 // Buzzer tone frequency (regular ringing)
 // This setting has no effect if active_buzzer mode is enabled
 // default: 1000
-#define Alarm_regular_ringing_frequency 1000 // Hz
+#define Alarm_regular_ringing_freq 1000 // Hz
 
 // Buzzer on (and off) time (regular ringing)
 // default: 500
 #define Alarm_regular_ringing_period 500 // ms
 
 // default: 2000
-#define Alarm_last_ringing_frequency 2000 // Hz
+#define Alarm_last_ringing_freq 2000 // Hz
 
 // default: 250
 #define Alarm_last_ringing_period 250 // ms

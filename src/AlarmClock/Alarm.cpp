@@ -15,12 +15,12 @@ void AlarmClass::loop(DateTime time)
         else if (_signalization.buzzer) { // alarm is ringing
             // select either the regular or last ringing parameters
             unsigned long period = (get_current_snooze_count() == 0) ? Alarm_last_ringing_period : Alarm_regular_ringing_period;
-            unsigned int frequency = (get_current_snooze_count() == 0) ? Alarm_last_ringing_frequency : Alarm_regular_ringing_frequency;
+            unsigned int freq = (get_current_snooze_count() == 0) ? Alarm_last_ringing_freq : Alarm_regular_ringing_freq;
 
             if ((unsigned long)(millis() - prev_millis) >= period) { // invert buzzer
                 prev_millis = millis();
                 if (get_current_beeping_status()) buzzerNoTone();
-                else buzzerTone(frequency, 0);
+                else buzzerTone(freq, 0);
                 set_current_beeping_status(!get_current_beeping_status());
             }
         }
@@ -44,7 +44,7 @@ void AlarmClass::loop(DateTime time)
                     set_current_snooze_status(false);
 
                     // safety feature - in case ambientDimmer got stuck:
-                    if (_signalization.buzzer) buzzerTone(Alarm_regular_ringing_frequency, 0);
+                    if (_signalization.buzzer) buzzerTone(Alarm_regular_ringing_freq, 0);
 
                     // Do events - can only switch on
                     ambientDimmer->set_from_duration(

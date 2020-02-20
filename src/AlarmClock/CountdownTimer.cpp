@@ -30,7 +30,7 @@ void CountdownTimerClass::loop()
     if (time_left == 0 && running && events.buzzer) { // buzzer
         if ((unsigned long)(millis() - prev_millis) >= CountdownTimer_period) {
             if (beeping) buzzerNoTone();
-            else buzzerTone(CountdownTimer_frequency, 0);
+            else buzzerTone(CountdownTimer_freq, 0);
             beeping = !beeping;
             prev_millis = millis();
         }
