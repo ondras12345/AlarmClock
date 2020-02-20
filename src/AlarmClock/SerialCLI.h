@@ -55,7 +55,7 @@ protected:
     error_t _set_inh(char *status);
     error_t _select_alarm(byte index);
     error_t _list_selected_alarm();
-    error_t _set_enabled(AlarmEnabled __en);
+    error_t _set_enabled(AlarmEnabled status);
     error_t _set_time(char *time);
     error_t _set_day_of_week(char *dow);
     error_t _set_snooze(char *snooze);

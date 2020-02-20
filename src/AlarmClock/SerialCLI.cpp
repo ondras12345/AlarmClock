@@ -380,11 +380,11 @@ SerialCLIClass::error_t SerialCLIClass::_list_selected_alarm()
     return 0;
 }
 
-SerialCLIClass::error_t SerialCLIClass::_set_enabled(AlarmEnabled __en)
+SerialCLIClass::error_t SerialCLIClass::_set_enabled(AlarmEnabled status)
 {
     if (_selected_alarm_index == _selected_alarm_index_none) return Serial_error_select;
 
-    (_alarms + _selected_alarm_index)->set_enabled(__en);
+    (_alarms + _selected_alarm_index)->set_enabled(status);
 
     _change = true;
     return 0;

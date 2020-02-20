@@ -110,25 +110,25 @@ public:
     AlarmClass();
 
 
-    bool set_enabled(AlarmEnabled __enabled);
+    bool set_enabled(AlarmEnabled enabled);
     AlarmEnabled get_enabled() { return _enabled; };
 
-    bool set_time(byte __hours, byte __minutes);
+    bool set_time(byte hours, byte minutes);
     hours_minutes get_time() { return _when; };
 
-    bool set_days_of_week(DaysOfWeekClass __days_of_week);
-    bool set_day_of_week(byte __day, bool __status);
+    bool set_days_of_week(DaysOfWeekClass days_of_week);
+    bool set_day_of_week(byte day, bool status);
     DaysOfWeekClass get_days_of_week() { return _days_of_week; };
-    bool get_day_of_week(byte __day) { return _days_of_week.getDayOfWeek(__day); }
+    bool get_day_of_week(byte day) { return _days_of_week.getDayOfWeek(day); }
 
-    bool set_snooze(byte __time_minutes, byte __count);
+    bool set_snooze(byte time_minutes, byte count);
     Snooze get_snooze() { return _snooze; };
 
-    bool set_signalization(byte __ambient, bool __lamp, bool __buzzer);
+    bool set_signalization(byte ambient, bool lamp, bool buzzer);
     Signalization get_signalization() { return _signalization; };
 
     bool get_inhibit() { return inhibit; };
-    bool set_inhibit(bool __inhibit);
+    bool set_inhibit(bool inhibit);
 };
 
 
