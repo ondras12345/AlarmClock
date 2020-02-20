@@ -81,7 +81,7 @@ void GUIClass::loop(DateTime __time)
 
                     case screen_alarms:
                     {
-                        Signalization prev_sig = _selected_alarm->get_signalization();
+                        Signalization prev_sig = _sel_alarm->get_signalization();
 
                         switch (_cursor_position) {
                         case cpa_home_button:
@@ -109,23 +109,23 @@ void GUIClass::loop(DateTime __time)
                             // declared within a case
                         {
                             byte day = (_cursor_position - cpa_alarm_day_1) + 1;
-                            _selected_alarm->set_day_of_week(day,
-                                !_selected_alarm->get_day_of_week(day));
+                            _sel_alarm->set_day_of_week(day,
+                                !_sel_alarm->get_day_of_week(day));
                         }
                             break;
 
                         //case cpa_alarm_sig_a: // multiple steps --> encoder
 
                         case cpa_alarm_sig_l:
-                            _selected_alarm->set_signalization(prev_sig.ambient,
-                                                               !prev_sig.lamp,
-                                                               prev_sig.buzzer);
+                            _sel_alarm->set_signalization(prev_sig.ambient,
+                                                          !prev_sig.lamp,
+                                                          prev_sig.buzzer);
                             break;
 
                         case cpa_alarm_sig_b:
-                            _selected_alarm->set_signalization(prev_sig.ambient,
-                                                               prev_sig.lamp,
-                                                               !prev_sig.buzzer);
+                            _sel_alarm->set_signalization(prev_sig.ambient,
+                                                          prev_sig.lamp,
+                                                          !prev_sig.buzzer);
                             break;
 
                         default:
@@ -200,66 +200,68 @@ void GUIClass::loop(DateTime __time)
                     case screen_alarms:
                         switch (_cursor_position) {
                         case cpa_alarm_index:
-                            _selected_alarm_index = _apply_limits(
-                                _selected_alarm_index, encoder_full_steps, 0,
+                            _sel_alarm_index = _apply_limits(
+                                _sel_alarm_index, encoder_full_steps, 0,
                                 alarms_count - 1, encoder_loop_alarm);
-                            _selected_alarm = (_alarms + _selected_alarm_index);
+                            _sel_alarm = (_alarms + _sel_alarm_index);
                             break;
 
                         case cpa_alarm_enabled:
                         {
-                            AlarmEnabled enabled = _selected_alarm->get_enabled();
+                            AlarmEnabled enabled = _sel_alarm->get_enabled();
                             enabled = AlarmEnabled(_apply_limits(enabled,
                                 encoder_full_steps, 0, 2));
-                            _selected_alarm->set_enabled(enabled);
+                            _sel_alarm->set_enabled(enabled);
                         }
                             break;
 
                         case cpa_alarm_time_h:
                         {
-                            hours_minutes time = _selected_alarm->get_time();
+                            hours_minutes time = _sel_alarm->get_time();
                             time.hours = _apply_limits(time.hours, encoder_full_steps,
                                                        0, 23, encoder_loop_time);
-                            _selected_alarm->set_time(time.hours, time.minutes);
+                            _sel_alarm->set_time(time.hours, time.minutes);
                         }
                             break;
 
                         case cpa_alarm_time_m:
                         {
-                            hours_minutes time = _selected_alarm->get_time();
+                            hours_minutes time = _sel_alarm->get_time();
                             time.minutes = _apply_limits(time.minutes,
                                                          encoder_full_steps,
                                                          0, 59, encoder_loop_time);
-                            _selected_alarm->set_time(time.hours, time.minutes);
+                            _sel_alarm->set_time(time.hours, time.minutes);
                         }
                             break;
 
                         case cpa_alarm_snz_time:
                         {
-                            Snooze snooze = _selected_alarm->get_snooze();
+                            Snooze snooze = _sel_alarm->get_snooze();
                             snooze.time_minutes = _apply_limits(snooze.time_minutes,
                                 encoder_full_steps, 0, 99, encoder_loop_snooze);
-                            _selected_alarm->set_snooze(snooze.time_minutes, snooze.count);
+                            _sel_alarm->set_snooze(snooze.time_minutes,
+                                                   snooze.count);
                         }
                             break;
 
                         case cpa_alarm_snz_count:
                         {
-                            Snooze snooze = _selected_alarm->get_snooze();
+                            Snooze snooze = _sel_alarm->get_snooze();
                             snooze.count = _apply_limits(snooze.count,
                                 encoder_full_steps, 0, 9);
-                            _selected_alarm->set_snooze(snooze.time_minutes, snooze.count);
+                            _sel_alarm->set_snooze(snooze.time_minutes,
+                                                   snooze.count);
                         }
                             break;
 
                         case cpa_alarm_sig_a:
                         {
-                            Signalization prev_sig = _selected_alarm->get_signalization();
+                            Signalization prev_sig = _sel_alarm->get_signalization();
                             prev_sig.ambient = _apply_limits(prev_sig.ambient,
                                 encoder_full_steps * 10, 0, 255, encoder_loop_ambient);
-                            _selected_alarm->set_signalization(prev_sig.ambient,
-                                                               prev_sig.lamp,
-                                                               prev_sig.buzzer);
+                            _sel_alarm->set_signalization(prev_sig.ambient,
+                                                          prev_sig.lamp,
+                                                          prev_sig.buzzer);
                         }
                             break;
 
@@ -436,13 +438,13 @@ void GUIClass::_update()
         char days_of_week[8] = "";  // 7 + \0
         days_of_week[7] = '\0';
         for (byte i = 1; i <= 7; i++) {
-            if (_selected_alarm->get_days_of_week().getDayOfWeek(i))
+            if (_sel_alarm->get_days_of_week().getDayOfWeek(i))
                 days_of_week[i - 1] = char('0' + i);
             else days_of_week[i - 1] = ' ';
         }
 
         char enabled[4] = "";
-        switch (_selected_alarm->get_enabled()) {
+        switch (_sel_alarm->get_enabled()) {
         case Off:
             strcpy(enabled, "Off");
             break;
@@ -457,19 +459,19 @@ void GUIClass::_update()
         }
 
         sprintf(_line_buffer, "%c%d/%d %s %s",
-                char(LCD_char_home_index), _selected_alarm_index + 1, alarms_count,
+                char(LCD_char_home_index), _sel_alarm_index + 1, alarms_count,
                 days_of_week, enabled );
         _lcd->print(_line_buffer);
 
         _lcd->setCursor(0, 1);
         sprintf(_line_buffer, "%02d:%02d+%02d*%d  %02d%c%c",
-                _selected_alarm->get_time().hours,
-                _selected_alarm->get_time().minutes,
-                _selected_alarm->get_snooze().time_minutes,
-                _selected_alarm->get_snooze().count,
-                _selected_alarm->get_signalization().ambient / 10,
-                _selected_alarm->get_signalization().lamp ? 'L' : 'l',
-                _selected_alarm->get_signalization().buzzer ? 'B' : 'b' );
+                _sel_alarm->get_time().hours,
+                _sel_alarm->get_time().minutes,
+                _sel_alarm->get_snooze().time_minutes,
+                _sel_alarm->get_snooze().count,
+                _sel_alarm->get_signalization().ambient / 10,
+                _sel_alarm->get_signalization().lamp ? 'L' : 'l',
+                _sel_alarm->get_signalization().buzzer ? 'B' : 'b' );
         _lcd->print(_line_buffer);
     }
         break;
@@ -518,5 +520,5 @@ GUIClass::GUIClass(AlarmClass *__alarms, void(*__writeEEPROM)(),
 
     // First alarm. I can't initialize it in the header because the compiler
     // doesn't know the address yet.
-    _selected_alarm = _alarms;
+    _sel_alarm = _alarms;
 }

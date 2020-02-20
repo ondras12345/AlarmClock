@@ -89,8 +89,8 @@ class GUIClass
      void(*_lamp)(bool);
      bool(*_get_lamp)();
 
-     byte _selected_alarm_index = 0;
-     AlarmClass *_selected_alarm;  // set when switching alarms
+     byte _sel_alarm_index = 0;
+     AlarmClass *_sel_alarm;  // set when switching alarms
      Screen _current_screen = screen_home;
      DateTime _RTC_set;
      unsigned long _update_prev_millis = 0;

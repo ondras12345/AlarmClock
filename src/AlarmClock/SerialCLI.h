@@ -36,8 +36,8 @@ protected:
     bool _change = false; // for save
     unsigned long _prev_command_millis = 0; // for autosave
 
-    const byte _selected_alarm_index_none = 255;
-    byte _selected_alarm_index = _selected_alarm_index_none;
+    const byte _sel_alarm_index_none = 255;
+    byte _sel_alarm_index = _sel_alarm_index_none;
 
 
     // utils
