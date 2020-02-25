@@ -121,19 +121,19 @@ AlarmClass::AlarmClass()
     inhibit = false;
 }
 
-bool AlarmClass::readEEPROM(byte data[EEPROM_AlarmClass_record_length])
+bool AlarmClass::readEEPROM(byte data[EEPROM_AlarmClass_length])
 {
 #if defined(DEBUG) && defined(DEBUG_EEPROM_alarms)
     Serial.println();
     Serial.println(F("EEPROM alarm read:"));
-    for (byte i = 0; i < EEPROM_AlarmClass_record_length; i++) {
+    for (byte i = 0; i < EEPROM_AlarmClass_length; i++) {
         Serial.print(data[i], HEX);
         Serial.print(' ');
     }
     Serial.println();
 #endif // DEBUG
 
-    if (data[0] != EEPROM_alarms_identificator) return false;
+    if (data[0] != EEPROM_alarms_id) return false;
 
     _when.hours = data[1];
     _when.minutes = data[2];
@@ -163,7 +163,7 @@ bool AlarmClass::readEEPROM(byte data[EEPROM_AlarmClass_record_length])
 
 byte * AlarmClass::writeEEPROM()
 {
-    _EEPROM_data[0] = EEPROM_alarms_identificator;
+    _EEPROM_data[0] = EEPROM_alarms_id;
 
     _EEPROM_data[1] = _when.hours;
     _EEPROM_data[2] = _when.minutes;
@@ -177,7 +177,7 @@ byte * AlarmClass::writeEEPROM()
 
 #if defined(DEBUG) && defined(DEBUG_EEPROM_alarms)
     Serial.println(F("EEPROM alarm write:"));
-    for (byte i = 0; i < EEPROM_AlarmClass_record_length; i++) {
+    for (byte i = 0; i < EEPROM_AlarmClass_length; i++) {
         Serial.print(_EEPROM_data[i], HEX);
         Serial.print(' ');
     }

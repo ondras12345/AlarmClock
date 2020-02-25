@@ -195,9 +195,9 @@ bool readEEPROM() {
 
     // alarms:
     for (byte i = 0; i < alarms_count && !err; i++) {
-        byte data[EEPROM_AlarmClass_record_length];
-        for (byte j = 0; j < EEPROM_AlarmClass_record_length; j++) {
-            data[j] = EEPROM.read((i * EEPROM_AlarmClass_record_length) + j + EEPROM_alarms_offset);
+        byte data[EEPROM_AlarmClass_length];
+        for (byte j = 0; j < EEPROM_AlarmClass_length; j++) {
+            data[j] = EEPROM.read((i * EEPROM_AlarmClass_length) + j + EEPROM_alarms_offset);
         }
         err |= !alarms[i].readEEPROM(data);
     }
@@ -216,8 +216,8 @@ void writeEEPROM() {
         Serial.println(i);
 #endif
         byte * data = alarms[i].writeEEPROM();
-        for (byte j = 0; j < EEPROM_AlarmClass_record_length; j++) {
-            unsigned int address = (i * EEPROM_AlarmClass_record_length) + j + EEPROM_alarms_offset;
+        for (byte j = 0; j < EEPROM_AlarmClass_length; j++) {
+            unsigned int address = (i * EEPROM_AlarmClass_length) + j + EEPROM_alarms_offset;
 #if defined(DEBUG) && defined(DEBUG_EEPROM_writes)
             Serial.print(F("Saving "));
             if (data[j] < 16) Serial.print('0');

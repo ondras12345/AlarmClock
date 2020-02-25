@@ -16,7 +16,7 @@
 #include <RTClib.h> // for datetime
 
 
-//#define AlarmClass_EEPROM_record_length identifier(1B) + sizeof(TimeStampClass - jen  2 byte) + sizeof(AlarmsEnabled - 1 byte) + sizeof(DaysOfWeekClass - jen 1 byte (eeprom)) + sizeof(Snooze) + sizeOf(Signalization)
+//#define AlarmClass_EEPROM_length identifier(1B) + sizeof(TimeStampClass - jen  2 byte) + sizeof(AlarmsEnabled - 1 byte) + sizeof(DaysOfWeekClass - jen 1 byte (eeprom)) + sizeof(Snooze) + sizeOf(Signalization)
 #define AlarmClass_current_snooze_count_none 255
 #define AlarmClass_current_snooze_count_value_mask 0b00001111
 #define AlarmClass_current_snooze_count_snooze_mask 0b01000000
@@ -50,7 +50,7 @@ struct Signalization {
 class AlarmClass
 {
 protected:
-    byte _EEPROM_data[EEPROM_AlarmClass_record_length]; // needs to be static (because of pointers)
+    byte _EEPROM_data[EEPROM_AlarmClass_length]; // needs to be static (because of pointers)
 
     // not saved in EEPROM:
     DateTime last_alarm; // needed in case the alarm gets canceled during the same minute it started
@@ -97,7 +97,7 @@ protected:
 
 
 public:
-    bool readEEPROM(byte data[EEPROM_AlarmClass_record_length]);
+    bool readEEPROM(byte data[EEPROM_AlarmClass_length]);
     byte * writeEEPROM();
 
     void loop(DateTime time);

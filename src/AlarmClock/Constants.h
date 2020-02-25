@@ -45,8 +45,8 @@ POST error codes
 EEPROM
 */
 #define EEPROM_alarms_offset 10
-#define EEPROM_AlarmClass_record_length (1 + 2 + 1 + 1 + 2 + 3)
-#define EEPROM_alarms_identificator 0xFE
+#define EEPROM_AlarmClass_length (1 + 2 + 1 + 1 + 2 + 3)
+#define EEPROM_alarms_id 0xFE
 #define EEPROM_DEBUG_dump_length 100
 
 
