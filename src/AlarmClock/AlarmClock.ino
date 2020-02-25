@@ -108,16 +108,16 @@ void setup() {
 
     lcd_init();
 
-    unsigned int error = SelfTest(POST);
-    if ((error & error_critical_mask) == 0) error |= (readEEPROM() ? 0 : error_EEPROM);
-    error |= SelfTest(time); // rtc.begin() can be omited (only calls Wire.begin())
+    unsigned int err = SelfTest(POST);
+    if ((err & err_critical_mask) == 0) err |= (readEEPROM() ? 0 : err_EEPROM);
+    err |= SelfTest(time); // rtc.begin() can be omited (only calls Wire.begin())
 
-    if (error & error_time_lost) {
+    if (err & err_time_lost) {
         Serial.println(F("RTC time lost"));
         // # TODO
     }
 
-    if ((error & error_critical_mask) != 0) {
+    if ((err & err_critical_mask) != 0) {
         factory_reset(); // # TODO show the error first, write to log if it is not EEPROM error, the wait for the user
     }
 
@@ -190,19 +190,19 @@ bool readEEPROM() {
 #endif // DEBUG
 
 
-    bool error = false;
+    bool err = false;
     // basic config:
 
     // alarms:
-    for (byte i = 0; i < alarms_count && !error; i++) {
+    for (byte i = 0; i < alarms_count && !err; i++) {
         byte data[EEPROM_AlarmClass_record_length];
         for (byte j = 0; j < EEPROM_AlarmClass_record_length; j++) {
             data[j] = EEPROM.read((i * EEPROM_AlarmClass_record_length) + j + EEPROM_alarms_offset);
         }
-        error |= !alarms[i].readEEPROM(data);
+        err |= !alarms[i].readEEPROM(data);
     }
 
-    return !error;
+    return !err;
 }
 
 void writeEEPROM() {
@@ -267,17 +267,17 @@ bool lcd_init() {
 Self test
 */
 unsigned int SelfTest(SelfTest_level level) {
-    unsigned int error = 0; // each bit signalizes an error
+    unsigned int err = 0; // each bit signalizes an error
 
     if (level == POST || level == time) {
-        if (!I2C_ping(I2C_DS3231_address)) error |= error_I2C_ping_DS3231;
+        if (!I2C_ping(I2C_DS3231_address)) err |= err_I2C_ping_DS3231;
 
     }
 
     if (level == time) {
-        if ((error & error_I2C_ping_DS3231) == 0) { // DS3231 is responding ((POST || time) code block was executed earlier)
-            if (rtc.lostPower()) error |= error_time_lost;
-            if (rtc.now().year() == 2000) error |= error_time_lost;
+        if ((err & err_I2C_ping_DS3231) == 0) { // DS3231 is responding ((POST || time) code block was executed earlier)
+            if (rtc.lostPower()) err |= err_time_lost;
+            if (rtc.now().year() == 2000) err |= err_time_lost;
         }
     }
 
@@ -288,7 +288,7 @@ unsigned int SelfTest(SelfTest_level level) {
         buzzerTone(1000, 100);
     }
 
-    return error;
+    return err;
 }
 
 bool I2C_ping(byte addr) {

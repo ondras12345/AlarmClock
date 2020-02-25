@@ -253,13 +253,13 @@ void SerialCLIClass::_print_error(error_t error_code)
     if (!error_code)
         Serial.println(F("OK"));
 
-    if (error_code & Serial_error_argument)
+    if (error_code & Serial_err_argument)
         Serial.println(F("Invalid args"));
 
-    if (error_code & Serial_error_select)
+    if (error_code & Serial_err_select)
         Serial.println(F("Sel first"));
 
-    if (error_code & Serial_error_useless_save)
+    if (error_code & Serial_err_useless_save)
         Serial.println(F("Nothing to save"));
 }
 
@@ -307,7 +307,7 @@ SerialCLIClass::error_t SerialCLIClass::_set_inh(char *status)
 SerialCLIClass::error_t SerialCLIClass::_select_alarm(byte __index)
 {
     if (__index >= alarms_count && __index != _sel_alarm_index_none)
-        return Serial_error_argument;
+        return Serial_err_argument;
 
     _sel_alarm_index = __index;
     if (_sel_alarm_index == _sel_alarm_index_none) strcpy(_prompt, _prompt_default);
@@ -318,7 +318,7 @@ SerialCLIClass::error_t SerialCLIClass::_select_alarm(byte __index)
 
 SerialCLIClass::error_t SerialCLIClass::_list_selected_alarm()
 {
-    if (_sel_alarm_index == _sel_alarm_index_none) return Serial_error_select;
+    if (_sel_alarm_index == _sel_alarm_index_none) return Serial_err_select;
 
     Serial.print(F("Num: "));
     Serial.println(_sel_alarm_index);
@@ -383,7 +383,7 @@ SerialCLIClass::error_t SerialCLIClass::_list_selected_alarm()
 
 SerialCLIClass::error_t SerialCLIClass::_set_enabled(AlarmEnabled status)
 {
-    if (_sel_alarm_index == _sel_alarm_index_none) return Serial_error_select;
+    if (_sel_alarm_index == _sel_alarm_index_none) return Serial_err_select;
 
     (_alarms + _sel_alarm_index)->set_enabled(status);
 
@@ -393,85 +393,85 @@ SerialCLIClass::error_t SerialCLIClass::_set_enabled(AlarmEnabled status)
 
 SerialCLIClass::error_t SerialCLIClass::_set_time(char *time)
 {
-    if (_sel_alarm_index == _sel_alarm_index_none) return Serial_error_select;
+    if (_sel_alarm_index == _sel_alarm_index_none) return Serial_err_select;
 
     byte hours, minutes;
     time = _find_next_digit(time);
-    if (*time == '\0') return Serial_error_argument;
+    if (*time == '\0') return Serial_err_argument;
     hours = _strbyte(time);
     time = _find_next_digit(time);
-    if (*time == '\0') return Serial_error_argument;
+    if (*time == '\0') return Serial_err_argument;
     minutes = _strbyte(time);
 
     if ((_alarms + _sel_alarm_index)->set_time(hours, minutes)) {
         _change = true;
         return 0;
     }
-    else return Serial_error_argument;
+    else return Serial_err_argument;
 }
 
 SerialCLIClass::error_t SerialCLIClass::_set_day_of_week(char *dow)
 {
-    if (_sel_alarm_index == _sel_alarm_index_none) return Serial_error_select;
+    if (_sel_alarm_index == _sel_alarm_index_none) return Serial_err_select;
 
     byte day;
     bool status;
     dow = _find_next_digit(dow);
-    if (*dow == '\0') return Serial_error_argument;
+    if (*dow == '\0') return Serial_err_argument;
     day = _strbyte(dow);
     dow = _find_next_digit(dow);
-    if (*dow == '\0') return Serial_error_argument;
+    if (*dow == '\0') return Serial_err_argument;
     status = _strbyte(dow);
 
     if ((_alarms + _sel_alarm_index)->set_day_of_week(day, status)) {
         _change = true;
         return 0;
     }
-    else return Serial_error_argument;
+    else return Serial_err_argument;
 }
 
 SerialCLIClass::error_t SerialCLIClass::_set_snooze(char * snooze)
 {
-    if (_sel_alarm_index == _sel_alarm_index_none) return Serial_error_select;
+    if (_sel_alarm_index == _sel_alarm_index_none) return Serial_err_select;
 
     byte time, count;
 
     snooze = _find_next_digit(snooze);
-    if (*snooze == '\0') return Serial_error_argument;
+    if (*snooze == '\0') return Serial_err_argument;
     time = _strbyte(snooze);
     snooze = _find_next_digit(snooze);
-    if (*snooze == '\0') return Serial_error_argument;
+    if (*snooze == '\0') return Serial_err_argument;
     count = _strbyte(snooze);
 
     if ((_alarms + _sel_alarm_index)->set_snooze(time, count)) {
         _change = true;
         return 0;
     }
-    else return Serial_error_argument;
+    else return Serial_err_argument;
 }
 
 SerialCLIClass::error_t SerialCLIClass::_set_signalization(char * sig)
 {
-    if (_sel_alarm_index == _sel_alarm_index_none) return Serial_error_select;
+    if (_sel_alarm_index == _sel_alarm_index_none) return Serial_err_select;
 
     byte ambient;
     bool lamp, buzzer;
 
     sig = _find_next_digit(sig);
-    if (*sig == '\0') return Serial_error_argument;
+    if (*sig == '\0') return Serial_err_argument;
     ambient = _strbyte(sig);
     sig = _find_next_digit(sig);
-    if (*sig == '\0') return Serial_error_argument;
+    if (*sig == '\0') return Serial_err_argument;
     lamp = _strbyte(sig);
     sig = _find_next_digit(sig);
-    if (*sig == '\0') return Serial_error_argument;
+    if (*sig == '\0') return Serial_err_argument;
     buzzer = _strbyte(sig);
 
     if ((_alarms + _sel_alarm_index)->set_signalization(ambient, lamp, buzzer)) {
         _change = true;
         return 0;
     }
-    else return Serial_error_argument;
+    else return Serial_err_argument;
 }
 
 SerialCLIClass::error_t SerialCLIClass::_save()
@@ -481,20 +481,20 @@ SerialCLIClass::error_t SerialCLIClass::_save()
         _writeEEPROM();
         return 0;
     }
-    else return Serial_error_useless_save;
+    else return Serial_err_useless_save;
 }
 
 SerialCLIClass::error_t SerialCLIClass::_rtc_time(char * time)
 {
     byte hour, minute;
     time = _find_next_digit(time);
-    if (*time == '\0') return Serial_error_argument;
+    if (*time == '\0') return Serial_err_argument;
     hour = _strbyte(time);
     time = _find_next_digit(time);
-    if (*time == '\0') return Serial_error_argument;
+    if (*time == '\0') return Serial_err_argument;
     minute = _strbyte(time);
 
-    if (hour > 23 || minute > 59) return Serial_error_argument;
+    if (hour > 23 || minute > 59) return Serial_err_argument;
 
 
     _now = _rtc->now();
@@ -508,16 +508,16 @@ SerialCLIClass::error_t SerialCLIClass::_rtc_date(char * date)
     byte month, day;
 
     date = _find_next_digit(date);
-    if (*date == '\0') return Serial_error_argument;
+    if (*date == '\0') return Serial_err_argument;
     day = _strbyte(date);
     date = _find_next_digit(date);
-    if (*date == '\0') return Serial_error_argument;
+    if (*date == '\0') return Serial_err_argument;
     month = _strbyte(date);
     date = _find_next_digit(date);
-    if (*date == '\0') return Serial_error_argument;
+    if (*date == '\0') return Serial_err_argument;
     year = _strbyte(date);
 
-    if (month > 12 || day > 31) return Serial_error_argument;
+    if (month > 12 || day > 31) return Serial_err_argument;
 
     _now = _rtc->now();
     _rtc->adjust(DateTime(year, month, day, _now.hour(), _now.minute()));
