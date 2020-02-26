@@ -73,6 +73,13 @@ enum cursor_position_RTC {
     cpr_date_y = 7
 };
 
+enum backlight_t {
+    off = 0,
+    on = 1,
+    permanent = 2
+};
+
+
 class GUIClass
 {
  protected:
@@ -94,7 +101,9 @@ class GUIClass
      Screen _current_screen = screen_home;
      DateTime _RTC_set;
      unsigned long _update_previous_millis = 0;
-     boolean _backlight = true;  // LCD backlight is turned on in setup()
+
+     backlight_t _backlight = on;  // LCD backlight is turned on in setup()
+
      unsigned long _backlight_previous_millis = 0;
      unsigned long _encoder_previous_millis = 0;
      // It is faster and causes less flicker if you send the LCD complete
@@ -136,8 +145,8 @@ class GUIClass
 
 
  public:
-     void set_backlight(boolean status);
-     boolean get_backlight() const { return _backlight; };
+     void set_backlight(backlight_t status);
+     backlight_t get_backlight() const { return _backlight; };
      void loop(DateTime time);
      GUIClass(AlarmClass *alarms, void(*writeEEPROM)(), RTC_DS3231 *rtc,
               Encoder *encoder, Bounce *encoder_button,

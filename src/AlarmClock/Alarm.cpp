@@ -63,6 +63,7 @@ void AlarmClass::loop(DateTime time)
                     ambientDimmer->start();
 
                     if (_signalization.lamp) lamp(true);
+                    activation_callback();
                     DEBUG_println(F("Alarm activated"));
                 }
             }
@@ -73,13 +74,17 @@ void AlarmClass::loop(DateTime time)
 void AlarmClass::set_hardware(void(*lamp_)(boolean),
                               PWMDimmerClass *ambientDimmer_,
                               void(*buzzerTone_)(unsigned int, unsigned long),
-                              void(*buzzerNoTone_)(), void(*writeEEPROM_)())
+                              void(*buzzerNoTone_)(), void(*writeEEPROM_)(),
+                              void(*activation_callback_)(),
+                              void(*stop_callback_)())
 {
     lamp = lamp_;
     ambientDimmer = ambientDimmer_;
     buzzerTone = buzzerTone_;
     buzzerNoTone = buzzerNoTone_;
     writeEEPROM_all = writeEEPROM_;
+    activation_callback = activation_callback_;
+    stop_callback = stop_callback_;
 }
 
 // doesn't have any effect during last ringing
@@ -111,6 +116,7 @@ void AlarmClass::button_stop()
     buzzerNoTone();
     //set_current_beeping_status(false); // this would break it (alarm would wake from snooze)
     // becasue current_snooze_count != AlarmClass_current_snooze_count_none
+    stop_callback();
 }
 
 AlarmClass::AlarmClass()

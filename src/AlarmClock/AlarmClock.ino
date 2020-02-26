@@ -138,8 +138,11 @@ void loop() {
     // buttons
     for (byte i = 0; i < button_count; i++) buttons[i].update();
     if (buttons[button_index_snooze].fell()) {
-        for (byte i = 0; i < alarms_count; i++) alarms[i].button_snooze();
-        DEBUG_println(F("snooze pressed"));
+        if(GUI.get_backlight() != off) {
+            for (byte i = 0; i < alarms_count; i++) alarms[i].button_snooze();
+            DEBUG_println(F("snooze pressed"));
+        }
+        else GUI.set_backlight(on);
     }
     if (buttons[button_index_stop].fell()) {
         for (byte i = 0; i < alarms_count; i++) alarms[i].button_stop();
@@ -160,10 +163,23 @@ void loop() {
 
 void init_hardware() {
     for (byte i = 0; i < alarms_count; i++)
-        alarms[i].set_hardware(lamp, &ambientDimmer, buzzerTone, buzzerNoTone, writeEEPROM);
+        alarms[i].set_hardware(lamp, &ambientDimmer, buzzerTone, buzzerNoTone,
+                               writeEEPROM, alarm_activation_callback,
+                               alarm_stop_callback);
 
     // # TODO implement CountdownTimer WARNING: ambient implementation changed.
     //countdownTimer.set_hardware(lamp, ambient, buzzerTone, buzzerNoTone);
+}
+
+
+void alarm_activation_callback()
+{
+    GUI.set_backlight(permanent);
+}
+
+void alarm_stop_callback()
+{
+    GUI.set_backlight(on);  // disable permanent backlight
 }
 
 
