@@ -1,10 +1,11 @@
 #include "GUI.h"
 
-void GUIClass::set_backlight(boolean status)
+void GUIClass::set_backlight(backlight_t status)
 {
     _backlight = status;
-    if (status) _lcd->backlight();
-    else _lcd->noBacklight();
+    if (_backlight == off) _lcd->noBacklight();
+    else _lcd->backlight();
+    _backlight_previous_millis = millis();
 }
 
 
@@ -17,16 +18,16 @@ void GUIClass::loop(DateTime __time)
     /*
     LCD Backlight
     */
-    if (_backlight &&
+    if (_backlight == on &&
         (unsigned long)(millis() - _backlight_previous_millis) >= GUI_backlight_timeout)
     {
-        set_backlight(false);
+        set_backlight(off);
     }
 
     if (_encoder_button->fell() || abs(_encoder->read()) >= encoder_step) {
         _backlight_previous_millis = millis();
-        if (!_backlight) {
-            set_backlight(true);
+        if (_backlight == off) {
+            set_backlight(on);
             _encoder->write(_encoder->read() % encoder_step);
         }
         else {

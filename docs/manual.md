@@ -72,8 +72,10 @@ Ambient LED strip dimming: [PWM][Wikipedia PWM]
 
 # LCD
 The backlight of the LCD turns off automatically after `GUI_backlight_timeout`
-milliseconds. To turn it on again, you need to press the rotary encoder button
-or rotate the knob.
+milliseconds. To turn it on again, you need to press the rotary encoder
+button, rotate the knob or press the snooze button. If the backlight is set to
+permanent (e.g. an alarm is active), it won't turn off automatically. Once the
+alarm is stopped, the backlight returns back to the timed mode.
 
 Use the encoder to move the cursor under the item you want to change,
 then press the encoder button. Boolean type values and buttons react

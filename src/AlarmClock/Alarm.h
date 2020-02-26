@@ -62,7 +62,9 @@ protected:
     PWMDimmerClass *ambientDimmer;
     void(*buzzerTone)(unsigned int, unsigned long); // freq, duration
     void(*buzzerNoTone)();
-    void(*writeEEPROM_all)();
+    void(*writeEEPROM_all)();  // write all alarms to EEPROM
+    void(*activation_callback)();
+    void(*stop_callback)();
 
     // saved in the EEPROM:
     hours_minutes _when;
@@ -104,7 +106,8 @@ public:
     void set_hardware(void(*lamp)(boolean),
                       PWMDimmerClass *ambientDimmer,
                       void(*buzzerTone)(unsigned int, unsigned long),
-                      void(*buzzerNoTone)(), void(*writeEEPROM)());
+                      void(*buzzerNoTone)(), void(*writeEEPROM)(),
+                      void(*activation_callback)(), void(*stop_callback)());
     void button_snooze();
     void button_stop();
     AlarmClass();

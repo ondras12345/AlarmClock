@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [0.2.1] - 2020-02-14
+### Changed
+- Better LCD backlight control
+
 ### Fixed
 - Alarm signalization option 'lamp' could not be unset due to a command
   processing error
