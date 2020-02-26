@@ -107,16 +107,19 @@ void AlarmClass::button_snooze()
 // stops everything (even if in snooze)
 void AlarmClass::button_stop()
 {
-    current_snooze_count = AlarmClass_current_snooze_count_none;
+    if(get_active()) {
+        current_snooze_count = AlarmClass_current_snooze_count_none;
 
-    ambientDimmer->set_from_duration(ambientDimmer->get_value(), 0,
-                                    Alarm_ambient_fade_out_duration);
-    ambientDimmer->start();
-    lamp(false);
-    buzzerNoTone();
-    //set_current_beeping_status(false); // this would break it (alarm would wake from snooze)
-    // becasue current_snooze_count != AlarmClass_current_snooze_count_none
-    stop_callback();
+        ambientDimmer->set_from_duration(ambientDimmer->get_value(), 0,
+                                        Alarm_ambient_fade_out_duration);
+        ambientDimmer->start();
+        lamp(false);
+        buzzerNoTone();
+        //set_current_beeping_status(false); // this would break it
+        // (alarm would wake from snooze)
+        // becasue current_snooze_count != AlarmClass_current_snooze_count_none
+        stop_callback();
+    }
 }
 
 AlarmClass::AlarmClass()
