@@ -32,7 +32,7 @@ the LCD GUI (home screen).
 
 ## Lamp
 An output pin that can be used to control a lamp. It can be controlled from
-both the GUI (home screen) and the CLI.
+the GUI (home screen), the CLI and by the alarms.
 
 
 # Configuration
