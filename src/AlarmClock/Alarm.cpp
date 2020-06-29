@@ -146,11 +146,14 @@ bool AlarmClass::readEEPROM(byte data[EEPROM_AlarmClass_length])
 
     if (data[0] != EEPROM_alarms_id) return false;
 
-    _when.hours = data[1];
-    _when.minutes = data[2];
-    if (_when.hours > 23 || _when.minutes > 59) return false;
+    if (data[1] <= 23) _when.hours = data[1];
+    else return false;
+    if (data[2] <= 59) _when.minutes = data[2];
+    else return false;
 
-    _enabled = AlarmEnabled(data[3]);
+    if (data[3] <= AlarmEnabled_max) _enabled = AlarmEnabled(data[3]);
+    else return false;
+
     _days_of_week.DaysOfWeek = data[4];
 
     if (data[5] <= 99) _snooze.time_minutes = data[5];
@@ -201,6 +204,7 @@ byte * AlarmClass::writeEEPROM()
 
 bool AlarmClass::set_enabled(AlarmEnabled __enabled)
 {
+    if (__enabled > AlarmEnabled_max) return false;
     _enabled = __enabled;
     return true;
 }

@@ -25,6 +25,7 @@
 #define AlarmClass_current_snooze_count_beeping_bit 5
 
 
+#define AlarmEnabled_max 2  // for input validation
 enum AlarmEnabled {
     Off = 0,
     Single = 1,
