@@ -158,7 +158,7 @@ Buttons
 // default: 25
 #define button_debounce_interval 25  // ms
 
-// Duration if a long press
+// Duration of a long press
 // Not needed right now
 //#define button_long_press 1000  // ms
 

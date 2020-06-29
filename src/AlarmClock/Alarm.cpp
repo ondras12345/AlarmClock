@@ -1,6 +1,7 @@
 #include "Alarm.h"
 
 
+// set_hardware must run before loop() is executed.
 void AlarmClass::loop(DateTime time)
 {
     if (get_active()) { // alarm is already active
@@ -66,6 +67,7 @@ void AlarmClass::loop(DateTime time)
     }
 }
 
+// This function must run before the first execution of loop().
 void AlarmClass::set_hardware(void(*lamp_)(bool),
                               PWMDimmerClass *ambientDimmer_,
                               void(*buzzerTone_)(unsigned int, unsigned long),
@@ -101,7 +103,7 @@ void AlarmClass::button_stop()
     current_snooze_count = AlarmClass_current_snooze_count_none;
 
     ambientDimmer->set_from_duration(ambientDimmer->get_value(), 0,
-                                    Alarm_ambient_fade_out_duration);
+                                     Alarm_ambient_fade_out_duration);
     ambientDimmer->start();
     lamp(false);
     buzzerNoTone();
