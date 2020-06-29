@@ -77,7 +77,7 @@ void PWMDimmerClass::stop()
 
 void PWMDimmerClass::loop()
 {
-    if (_active && ((unsigned long)(millis() - _previousChangeMillis) >= _interval)) {
+    if (_active && ((unsigned long)(millis() - _prev_change_millis) >= _interval)) {
         if ((_step > 0 && _value >= _stop) || (_step < 0 && _value <= _stop)) {
             _value = _stop;
             analogWrite(_pin, _value);
@@ -101,6 +101,6 @@ void PWMDimmerClass::loop()
             analogWrite(_pin, _value);
         }
 
-        _previousChangeMillis = millis();
+        _prev_change_millis = millis();
     }
 }

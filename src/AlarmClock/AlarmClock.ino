@@ -50,15 +50,15 @@ enum SelfTest_level {
 
 // Function prototypes
 // Hardware
-void lamp(boolean status);
-boolean get_lamp();
+void lamp(bool status);
+bool get_lamp();
 void buzzerTone(unsigned int freq, unsigned long duration = 0); // specifies default duration=0
 //void buzzerNoTone();
 
 // Arduino IDE needs these before SerialCLI definition:
 void writeEEPROM();
-void set_inhibit(boolean status);
-boolean get_inhibit();
+void set_inhibit(bool status);
+bool get_inhibit();
 
 
 // Global variables
@@ -77,17 +77,17 @@ GUIClass GUI(alarms, writeEEPROM, &rtc, &encoder,
              &ambientDimmer, lamp, get_lamp);
 
 
-unsigned long loop_rtc_previous_millis = 0;
+unsigned long loop_rtc_prev_millis = 0;
 
-boolean inhibit = false;
-unsigned long inhibit_previous_millis = 0;
+bool inhibit = false;
+unsigned long inhibit_prev_millis = 0;
 
-boolean lamp_status = false;
+bool lamp_status = false;
 
 #ifdef active_buzzer
-unsigned long active_buzzer_previous_millis = 0;
+unsigned long active_buzzer_prev_millis = 0;
 unsigned long active_buzzer_duration = 0;
-boolean active_buzzer_status = false;
+bool active_buzzer_status = false;
 #endif
 
 
@@ -108,16 +108,16 @@ void setup() {
 
     lcd_init();
 
-    unsigned int error = SelfTest(POST);
-    if ((error & error_critical_mask) == 0) error |= (readEEPROM() ? 0 : error_EEPROM);
-    error |= SelfTest(time); // rtc.begin() can be omited (only calls Wire.begin())
+    unsigned int err = SelfTest(POST);
+    if ((err & err_critical_mask) == 0) err |= (readEEPROM() ? 0 : err_EEPROM);
+    err |= SelfTest(time); // rtc.begin() can be omited (only calls Wire.begin())
 
-    if (error & error_time_lost) {
+    if (err & err_time_lost) {
         Serial.println(F("RTC time lost"));
         // # TODO
     }
 
-    if ((error & error_critical_mask) != 0) {
+    if ((err & err_critical_mask) != 0) {
         factory_reset(); // # TODO show the error first, write to log if it is not EEPROM error, the wait for the user
     }
 
@@ -125,9 +125,9 @@ void setup() {
 }
 
 void loop() {
-    if ((unsigned long)(millis() - loop_rtc_previous_millis) >= 800UL) {
+    if ((unsigned long)(millis() - loop_rtc_prev_millis) >= 800UL) {
         now = rtc.now(); // # TODO + summer_time
-        loop_rtc_previous_millis = millis();
+        loop_rtc_prev_millis = millis();
     }
     CLI.loop(now);
     GUI.loop(now);
@@ -148,14 +148,14 @@ void loop() {
         for (byte i = 0; i < alarms_count; i++) alarms[i].button_stop();
         DEBUG_println(F("stop pressed"));
     }
-    if (inhibit && (unsigned long)(millis() - inhibit_previous_millis) >= Alarm_inhibit_duration) {
+    if (inhibit && (unsigned long)(millis() - inhibit_prev_millis) >= Alarm_inhibit_duration) {
         set_inhibit(false);
     }
 
     // active buzzer
 #ifdef active_buzzer
     if (active_buzzer_status && active_buzzer_duration > 0 &&
-        (unsigned long)(millis() - active_buzzer_previous_millis) >= active_buzzer_duration) {
+        (unsigned long)(millis() - active_buzzer_prev_millis) >= active_buzzer_duration) {
         buzzerNoTone();
     }
 #endif
@@ -186,7 +186,7 @@ void alarm_stop_callback()
 /*
 EEPROM
 */
-boolean readEEPROM() {
+bool readEEPROM() {
 #ifdef DEBUG
     Serial.print(F("EEPROM dump"));
     byte val;
@@ -206,19 +206,19 @@ boolean readEEPROM() {
 #endif // DEBUG
 
 
-    boolean error = false;
+    bool err = false;
     // basic config:
 
     // alarms:
-    for (byte i = 0; i < alarms_count && !error; i++) {
-        byte data[EEPROM_AlarmClass_record_length];
-        for (byte j = 0; j < EEPROM_AlarmClass_record_length; j++) {
-            data[j] = EEPROM.read((i * EEPROM_AlarmClass_record_length) + j + EEPROM_alarms_offset);
+    for (byte i = 0; i < alarms_count && !err; i++) {
+        byte data[EEPROM_AlarmClass_length];
+        for (byte j = 0; j < EEPROM_AlarmClass_length; j++) {
+            data[j] = EEPROM.read((i * EEPROM_AlarmClass_length) + j + EEPROM_alarms_offset);
         }
-        error |= !alarms[i].readEEPROM(data);
+        err |= !alarms[i].readEEPROM(data);
     }
 
-    return !error;
+    return !err;
 }
 
 void writeEEPROM() {
@@ -232,8 +232,8 @@ void writeEEPROM() {
         Serial.println(i);
 #endif
         byte * data = alarms[i].writeEEPROM();
-        for (byte j = 0; j < EEPROM_AlarmClass_record_length; j++) {
-            unsigned int address = (i * EEPROM_AlarmClass_record_length) + j + EEPROM_alarms_offset;
+        for (byte j = 0; j < EEPROM_AlarmClass_length; j++) {
+            unsigned int address = (i * EEPROM_AlarmClass_length) + j + EEPROM_alarms_offset;
 #if defined(DEBUG) && defined(DEBUG_EEPROM_writes)
             Serial.print(F("Saving "));
             if (data[j] < 16) Serial.print('0');
@@ -262,7 +262,7 @@ void factory_reset() {
 /*
 LCD
 */
-boolean lcd_init() {
+bool lcd_init() {
     if (I2C_ping(I2C_LCD_address)) {
         lcd.init();
         lcd.backlight();
@@ -283,17 +283,17 @@ boolean lcd_init() {
 Self test
 */
 unsigned int SelfTest(SelfTest_level level) {
-    unsigned int error = 0; // each bit signalizes an error
+    unsigned int err = 0; // each bit signalizes an error
 
     if (level == POST || level == time) {
-        if (!I2C_ping(I2C_DS3231_address)) error |= error_I2C_ping_DS3231;
+        if (!I2C_ping(I2C_DS3231_address)) err |= err_I2C_ping_DS3231;
 
     }
 
     if (level == time) {
-        if ((error & error_I2C_ping_DS3231) == 0) { // DS3231 is responding ((POST || time) code block was executed earlier)
-            if (rtc.lostPower()) error |= error_time_lost;
-            if (rtc.now().year() == 2000) error |= error_time_lost;
+        if ((err & err_I2C_ping_DS3231) == 0) { // DS3231 is responding ((POST || time) code block was executed earlier)
+            if (rtc.lostPower()) err |= err_time_lost;
+            if (rtc.now().year() == 2000) err |= err_time_lost;
         }
     }
 
@@ -304,10 +304,10 @@ unsigned int SelfTest(SelfTest_level level) {
         buzzerTone(1000, 100);
     }
 
-    return error;
+    return err;
 }
 
-boolean I2C_ping(byte addr) {
+bool I2C_ping(byte addr) {
     Wire.beginTransmission(addr);
     return (Wire.endTransmission() == 0);
 }
@@ -316,20 +316,20 @@ boolean I2C_ping(byte addr) {
 Hardware
 Included classes can control the hardware trough these functions
 */
-void lamp(boolean status)
+void lamp(bool status)
 {
     digitalWrite(pin_lamp, status);
     lamp_status = status;
 }
 
-boolean get_lamp() { return lamp_status; }
+bool get_lamp() { return lamp_status; }
 
 void buzzerTone(unsigned int freq, unsigned long duration)
 {
     // default value duration=0 specified in prototype
 #ifdef active_buzzer
     active_buzzer_duration = duration;
-    active_buzzer_previous_millis = millis();
+    active_buzzer_prev_millis = millis();
     active_buzzer_status = true;
     digitalWrite(pin_buzzer, HIGH);
 
@@ -353,11 +353,11 @@ void buzzerNoTone()
 /*
 Utils
 */
-void set_inhibit(boolean status) {
-    inhibit_previous_millis = millis();
+void set_inhibit(bool status) {
+    inhibit_prev_millis = millis();
     inhibit = status;
     for (byte i = 0; i < alarms_count; i++) alarms[i].set_inhibit(status);
     if (status) DEBUG_println(F("inhibit enabled"));
     else DEBUG_println(F("inhibit disabled"));
 }
-boolean get_inhibit() { return inhibit; }
+bool get_inhibit() { return inhibit; }

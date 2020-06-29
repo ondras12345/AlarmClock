@@ -44,7 +44,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   __WARNING__: This breaks old EEPROM records and may perform a factory reset
   when first used, because minutes and/or hours of the old record may exceed
   the limits (23 h 59 min) when interpreted as the new format.
-- Serial CLI now requires commands (messages) to be terminated by CR, LF or CRLF
+- Serial CLI now requires commands (messages) to be terminated by CR, LF or
+  CRLF
 - Serial CLI error codes reworked
 - Setting descriptions are now in `src/AlarmClock/Settings.h`
 
@@ -68,6 +69,7 @@ First working version
 - Configurable alarms (default = 6, can be changed in `Settings.h`)
 - Command line interface (CLI) for configuration (over UART)
 - Compile time option for DEBUG output (printed over UART)
-- Support for dimmable LED strip controlled by alarms (called 'ambient', dimming using PWM)
+- Support for dimmable LED strip controlled by alarms (called 'ambient',
+  dimming using PWM)
 - Support for On/Off output controlled by alarms (called 'lamp')
 - Checklist for tests (used during development)

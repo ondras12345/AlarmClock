@@ -15,7 +15,7 @@
 class PWMDimmerClass
 {
  protected:
-     unsigned long _previousChangeMillis = 0;
+     unsigned long _prev_change_millis = 0;
      byte _pin;
      int _value; // int because of overflows
 
@@ -25,7 +25,7 @@ class PWMDimmerClass
      byte _stop = 0;
      unsigned long _interval = 100;
      int _step = 10; // can be negative
-     boolean _active = false;
+     bool _active = false;
 
 
  public:
@@ -47,7 +47,7 @@ class PWMDimmerClass
 
      byte get_stop() const { return byte(_stop); }
 
-     boolean get_active() const { return _active; }
+     bool get_active() const { return _active; }
 
      unsigned long get_remaining() const {
          if (!_active) return 0;

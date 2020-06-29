@@ -90,22 +90,20 @@ class GUIClass
      Encoder *_encoder;
      Bounce *_encoder_button;
      LiquidCrystal_I2C *_lcd;
-     void(*_set_inhibit)(boolean);
-     boolean(*_get_inhibit)();
+     void(*_set_inhibit)(bool);
+     bool(*_get_inhibit)();
      PWMDimmerClass * _ambientDimmer;
-     void(*_lamp)(boolean);
-     boolean(*_get_lamp)();
+     void(*_lamp)(bool);
+     bool(*_get_lamp)();
 
-     byte _selected_alarm_index = 0;
-     AlarmClass *_selected_alarm;  // set when switching alarms
+     byte _sel_alarm_index = 0;
+     AlarmClass *_sel_alarm;  // set when switching alarms
      Screen _current_screen = screen_home;
      DateTime _RTC_set;
-     unsigned long _update_previous_millis = 0;
-
      backlight_t _backlight = on;  // LCD backlight is turned on in setup()
-
-     unsigned long _backlight_previous_millis = 0;
-     unsigned long _encoder_previous_millis = 0;
+     unsigned long _update_prev_millis = 0;
+     unsigned long _backlight_prev_millis = 0;
+     unsigned long _encoder_prev_millis = 0;
      // It is faster and causes less flicker if you send the LCD complete
      // lines instead of multiple pieces.
      char _line_buffer[LCD_width + 1];  // +1 for null termination
@@ -126,8 +124,8 @@ class GUIClass
         { {0,0}, {1,0}, {8,0}, {11,0}, {14,0},
           {0,1}, {3,1}, {6,1} }
      };
-     boolean _cursor_clicked = false;
-     boolean _change = false;  // for EEPROM write
+     bool _cursor_clicked = false;
+     bool _change = false;  // for EEPROM write
 
      /*
      Utility functions
@@ -135,7 +133,7 @@ class GUIClass
      // Apply limits for the rotary encoder. The limits are inclusive.
      // loop - allow the user to move from limit_high to limit_low
      byte _apply_limits(byte value, int step, byte limit_low, byte limit_high,
-                        boolean loop = false);
+                        bool loop = false);
 
      // This does not handle setting variables such as _RTC_set_time
      void _switch_screen(Screen screen);
@@ -151,9 +149,9 @@ class GUIClass
      GUIClass(AlarmClass *alarms, void(*writeEEPROM)(), RTC_DS3231 *rtc,
               Encoder *encoder, Bounce *encoder_button,
               LiquidCrystal_I2C *lcd,
-              void(*set_inhibit)(boolean), boolean(*get_inhibit)(),
-              PWMDimmerClass *ambientDimmer, void(*lamp)(boolean),
-              boolean(*get_lamp)());
+              void(*set_inhibit)(bool), bool(*get_inhibit)(),
+              PWMDimmerClass *ambientDimmer, void(*lamp)(bool),
+              bool(*get_lamp)());
 };
 
 #endif

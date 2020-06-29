@@ -35,18 +35,18 @@ static const char* days_of_the_week_names_short[] = { "", "Mo", "Tu", "We", "Th"
 /*
 POST error codes
 */
-#define error_I2C_ping_DS3231 1
-#define error_time_lost 2
-#define error_EEPROM 4
-#define error_critical_mask 0b1111111111111101 // time_lost is not critical
+#define err_I2C_ping_DS3231 1
+#define err_time_lost 2
+#define err_EEPROM 4
+#define err_critical_mask 0b1111111111111101 // time_lost is not critical
 
 
 /*
 EEPROM
 */
 #define EEPROM_alarms_offset 10
-#define EEPROM_AlarmClass_record_length (1 + 2 + 1 + 1 + 2 + 3)
-#define EEPROM_alarms_identificator 0xFE
+#define EEPROM_AlarmClass_length (1 + 2 + 1 + 1 + 2 + 3)
+#define EEPROM_alarms_id 0xFE
 #define EEPROM_DEBUG_dump_length 100
 
 
@@ -56,9 +56,9 @@ Serial CLI
 #define Serial_buffer_length 12
 #define Serial_prompt_length 5
 
-#define Serial_error_argument 1
-#define Serial_error_select 2  // nothing selected
-#define Serial_error_useless_save 4  // nothing to save
+#define Serial_err_argument 1
+#define Serial_err_select 2  // nothing selected
+#define Serial_err_useless_save 4  // nothing to save
 
 
 /*
