@@ -69,6 +69,8 @@ test(Alarm_trigger)
         switch (myTest)
         {
             case inhibit:
+                {
+                bool activation_time = false;
                 alarm.set_inhibit(true);
                 while (time < DateTime(2020, 1, 1 + byte(myTest), 13, 15, 00))
                 {
@@ -77,8 +79,16 @@ test(Alarm_trigger)
                     assertFalse(activated);
                     assertFalse(lamp_status);
 
+                    if (time.hour() == 12 && time.minute() == 13 && time.second() < 30)
+                    {
+                        assertEqual(alarm.get_enabled(), Off);  // single
+                        activation_time = true;
+                    }
+
                     reset_alarm_mockups();
                     time = time + TimeSpan(30);
+                }
+                assertTrue(activation_time);
                 }
                 break;
 
