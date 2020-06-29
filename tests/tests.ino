@@ -18,7 +18,7 @@
 
 void setup()
 {
-    delay(1000); // wait for stability on some boards to prevent garbage Serial
+    delay(500); // wait for stability on some boards to prevent garbage Serial
     Serial.begin(115200);
     while(!Serial);
     Serial.println();
