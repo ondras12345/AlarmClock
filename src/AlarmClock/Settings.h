@@ -22,7 +22,7 @@ For more info about these options see docs/manual.md
 DEBUG
 */
 // Enables debug messages if uncommented
-// Individual DEBUG_* options have no effect if main DEBUG is disable
+// Individual DEBUG_* options have no effect if main DEBUG is disabled
 //#define DEBUG
 //#define DEBUG_EEPROM_alarms // extra EEPROM messages
 //#define DEBUG_EEPROM_writes // very long messages when writing
