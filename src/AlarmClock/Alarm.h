@@ -51,11 +51,20 @@ struct Signalization {
 class AlarmClass
 {
 protected:
-    byte _EEPROM_data[EEPROM_AlarmClass_length]; // needs to be static (because of pointers)
+    // This variable needs to exist all the time because a function is
+    // returning a pointer to it
+    byte _EEPROM_data[EEPROM_AlarmClass_length];
 
-    // not saved in EEPROM:
-    DateTime last_alarm; // needed in case the alarm gets canceled during the same minute it started
-    byte current_snooze_count; // bit 6 - currently in snooze; bit 5 - currently beeping; bit 0,1,2,3 - actual value (max 9)
+    /*
+    not saved in EEPROM:
+    */
+    // needed in case the alarm gets canceled during the same minute it started
+    DateTime last_alarm;
+
+    // bit 6 - currently in snooze;
+    // bit 5 - currently beeping;
+    // bit 0,1,2,3 - actual value (max 9)
+    byte current_snooze_count;
     unsigned long prev_millis;
     bool inhibit;
 
@@ -67,36 +76,54 @@ protected:
     void(*activation_callback)();
     void(*stop_callback)();
 
-    // saved in the EEPROM:
+    /*
+    saved in the EEPROM:
+    */
     hours_minutes _when;
     AlarmEnabled _enabled;
     DaysOfWeekClass _days_of_week;
     Snooze _snooze;
     Signalization _signalization;
 
-    // current snooze count value selected from the variable that also contains other info; counts down to 0
-    byte get_current_snooze_count() const { return current_snooze_count & AlarmClass_current_snooze_count_value_mask; };
+    // Current snooze count value selected from the variable that also contains
+    // other info.
+    // Counts down to 0.
+    byte get_current_snooze_count() const {
+        return current_snooze_count & AlarmClass_current_snooze_count_value_mask;
+    };
 
     // set the snooze count value
     void set_current_snooze_count(byte count) {
-        current_snooze_count &= ~AlarmClass_current_snooze_count_value_mask; // value = 0 (~ = bitwise not)
+        // value = 0 (~ = bitwise not)
+        current_snooze_count &= ~AlarmClass_current_snooze_count_value_mask;
         current_snooze_count |= count;
+        // # TODO limit count to 4 bits !!
     };
 
     // currently in snooze
-    bool get_current_snooze_status() const { return current_snooze_count & AlarmClass_current_snooze_count_snooze_mask; };
+    bool get_current_snooze_status() const {
+        return current_snooze_count & AlarmClass_current_snooze_count_snooze_mask;
+    };
 
     // set the snooze bit
-    void set_current_snooze_status(bool bitvalue) { bitWrite(current_snooze_count, AlarmClass_current_snooze_count_snooze_bit, bitvalue); };
+    void set_current_snooze_status(bool bitvalue) {
+        bitWrite(current_snooze_count, AlarmClass_current_snooze_count_snooze_bit, bitvalue);
+    };
 
-    // currently beeping (for inversing buzzer)
-    bool get_current_beeping_status() const { return current_snooze_count & AlarmClass_current_snooze_count_beeping_mask; };
+    // currently beeping (used for inverting the buzzer)
+    bool get_current_beeping_status() const {
+        return current_snooze_count & AlarmClass_current_snooze_count_beeping_mask;
+    };
 
-    // set the beeping bit (for inversing buzzer)
-    void set_current_beeping_status(bool bitvalue) { bitWrite(current_snooze_count, AlarmClass_current_snooze_count_beeping_bit, bitvalue); };
+    // set the beeping bit (used for inverting the buzzer)
+    void set_current_beeping_status(bool bitvalue) {
+        bitWrite(current_snooze_count, AlarmClass_current_snooze_count_beeping_bit, bitvalue);
+    };
 
     // true --> alarm is on (ringing or snooze)
-    bool get_active() const { return current_snooze_count < AlarmClass_current_snooze_count_none; };
+    bool get_active() const {
+        return current_snooze_count < AlarmClass_current_snooze_count_none;
+    };
 
 
 public:
