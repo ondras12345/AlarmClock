@@ -96,8 +96,9 @@ protected:
     void set_current_snooze_count(byte count) {
         // value = 0 (~ = bitwise not)
         current_snooze_count &= ~AlarmClass_current_snooze_count_value_mask;
-        current_snooze_count |= count;
-        // # TODO limit count to 4 bits !!
+        // 0x0F - limit to 4 bits
+        // This should not be needed if everything works correctly.
+        current_snooze_count |= (count & 0x0F);
     };
 
     // currently in snooze
