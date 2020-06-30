@@ -4,8 +4,10 @@
 // set_hardware must run before loop() is executed.
 void AlarmClass::loop(DateTime time)
 {
-    if (get_active()) { // alarm is already active
-        if (get_current_snooze_status()) { // alarm is NOT ringing (snooze)
+    if (get_active()) {
+        // alarm is already active
+        if (get_current_snooze_status()) {
+            // alarm is NOT ringing (snooze)
             if ((unsigned long)(millis() - prev_millis) >= (_snooze.time_minutes * 60000UL)) {
                 set_current_snooze_status(false);
                 if (_signalization.lamp) lamp(true);
@@ -13,12 +15,18 @@ void AlarmClass::loop(DateTime time)
             }
 
         }
-        else if (_signalization.buzzer) { // alarm is ringing
-            // select either the regular or last ringing parameters
-            unsigned long period = (get_current_snooze_count() == 0) ? Alarm_last_ringing_period : Alarm_regular_ringing_period;
-            unsigned int freq = (get_current_snooze_count() == 0) ? Alarm_last_ringing_freq : Alarm_regular_ringing_freq;
+        else {
+            // alarm is ringing
+            if (!_signalization.buzzer) return;
 
-            if ((unsigned long)(millis() - prev_millis) >= period) { // invert buzzer
+            // select either the regular or last ringing parameters
+            unsigned long period = (get_current_snooze_count() == 0) ?
+                Alarm_last_ringing_period : Alarm_regular_ringing_period;
+            unsigned int freq = (get_current_snooze_count() == 0) ?
+                Alarm_last_ringing_freq : Alarm_regular_ringing_freq;
+
+            if ((unsigned long)(millis() - prev_millis) >= period) {
+                // invert buzzer
                 prev_millis = millis();
                 if (get_current_beeping_status()) buzzerNoTone();
                 else buzzerTone(freq, 0);
@@ -26,47 +34,67 @@ void AlarmClass::loop(DateTime time)
             }
         }
 
+        return;  // alarm is active
     }
-    else { // alarm is not active
-        if (_days_of_week.getDayOfWeek_Adafruit(time.dayOfTheWeek()) && time.hour() == _when.hours && time.minute() == _when.minutes && _enabled != Off) { // time is matching
-            if ((time - last_alarm).totalseconds() > 60) { // check for last_alarm - in case the alarm gets canceled during the same minute it started
-                if (_enabled == Single) {
-                    _enabled = Off;
-                    writeEEPROM_all();
-                }  // must disable even if alarm is inhibited
 
-                if (get_inhibit()) {
-                    DEBUG_println(F("Alarm inhibited"));
-                    last_alarm = time;  // otherwise it would spam the log
-                }
-                else {
-                    last_alarm = time;
-                    set_current_snooze_count(_snooze.count);
-                    set_current_snooze_status(false);
-
-                    // safety feature - in case ambientDimmer got stuck:
-                    if (_signalization.buzzer) buzzerTone(Alarm_regular_ringing_freq, 0);
-
-                    // Do events - can only switch on
-                    ambientDimmer->set_from_duration(
-                            ambientDimmer->get_value(),
-                            _signalization.ambient > ambientDimmer->get_stop() ?
-                            _signalization.ambient : ambientDimmer->get_stop(),
-                            (ambientDimmer->get_remaining() > 0 &&
-                             ambientDimmer->get_remaining() <
-                             Alarm_ambient_dimming_duration) ?
-                            ambientDimmer->get_remaining() :
-                            Alarm_ambient_dimming_duration);
-                    ambientDimmer->start();
-
-                    if (_signalization.lamp) lamp(true);
-                    activation_callback();
-                    DEBUG_println(F("Alarm activated"));
-                }
-            }
+    // alarm is not active
+    if (should_trigger(time)) {
+        // Single must disable even if alarm is inhibited
+        if (_enabled == Single) {
+            _enabled = Off;
+            writeEEPROM_all();
         }
+
+        if (get_inhibit()) {
+            DEBUG_println(F("Alarm inhibited"));
+            last_alarm = time;  // otherwise it would spam the log
+            return;
+        }
+
+        last_alarm = time;
+        set_current_snooze_count(_snooze.count);
+        set_current_snooze_status(false);
+
+        // safety feature - in case ambientDimmer got stuck:
+        if (_signalization.buzzer) buzzerTone(Alarm_regular_ringing_freq, 0);
+
+        // Do events - can only switch on
+        ambientDimmer->set_from_duration(
+                ambientDimmer->get_value(),
+                _signalization.ambient > ambientDimmer->get_stop() ?
+                _signalization.ambient : ambientDimmer->get_stop(),
+                (ambientDimmer->get_remaining() > 0 &&
+                 ambientDimmer->get_remaining() <
+                 Alarm_ambient_dimming_duration) ?
+                ambientDimmer->get_remaining() :
+                Alarm_ambient_dimming_duration);
+        ambientDimmer->start();
+
+        if (_signalization.lamp) lamp(true);
+        activation_callback();
+        DEBUG_println(F("Alarm activated"));
     }
 }
+
+
+// returns true if the alarm should trigger
+// This function does NOT contain the !get_active() condition.
+bool AlarmClass::should_trigger(DateTime time)
+{
+    // check for last_alarm - in case the alarm gets canceled during the
+    // same minute it started
+    if ((time - last_alarm).totalseconds() < 60)
+        return false;
+
+    // time is not matching
+    if (!(_days_of_week.getDayOfWeek_Adafruit(time.dayOfTheWeek()) &&
+            time.hour() == _when.hours && time.minute() == _when.minutes &&
+            _enabled != Off))
+        return false;
+
+    return true;
+}
+
 
 // This function must run before the first execution of loop().
 void AlarmClass::set_hardware(void(*lamp_)(bool),
@@ -88,36 +116,38 @@ void AlarmClass::set_hardware(void(*lamp_)(bool),
 // doesn't have any effect during last ringing
 void AlarmClass::button_snooze()
 {
-    if (!get_current_snooze_status() && get_active()) {
-        if (get_current_snooze_count() >= 1) {
-            set_current_snooze_status(true);
-            set_current_snooze_count(get_current_snooze_count() - 1);
-            prev_millis = millis();
+    if (get_current_snooze_status() || !get_active())
+        return;
 
-            // not changing ambient
-            lamp(false);
-            buzzerNoTone();
-            set_current_beeping_status(false);
-        }
-    }
+    if (get_current_snooze_count() == 0)
+        return;
+
+    set_current_snooze_status(true);
+    set_current_snooze_count(get_current_snooze_count() - 1);
+    prev_millis = millis();
+
+    // not changing ambient
+    lamp(false);
+    buzzerNoTone();
+    set_current_beeping_status(false);
 }
 
 // stops everything (even if in snooze)
 void AlarmClass::button_stop()
 {
-    if(get_active()) {
-        current_snooze_count = AlarmClass_current_snooze_count_none;
+    if(!get_active()) return;
 
-        ambientDimmer->set_from_duration(ambientDimmer->get_value(), 0,
-                                         Alarm_ambient_fade_out_duration);
-        ambientDimmer->start();
-        lamp(false);
-        buzzerNoTone();
-        //set_current_beeping_status(false); // this would break it
-        // (alarm would wake from snooze)
-        // becasue current_snooze_count != AlarmClass_current_snooze_count_none
-        stop_callback();
-    }
+    current_snooze_count = AlarmClass_current_snooze_count_none;
+
+    ambientDimmer->set_from_duration(ambientDimmer->get_value(), 0,
+                                     Alarm_ambient_fade_out_duration);
+    ambientDimmer->start();
+    lamp(false);
+    buzzerNoTone();
+    //set_current_beeping_status(false); // this would break it
+    // (alarm would wake from snooze)
+    // becasue current_snooze_count != AlarmClass_current_snooze_count_none
+    stop_callback();
 }
 
 AlarmClass::AlarmClass()

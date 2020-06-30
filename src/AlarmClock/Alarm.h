@@ -65,6 +65,8 @@ protected:
     // bit 5 - currently beeping;
     // bit 0,1,2,3 - actual value (max 9)
     byte current_snooze_count;
+    // used for inverting the buzzer (if active)
+    // or timing the snooze (if in snooze)
     unsigned long prev_millis;
     bool inhibit;
 
@@ -125,6 +127,9 @@ protected:
     bool get_active() const {
         return current_snooze_count < AlarmClass_current_snooze_count_none;
     };
+
+
+    bool should_trigger(DateTime time);
 
 
 public:
