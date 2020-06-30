@@ -17,13 +17,6 @@
 
 
 //#define AlarmClass_EEPROM_length identifier(1B) + sizeof(TimeStampClass - jen  2 byte) + sizeof(AlarmsEnabled - 1 byte) + sizeof(DaysOfWeekClass - jen 1 byte (eeprom)) + sizeof(Snooze) + sizeOf(Signalization)
-#define AlarmClass_current_snooze_count_none 255
-#define AlarmClass_current_snooze_count_value_mask 0b00001111
-#define AlarmClass_current_snooze_count_snooze_mask 0b01000000
-#define AlarmClass_current_snooze_count_snooze_bit 6
-#define AlarmClass_current_snooze_count_beeping_mask 0b00100000
-#define AlarmClass_current_snooze_count_beeping_bit 5
-
 
 #define AlarmEnabled_max 2  // for input validation
 enum AlarmEnabled {
@@ -61,14 +54,14 @@ protected:
     // needed in case the alarm gets canceled during the same minute it started
     DateTime last_alarm;
 
-    // bit 6 - currently in snooze;
-    // bit 5 - currently beeping;
-    // bit 0,1,2,3 - actual value (max 9)
-    byte current_snooze_count;
+#define current_snooze_count_inactive 255
+    byte current_snooze_count;  // max 9; 255 --> inactive alarm
     // used for inverting the buzzer (if active)
     // or timing the snooze (if in snooze)
     unsigned long prev_millis;
     bool inhibit;
+    bool snooze_status;  // currently in snooze
+    bool beeping; // currently beeping (used for inverting the buzzer)
 
     void(*lamp)(bool);
     PWMDimmerClass *ambientDimmer;
@@ -87,45 +80,9 @@ protected:
     Snooze _snooze;
     Signalization _signalization;
 
-    // Current snooze count value selected from the variable that also contains
-    // other info.
-    // Counts down to 0.
-    byte get_current_snooze_count() const {
-        return current_snooze_count & AlarmClass_current_snooze_count_value_mask;
-    };
-
-    // set the snooze count value
-    void set_current_snooze_count(byte count) {
-        // value = 0 (~ = bitwise not)
-        current_snooze_count &= ~AlarmClass_current_snooze_count_value_mask;
-        // 0x0F - limit to 4 bits
-        // This should not be needed if everything works correctly.
-        current_snooze_count |= (count & 0x0F);
-    };
-
-    // currently in snooze
-    bool get_current_snooze_status() const {
-        return current_snooze_count & AlarmClass_current_snooze_count_snooze_mask;
-    };
-
-    // set the snooze bit
-    void set_current_snooze_status(bool bitvalue) {
-        bitWrite(current_snooze_count, AlarmClass_current_snooze_count_snooze_bit, bitvalue);
-    };
-
-    // currently beeping (used for inverting the buzzer)
-    bool get_current_beeping_status() const {
-        return current_snooze_count & AlarmClass_current_snooze_count_beeping_mask;
-    };
-
-    // set the beeping bit (used for inverting the buzzer)
-    void set_current_beeping_status(bool bitvalue) {
-        bitWrite(current_snooze_count, AlarmClass_current_snooze_count_beeping_bit, bitvalue);
-    };
-
     // true --> alarm is on (ringing or snooze)
     bool get_active() const {
-        return current_snooze_count < AlarmClass_current_snooze_count_none;
+        return current_snooze_count < current_snooze_count_inactive;
     };
 
 
