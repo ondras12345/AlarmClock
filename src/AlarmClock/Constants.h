@@ -29,7 +29,7 @@ DEBUG
 String constants
 */
 // 1 = Monday, 7 = Sunday
-static const char* days_of_the_week_names_short[] = { "", "Mo", "Tu", "We", "Th", "Fr", "Sa", "Su" };
+extern const char* days_of_the_week_names_short[8];
 
 
 /*
