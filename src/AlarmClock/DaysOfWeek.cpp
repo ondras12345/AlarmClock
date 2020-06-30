@@ -1,12 +1,12 @@
 #include "DaysOfWeek.h"
 
-bool DaysOfWeekClass::getDayOfWeek(byte num)
+bool DaysOfWeekClass::getDayOfWeek(byte num) const
 {
     return bitRead(DaysOfWeek, num);
 }
 
 // day of the week using the standard of the Adafruit RTC library - 0=Sunday, 6=saturday
-bool DaysOfWeekClass::getDayOfWeek_Adafruit(byte num)
+bool DaysOfWeekClass::getDayOfWeek_Adafruit(byte num) const
 {
     if (num == 0) return bitRead(DaysOfWeek, 7);
     else return bitRead(DaysOfWeek, num);

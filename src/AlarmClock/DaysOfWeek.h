@@ -21,8 +21,8 @@ protected:
 
 public:
     byte DaysOfWeek;
-    bool getDayOfWeek(byte num);
-    bool getDayOfWeek_Adafruit(byte num);
+    bool getDayOfWeek(byte num) const;
+    bool getDayOfWeek_Adafruit(byte num) const;
     bool setDayOfWeek(byte num, bool status);
     bool setDayOfWeek_Adafruit(byte num, bool status);
 };

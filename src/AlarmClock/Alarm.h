@@ -115,23 +115,23 @@ public:
 
 
     bool set_enabled(AlarmEnabled enabled);
-    AlarmEnabled get_enabled() { return _enabled; };
+    AlarmEnabled get_enabled() const { return _enabled; };
 
     bool set_time(byte hours, byte minutes);
-    hours_minutes get_time() { return _when; };
+    hours_minutes get_time() const { return _when; };
 
     bool set_days_of_week(DaysOfWeekClass days_of_week);
     bool set_day_of_week(byte day, bool status);
-    DaysOfWeekClass get_days_of_week() { return _days_of_week; };
-    bool get_day_of_week(byte day) { return _days_of_week.getDayOfWeek(day); }
+    DaysOfWeekClass get_days_of_week() const { return _days_of_week; };
+    bool get_day_of_week(byte day) const { return _days_of_week.getDayOfWeek(day); }
 
     bool set_snooze(byte time_minutes, byte count);
-    Snooze get_snooze() { return _snooze; };
+    Snooze get_snooze() const { return _snooze; };
 
     bool set_signalization(byte ambient, bool lamp, bool buzzer);
-    Signalization get_signalization() { return _signalization; };
+    Signalization get_signalization() const { return _signalization; };
 
-    bool get_inhibit() { return inhibit; };
+    bool get_inhibit() const { return inhibit; };
     bool set_inhibit(bool inhibit);
 };
 
