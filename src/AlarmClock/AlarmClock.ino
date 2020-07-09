@@ -177,6 +177,7 @@ void alarm_activation_callback()
     GUI.set_backlight(permanent);
 }
 
+// WARNING: stop_callback is also called if the alarm times out.
 void alarm_stop_callback()
 {
     GUI.set_backlight(on);  // disable permanent backlight

@@ -72,6 +72,12 @@ Alarms
 #define Alarm_ambient_fade_out_duration 2000UL  // ms
 
 
+// Alarm timeout
+// default: 30 * 60L
+// (long because RTClib uses int32_t)
+#define Alarm_timeout 30 * 60L  // s
+
+
 
 /*
 Hardware

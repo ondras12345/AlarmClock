@@ -24,6 +24,15 @@ void AlarmClass::loop(DateTime time)
         }
         else {
             // alarm is ringing
+
+            // WARNING: If another alarm activated after this one, it would
+            // disable it's lamp and ambient (buzzer should enable again)
+            // # TODO
+            if ((time - last_alarm).totalseconds() >= Alarm_timeout) {
+                button_stop();
+                return;
+            }
+
             if (!_signalization.buzzer) return;
 
             // select either the regular or last ringing parameters
@@ -132,8 +141,9 @@ bool AlarmClass::should_trigger(DateTime time)
     @param activation_callback_ pointer to a function that is called when the
                                 alarm activates
 
-    @param stop_callback_ pointer to a function that is called when the alarm is
-                          stopped
+    @param stop_callback_ pointer to a function that is called when the alarm
+                          is stopped.
+                          WARNING: also called if the alarm times out.
 */
 void AlarmClass::set_hardware(void(*lamp_)(bool),
                               PWMDimmerClass *ambientDimmer_,
