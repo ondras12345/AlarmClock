@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Unit tests
 - Doxygen documentation (incomplete)
+- "Skip" added to Alarm "Enabled" options
 
 ### Changed
 - Better LCD backlight control

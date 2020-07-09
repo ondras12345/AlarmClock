@@ -44,7 +44,8 @@ test(Alarm_trigger)
     enum test {
         inhibit = 0,
         activate = 1,
-        last = 2
+        skip = 2,
+        last = 3
     };
 
     test myTest = inhibit;
@@ -122,6 +123,39 @@ test(Alarm_trigger)
                 assertTrue(activation_time);
                 }
                 break;
+
+            case skip:
+                {
+                assertTrue(alarm.set_enabled(Skip));
+
+                bool activation_time = false;
+                while (time < DateTime(2020, 1, 1 + byte(myTest), 13, 15, 00))
+                {
+                    alarm.loop(time);
+
+                    if (time.hour() == 12 && time.minute() == 13 && time.second() < 30)
+                    {
+                        assertFalse(activated);
+                        assertFalse(lamp_status);
+                        assertFalse(buzzer_status);
+                        assertEqual(alarm.get_enabled(), Repeat);  // Skip
+
+                        activation_time = true;
+                    }
+                    else
+                    {
+                        assertFalse(activated);
+                        assertFalse(lamp_status);
+                    }
+
+                    reset_alarm_mockups();
+                    alarm.button_stop();
+                    time = time + TimeSpan(30);
+                }
+                // In case the test code was wrong
+                assertTrue(activation_time);
+                }
+                break;
         }
 
         myTest = (test)(myTest + 1);
@@ -177,49 +211,49 @@ test(Alarm_EEPROM_read)
 
     // Bad id
     byte data1[EEPROM_AlarmClass_length] = {
-        EEPROM_alarms_id + 1, 23, 59, 2, 0x08, 99, 9, 80, 1, 0
+        EEPROM_alarms_id + 1, 23, 59, 3, 0x08, 99, 9, 80, 1, 0
     };
     assertFalse(alarm.readEEPROM(data1));
 
 
     // Bad hours
     byte data2[EEPROM_AlarmClass_length] = {
-        EEPROM_alarms_id, 24, 59, 2, 0x08, 99, 9, 80, 1, 0
+        EEPROM_alarms_id, 24, 59, 3, 0x08, 99, 9, 80, 1, 0
     };
     assertFalse(alarm.readEEPROM(data2));
 
     // Bad minutes
     byte data3[EEPROM_AlarmClass_length] = {
-        EEPROM_alarms_id, 23, 60, 2, 0x08, 99, 9, 80, 1, 0
+        EEPROM_alarms_id, 23, 60, 3, 0x08, 99, 9, 80, 1, 0
     };
     assertFalse(alarm.readEEPROM(data3));
 
     // Bad enabled
     byte data4[EEPROM_AlarmClass_length] = {
-        EEPROM_alarms_id, 23, 59, 3, 0x08, 99, 9, 80, 1, 0
+        EEPROM_alarms_id, 23, 59, 4, 0x08, 99, 9, 80, 1, 0
     };
     assertFalse(alarm.readEEPROM(data4));
 
     // Bad snooze time
     byte data5[EEPROM_AlarmClass_length] = {
-        EEPROM_alarms_id, 23, 59, 2, 0x08, 100, 9, 80, 1, 0
+        EEPROM_alarms_id, 23, 59, 3, 0x08, 100, 9, 80, 1, 0
     };
     assertFalse(alarm.readEEPROM(data5));
 
     // Bad snooze count
     byte data6[EEPROM_AlarmClass_length] = {
-        EEPROM_alarms_id, 23, 59, 2, 0x08, 99, 10, 80, 1, 0
+        EEPROM_alarms_id, 23, 59, 3, 0x08, 99, 10, 80, 1, 0
     };
     assertFalse(alarm.readEEPROM(data6));
 
     // Valid alarm
     byte data7[EEPROM_AlarmClass_length] = {
-        EEPROM_alarms_id, 23, 59, 2, 0x08, 99, 9, 80, 1, 0
+        EEPROM_alarms_id, 23, 59, 3, 0x08, 99, 9, 80, 1, 0
     };
     assertTrue(alarm.readEEPROM(data7));
     assertEqual(alarm.get_time().hours, 23);
     assertEqual(alarm.get_time().minutes, 59);
-    assertEqual(alarm.get_enabled(), Repeat);
+    assertEqual(alarm.get_enabled(), Skip);
     assertEqual(alarm.get_snooze().time_minutes, 99);
     assertEqual(alarm.get_snooze().count, 9);
     assertEqual(alarm.get_signalization().ambient, 80);

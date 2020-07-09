@@ -11,6 +11,7 @@
     - [ ] `ls`
     - [ ] `en-sgl`
     - [ ] `en-rpt`
+    - [ ] `en-skp`
     - [ ] `dis`
     - [ ] `time{h}:{m}`
     - [ ] `dow{d}:{s}`

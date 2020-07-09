@@ -211,7 +211,7 @@ void GUIClass::loop(DateTime __time)
                         {
                             AlarmEnabled enabled = _sel_alarm->get_enabled();
                             enabled = AlarmEnabled(_apply_limits(enabled,
-                                encoder_full_steps, 0, 2));
+                                encoder_full_steps, 0, 3));
                             _sel_alarm->set_enabled(enabled);
                         }
                             break;
@@ -456,6 +456,10 @@ void GUIClass::_update()
 
         case Repeat:
             strcpy(enabled, "RPT");
+            break;
+
+        case Skip:
+            strcpy(enabled, "SKP");
             break;
         }
 

@@ -52,6 +52,13 @@ void AlarmClass::loop(DateTime time)
             writeEEPROM_all();
         }
 
+        if (_enabled == Skip) {
+            _enabled = Repeat;
+            writeEEPROM_all();
+            last_alarm = time;  // otherwise it run over and over again
+            return;
+        }
+
         if (inhibit) {
             DEBUG_println(F("Alarm inhibited"));
             last_alarm = time;  // otherwise it would spam the log

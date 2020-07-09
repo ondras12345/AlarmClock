@@ -14,8 +14,10 @@ Alarm_inhibit_duration compile-time option). I plan to use it when I get up
 before the alarm rings, so that I don't have to wait for the alarm to activate
 nor disable it (I know that I'd forget to re-enable it).
 
-If an alarm with option 'Enabled: Single' is inhibited, it gets disabled
+If an alarm with option "Enabled: Single" is inhibited, it gets disabled
 the same as if it started ringing normally.
+The same thing applies for "Enabled: Skip": is gets enabled even if it was
+inhibited.
 
 This feature can by enabled by clicking on the `i` button in the GUI. The
 button should change to uppercase `I`, indicating that the feature is on. It
@@ -52,22 +54,25 @@ and press the button on time to set it precisely.
 
 ## Alarms
 
-| Option                          | Values          | Type  | Meaning                                       |
-| ------------------------------- | --------------- | ----- | --------------------------------------------- |
-| Enabled                         | (Off\|SGL\|RPT) | enum  | Off: disabled, Single: only rings once        |
-| Days of week                    | (1-7):(1\|0)    | bools | Days of the week the alarm is enabled for     |
-| Time                            | (0-23):(0-59)   | time  |                                               |
-| Snooze: time                    | (1-99)          | min   | How long is the alarm in snooze               |
-| Snooze: count                   | (0-9)           | count | How many times can the snooze feature be used |
-| Signalization: Ambient          | (0-255)         |       | Ambient LED strips intensity (0 = disabled)   |
-| Signalization: Lamp             | (0\|1)          | bool  | Is the 'lamp' output activated                |
-| Signalization: Buzzer           | (0\|1)          | bool  | Is the buzzer activated                       |
+| Option                          | Values               | Type  | Meaning                                       |
+| ------------------------------- | -------------------- | ----- | --------------------------------------------- |
+| Enabled                         | (Off\|SGL\|RPT\|SKP) | enum  | Off, Single: only rings once, Repeat, Skip    |
+| Days of week                    | (1-7):(1\|0)         | bools | Days of the week the alarm is enabled for     |
+| Time                            | (0-23):(0-59)        | time  |                                               |
+| Snooze: time                    | (1-99)               | min   | How long is the alarm in snooze               |
+| Snooze: count                   | (0-9)                | count | How many times can the snooze feature be used |
+| Signalization: Ambient          | (0-255)              |       | Ambient LED strips intensity (0 = disabled)   |
+| Signalization: Lamp             | (0\|1)               | bool  | Is the 'lamp' output activated                |
+| Signalization: Buzzer           | (0\|1)               | bool  | Is the buzzer activated                       |
 
 
 **Notes:**  
 bool: [boolean][Wikipedia boolean]  
 days of week: Mo = 1, Su = 7  
 Ambient LED strip dimming: [PWM][Wikipedia PWM]
+
+If "Enabled" is set to "Skip", the next activation is inhibited. The alarm
+returns to "Repeat" afterwards.
 
 
 # LCD
