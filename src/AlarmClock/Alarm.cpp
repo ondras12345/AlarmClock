@@ -1,7 +1,15 @@
+/*!
+    @file Alarm.cpp
+*/
+
 #include "Alarm.h"
 
 
-// set_hardware must run before loop() is executed.
+/*!
+    @brief  Call this function in the loop() of your sketch.
+    @param time Current date and time
+    @see    `set_hardware` must run before this function is first called
+*/
 void AlarmClass::loop(DateTime time)
 {
     if (get_active()) {
@@ -95,7 +103,32 @@ bool AlarmClass::should_trigger(DateTime time)
 }
 
 
-// This function must run before the first execution of loop().
+/*!
+    @brief  Give the alarm access to the hardware.
+            This function must run before the first execution of loop().
+            This is not part of the constructor to make it easier to initialise
+            an array of alarms.
+
+    @param lamp_  pointer to a function that controls the lamp output.
+
+    @param ambientDimmer_ pointer to an instance of `PWMDimmerClass` that
+                          controls the ambient LED strip
+
+    @param buzzerTone_ pointer to a function that turns the buzzer on and sets
+                       the frequency and duration
+
+    @param buzzerNoTone_ pointer to a function that turns the buzzer off
+
+    @param writeEEPROM_ pointer to a function that writes all the alarms to the
+                        EEPROM. This is needed when a "Single" or "Skip" alarms
+                        changes its Enabled state.
+
+    @param activation_callback_ pointer to a function that is called when the
+                                alarm activates
+
+    @param stop_callback_ pointer to a function that is called when the alarm is
+                          stopped
+*/
 void AlarmClass::set_hardware(void(*lamp_)(bool),
                               PWMDimmerClass *ambientDimmer_,
                               void(*buzzerTone_)(unsigned int, unsigned long),
@@ -112,7 +145,11 @@ void AlarmClass::set_hardware(void(*lamp_)(bool),
     stop_callback = stop_callback_;
 }
 
-// doesn't have any effect during last ringing
+
+/*!
+    @brief  Call this function when the snooze button is pressed.
+            It has no effect during the last ringing of the alarm.
+*/
 void AlarmClass::button_snooze()
 {
     if (snooze_status || !get_active())
@@ -131,7 +168,11 @@ void AlarmClass::button_snooze()
     beeping = false;
 }
 
-// stops everything (even if in snooze)
+
+/*!
+    @brief  Stops everything, even if in snooze.
+            Call this function when the stop button is pressed.
+ */
 void AlarmClass::button_stop()
 {
     if(!get_active()) return;
@@ -147,6 +188,11 @@ void AlarmClass::button_stop()
     stop_callback();
 }
 
+
+/*!
+    @brief  Initialises the alarm to sane default values (disabled).
+            The alarm will never trigger unless modified.
+*/
 AlarmClass::AlarmClass()
 {
     _when = { 0, 0 };
@@ -161,6 +207,14 @@ AlarmClass::AlarmClass()
     inhibit = false;
 }
 
+
+/*!
+    @brief  Configure the alarm from EEPROM data.
+    @param data an array of bytes - the EEPROM record, including the id
+    @return True if valid, otherwise false.
+            If it returns false, the alarm may be set to incomplete (and
+            probably random) data.
+*/
 bool AlarmClass::readEEPROM(byte data[EEPROM_AlarmClass_length])
 {
 #if defined(DEBUG) && defined(DEBUG_EEPROM_alarms)
@@ -206,6 +260,11 @@ bool AlarmClass::readEEPROM(byte data[EEPROM_AlarmClass_length])
     return true;
 }
 
+
+/*!
+    @brief  Converts the alarm to an EEPROM record.
+    @return A pointer to the first byte of the data.
+*/
 byte * AlarmClass::writeEEPROM()
 {
     _EEPROM_data[0] = EEPROM_alarms_id;
@@ -240,6 +299,7 @@ bool AlarmClass::set_enabled(AlarmEnabled __enabled)
     return true;
 }
 
+
 bool AlarmClass::set_time(byte __hours, byte __minutes)
 {
     if (__hours > 23 || __minutes > 59) return false;
@@ -247,16 +307,19 @@ bool AlarmClass::set_time(byte __hours, byte __minutes)
     return true;
 }
 
+
 bool AlarmClass::set_days_of_week(DaysOfWeekClass __days_of_week)
 {
     _days_of_week = __days_of_week;
     return true;
 }
 
+
 bool AlarmClass::set_day_of_week(byte __day, bool __status)
 {
     return _days_of_week.setDayOfWeek(__day, __status);
 }
+
 
 bool AlarmClass::set_snooze(byte __time_minutes, byte __count)
 {
@@ -266,6 +329,7 @@ bool AlarmClass::set_snooze(byte __time_minutes, byte __count)
     return true;
 }
 
+
 bool AlarmClass::set_signalization(byte __ambient, bool __lamp, bool __buzzer)
 {
     _signalization.ambient = __ambient;
@@ -273,6 +337,7 @@ bool AlarmClass::set_signalization(byte __ambient, bool __lamp, bool __buzzer)
     _signalization.buzzer = __buzzer;
     return true;
 }
+
 
 bool AlarmClass::set_inhibit(bool __inhibit)
 {

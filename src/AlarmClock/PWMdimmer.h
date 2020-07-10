@@ -1,4 +1,7 @@
-// PWMdimmer.h
+/*!
+    @file PWMdimmer.h
+*/
+
 
 #ifndef _PWMDIMMER_h
 #define _PWMDIMMER_h
@@ -12,6 +15,10 @@
 #include "Settings.h"
 #include "Constants.h"
 
+/*!
+    @brief  A general purpose class that implements PWM duty cycle ramp-up and
+            ramp-down
+*/
 class PWMDimmerClass
 {
  protected:
@@ -19,7 +26,7 @@ class PWMDimmerClass
      byte _pin;
      int _value; // int because of overflows
 
-     // I need to initialize these variables with values bacause start() can be
+     // I need to initialize these variables with values because start() can be
      // executed before set()
      byte _start = 0;
      byte _stop = 0;
@@ -45,10 +52,15 @@ class PWMDimmerClass
 
      byte get_value() const { return byte(_value); }
 
+     //! Get the target value
      byte get_stop() const { return byte(_stop); }
 
      bool get_active() const { return _active; }
 
+     /*!
+        @brief  Get time remaining before the target value is reached.
+        @return time in ms
+     */
      unsigned long get_remaining() const {
          if (!_active) return 0;
          byte diff_remaining = abs(_stop - _value);

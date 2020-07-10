@@ -1,3 +1,9 @@
+/*!
+    @file   Constants.h
+    @brief  Constants that are not meant to be changed by the user.
+    User changable settings are in Settings.h
+*/
+
 #ifndef _CONSTANTS_h
 #define _CONSTANTS_h
 
@@ -8,10 +14,6 @@
 #endif
 
 #include "Settings.h"
-/*
-This file contains constants that are not meant to be user changable.
-User changable settings are in Settings.h
-*/
 
 /*
 DEBUG

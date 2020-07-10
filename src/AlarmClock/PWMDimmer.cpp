@@ -1,11 +1,23 @@
+/*!
+    @file PWMdimmer.cpp
+*/
+
 #include "PWMDimmer.h"
 
+/*!
+    @brief  Initialises the PWMDimmer object
+    @param pin a pin that supports PWM
+*/
 PWMDimmerClass::PWMDimmerClass(byte pin)
 {
     _pin = pin;
 }
 
 
+/*!
+    @brief  Sets the values required for operation.
+            WARNING: This does not start the process.
+*/
 void PWMDimmerClass::set(byte start, byte stop, int step, unsigned long interval)
 {
     _start = start;
@@ -15,6 +27,10 @@ void PWMDimmerClass::set(byte start, byte stop, int step, unsigned long interval
 }
 
 
+/*!
+    @brief  Automatically calculates `step` and `interval` and calls `set`
+    @see `set`
+*/
 void PWMDimmerClass::set_from_duration(byte start, byte stop, unsigned long duration)
 {
     int step_sign = (start > stop) ? -1 : 1;
@@ -75,6 +91,7 @@ void PWMDimmerClass::stop()
 }
 
 
+//! Call this function in the loop() of your sketch.
 void PWMDimmerClass::loop()
 {
     if (_active && ((unsigned long)(millis() - _prev_change_millis) >= _interval)) {

@@ -1,3 +1,16 @@
+/*!
+    @file   Settings.h
+    @brief  User-modifiable settings.
+            Doxygen could not be used to document these settings because some
+            of them need to be commented out.
+
+    Constants like error codes are in Constants.h
+
+    **NOTES**:
+    - 1000UL - normal 16bit int would overflow for some values, so they need to
+      be unsigned long
+*/
+
 #ifndef _SETTINGS_h
 #define _SETTINGS_h
 
@@ -6,15 +19,6 @@
 #else
 #include "WProgram.h"
 #endif
-/*
-This file contains settings that are meant to be user changeable.
-Constants like error codes are in Constants.h
-For more info about these options see docs/manual.md
-
-**NOTES**:
-- 1000UL - normal 16bit int would overflow for some values, so they need to be
-  unsigned long
-*/
 
 
 
