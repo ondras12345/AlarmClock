@@ -34,6 +34,7 @@ DEBUG
 //#define DEBUG_Serial_CLI  // HEX dumps of received data, ...
 //#define DEBUG_GUI
 //#define DEBUG_encoder
+//#define DEBUG_LAMP  // lamp control (lamp_count, ...)
 
 
 

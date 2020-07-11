@@ -26,7 +26,8 @@ void AlarmClass::loop(DateTime time)
             // alarm is ringing
 
             // WARNING: If another alarm activated after this one, it would
-            // disable it's lamp and ambient (buzzer should enable again)
+            // disable it's ambient (buzzer should enable again; lamp is
+            // already solved)
             // # TODO
             if ((time - last_alarm).totalseconds() >= Alarm_timeout) {
                 button_stop();
@@ -179,7 +180,7 @@ void AlarmClass::button_snooze()
     prev_millis = millis();
 
     // not changing ambient
-    lamp(false);
+    if (_signalization.lamp) lamp(false);
     buzzerNoTone();
     beeping = false;
 }
@@ -198,7 +199,7 @@ void AlarmClass::button_stop()
     ambientDimmer->set_from_duration(ambientDimmer->get_value(), 0,
                                      Alarm_ambient_fade_out_duration);
     ambientDimmer->start();
-    lamp(false);
+    if (_signalization.lamp) lamp(false);
     buzzerNoTone();
     beeping = false;
     stop_callback();

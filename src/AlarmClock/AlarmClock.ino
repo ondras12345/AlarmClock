@@ -51,6 +51,7 @@ enum SelfTest_level {
 // Function prototypes
 // Hardware
 void lamp(bool status);
+void lamp_manu(bool status);
 bool get_lamp();
 void buzzerTone(unsigned int freq, unsigned long duration = 0); // specifies default duration=0
 //void buzzerNoTone();
@@ -70,11 +71,11 @@ AlarmClass alarms[alarms_count];
 //CountdownTimerClass countdownTimer;  // # TODO implement CountdownTimer
 PWMDimmerClass ambientDimmer(pin_ambient);
 DateTime now;
-SerialCLIClass CLI(alarms, writeEEPROM, &rtc, &ambientDimmer, lamp, get_lamp,
-                   set_inhibit, get_inhibit);
+SerialCLIClass CLI(alarms, writeEEPROM, &rtc, &ambientDimmer, lamp_manu,
+                   get_lamp, set_inhibit, get_inhibit);
 GUIClass GUI(alarms, writeEEPROM, &rtc, &encoder,
              &buttons[button_index_encoder], &lcd, set_inhibit, get_inhibit,
-             &ambientDimmer, lamp, get_lamp);
+             &ambientDimmer, lamp_manu, get_lamp);
 
 
 unsigned long loop_rtc_prev_millis = 0;
@@ -83,6 +84,14 @@ bool inhibit = false;
 unsigned long inhibit_prev_millis = 0;
 
 bool lamp_status = false;
+// number of alarms that want the lamp to be on.
+// This should prevent collisions like one alarm disabling another's lamp
+// (e.g. timeout)
+// GUI and CLI are not included in this number and set it to 0 or 255 when they
+// want to turn the lamp off or on.
+byte lamp_count = 0;
+// lamp_count == 255 --> manually on (GUI, CLI)
+#define lamp_count_manu 255
 
 #ifdef active_buzzer
 unsigned long active_buzzer_prev_millis = 0;
@@ -317,10 +326,33 @@ bool I2C_ping(byte addr) {
 Hardware
 Included classes can control the hardware trough these functions
 */
+// manual control - this allows the lamp to be disabled manually from the GUI
+// even if it was enabled from the CLI and vice versa.
+void lamp_manu(bool status)
+{
+    if (status) lamp_count = lamp_count_manu;
+    else lamp_count = 0;
+    // I cannot just add 1 to lamp_count because repeated `lamp1` would cause
+    // overflow.
+
+    lamp(status);
+}
+
 void lamp(bool status)
 {
-    digitalWrite(pin_lamp, status);
-    lamp_status = status;
+    if (lamp_count != lamp_count_manu) {
+        if (status) lamp_count++;
+        else if (lamp_count != 0) lamp_count--;
+    }
+
+    lamp_status = !(lamp_count == 0);
+    digitalWrite(pin_lamp, lamp_status);
+#if defined(DEBUG) && defined(DEBUG_LAMP)
+    Serial.print(F("lamp_count: "));
+    Serial.print(lamp_count);
+    Serial.print(F(" status: "));
+    Serial.println(status);
+#endif
 }
 
 bool get_lamp() { return lamp_status; }
