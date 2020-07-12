@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Unit tests
+- Doxygen documentation (incomplete)
 
 ### Changed
 - Better LCD backlight control

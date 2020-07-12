@@ -1,4 +1,6 @@
-// Alarm.h
+/*!
+    @file Alarm.h
+*/
 
 #ifndef _ALARM_h
 #define _ALARM_h
@@ -25,8 +27,8 @@ enum AlarmEnabled {
     Repeat = 2
 };
 struct Snooze {
-    byte time_minutes; // max 99
-    byte count; // max 9
+    byte time_minutes; //!< max 99
+    byte count; //!< max 9
 };
 
 struct hours_minutes {
@@ -34,13 +36,21 @@ struct hours_minutes {
     byte minutes;
 };
 
+/*!
+    @brief  Stores information about the means that should be used to wake the
+            user up when the alarm activates.
+*/
 struct Signalization {
-    byte ambient; // ambient light - dimmable LED strips
+    byte ambient; //!< ambient light intensity - dimmable LED strips
     bool lamp;
     bool buzzer;
 };
 
 
+/*!
+    @brief  An alarm. In normal use, there is an array of multiple instances of
+            this class.
+*/
 class AlarmClass
 {
 protected:

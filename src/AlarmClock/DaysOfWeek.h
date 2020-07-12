@@ -1,9 +1,7 @@
-// DaysOfWeek.h
-/*
-1 = Monday, 7 = Sunday
-Saves to EEPROM as 1B
-Used by alarms to determine which day of week to ring on
+/*!
+    @file DaysOfWeek.h
 */
+
 
 #ifndef _DAYSOFWEEK_h
 #define _DAYSOFWEEK_h
@@ -14,6 +12,12 @@ Used by alarms to determine which day of week to ring on
 #include "WProgram.h"
 #endif
 
+/*!
+    @brief  A class that is used by alarms to determine which day of the week
+            to activate on.
+
+    Saved in EEPROM as 1B.
+*/
 class DaysOfWeekClass
 {
 protected:
