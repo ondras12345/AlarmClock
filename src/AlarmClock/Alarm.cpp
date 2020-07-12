@@ -46,19 +46,25 @@ void AlarmClass::loop(DateTime time)
 
     // alarm is not active
     if (should_trigger(time)) {
+        last_alarm = time;
+
         // Single must disable even if alarm is inhibited
         if (_enabled == Single) {
             _enabled = Off;
             writeEEPROM_all();
         }
 
-        if (inhibit) {
-            DEBUG_println(F("Alarm inhibited"));
-            last_alarm = time;  // otherwise it would spam the log
+        if (_enabled == Skip) {
+            _enabled = Repeat;
+            writeEEPROM_all();
             return;
         }
 
-        last_alarm = time;
+        if (inhibit) {
+            DEBUG_println(F("Alarm inhibited"));
+            return;
+        }
+
         current_snooze_count = _snooze.count;
         snooze_status = false;
 

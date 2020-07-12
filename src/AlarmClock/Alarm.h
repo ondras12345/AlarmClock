@@ -20,11 +20,12 @@
 
 //#define AlarmClass_EEPROM_length identifier(1B) + sizeof(TimeStampClass - jen  2 byte) + sizeof(AlarmsEnabled - 1 byte) + sizeof(DaysOfWeekClass - jen 1 byte (eeprom)) + sizeof(Snooze) + sizeOf(Signalization)
 
-#define AlarmEnabled_max 2  // for input validation
+#define AlarmEnabled_max 3  // for input validation
 enum AlarmEnabled {
     Off = 0,
     Single = 1,
-    Repeat = 2
+    Repeat = 2,
+    Skip = 3
 };
 struct Snooze {
     byte time_minutes; //!< max 99

@@ -101,6 +101,9 @@ void SerialCLIClass::loop(DateTime __time)
         else if (!strcmp(_Serial_buffer, "en-rpt")) {
             _print_error(_set_enabled(Repeat));
         }
+        else if (!strcmp(_Serial_buffer, "en-skp")) {
+            _print_error(_set_enabled(Skip));
+        }
         else if (!strcmp(_Serial_buffer, "dis")) {
             _print_error(_set_enabled(Off));
         }
@@ -190,7 +193,7 @@ void SerialCLIClass::_print_help()
     _indent(2);
     Serial.println(F("ls - list"));
     _indent(2);
-    Serial.println(F("en-sgl/en-rpt - enable - single/repeat"));
+    Serial.println(F("en-sgl/en-rpt/en-skp - enable - single/repeat/skip"));
     _indent(2);
     Serial.println(F("dis - disable"));
     _indent(2);
@@ -336,6 +339,10 @@ SerialCLIClass::error_t SerialCLIClass::_list_selected_alarm()
 
     case Repeat:
         Serial.println(F("Repeat"));
+        break;
+
+    case Skip:
+        Serial.println(F("Skip"));
         break;
     }
 
