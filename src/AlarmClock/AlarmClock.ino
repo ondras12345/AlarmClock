@@ -70,6 +70,7 @@ AlarmClass alarms[alarms_count];
 //CountdownTimerClass countdownTimer;  // # TODO implement CountdownTimer
 PWMDimmerClass ambientDimmer(pin_ambient);
 HALbool lamp(lamp_set);
+HALbool permanent_backlight(set_backlight_permanent);
 DateTime now;
 SerialCLIClass CLI(alarms, writeEEPROM, &rtc, &ambientDimmer, &lamp,
                    set_inhibit, get_inhibit);
@@ -176,13 +177,13 @@ void init_hardware() {
 
 void alarm_activation_callback()
 {
-    GUI.set_backlight(permanent);
+    permanent_backlight.set(true);
 }
 
 // WARNING: stop_callback is also called if the alarm times out.
 void alarm_stop_callback()
 {
-    GUI.set_backlight(on);  // disable permanent backlight
+    permanent_backlight.set(false);
 }
 
 
@@ -362,3 +363,9 @@ void set_inhibit(bool status) {
     else DEBUG_println(F("inhibit disabled"));
 }
 bool get_inhibit() { return inhibit; }
+
+void set_backlight_permanent(bool s)
+{
+    if (s) GUI.set_backlight(permanent);
+    else GUI.set_backlight(on);  // disable permanent backlight
+}
