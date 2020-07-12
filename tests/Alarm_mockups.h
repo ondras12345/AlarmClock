@@ -7,6 +7,9 @@
 #include "WProgram.h"
 #endif
 
+#include "src/AlarmClock/HALbool.h"
+
+extern HALbool lamp;
 extern bool lamp_status;
 
 extern bool buzzer_status;
@@ -20,7 +23,7 @@ extern bool stopped;
 
 void reset_alarm_mockups();
 
-void lamp(bool status);
+void set_lamp(bool status);
 
 void buzzerTone(unsigned int freq, unsigned long duration = 0);
 void buzzerNoTone();

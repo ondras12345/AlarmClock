@@ -13,6 +13,7 @@
 #include "Constants.h"
 #include "Alarm.h"
 #include "PWMDimmer.h"
+#include "HALbool.h"
 
 class SerialCLIClass
 {
@@ -24,8 +25,7 @@ protected:
     RTC_DS3231 *_rtc;
     void(*_writeEEPROM)();
     PWMDimmerClass * _ambientDimmer;
-    void(*_lamp)(bool);
-    bool(*_get_lamp)();
+    HALbool * _lamp;
     void(*_set_inhibit)(bool);
     bool(*_get_inhibit)();
 
@@ -68,9 +68,8 @@ protected:
 public:
     void loop(DateTime time);
     SerialCLIClass(AlarmClass *alarms, void(*writeEEPROM)(), RTC_DS3231 *rtc,
-                   PWMDimmerClass *ambientDimmer, void(*lamp)(bool),
-                   bool(*get_lamp)(), void(*set_inhibit)(bool),
-                   bool(*get_inhibit)());
+                   PWMDimmerClass *ambientDimmer, HALbool *lamp,
+                   void(*set_inhibit)(bool), bool(*get_inhibit)());
 };
 
 #endif

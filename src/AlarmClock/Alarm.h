@@ -14,6 +14,7 @@
 #include "Settings.h"
 #include "Constants.h"
 #include "PWMDimmer.h"
+#include "HALbool.h"
 #include "DaysOfWeek.h"
 #include <RTClib.h> // for datetime
 
@@ -80,7 +81,7 @@ protected:
     bool snooze_status;  // currently in snooze
     bool beeping; // currently beeping (used for inverting the buzzer)
 
-    void(*lamp)(bool);
+    HALbool *lamp;
     PWMDimmerClass *ambientDimmer;
     void(*buzzerTone)(unsigned int, unsigned long); // freq, duration
     void(*buzzerNoTone)();
@@ -111,7 +112,7 @@ public:
     byte * writeEEPROM();
 
     void loop(DateTime time);
-    void set_hardware(void(*lamp)(bool),
+    void set_hardware(HALbool *lamp,
                       PWMDimmerClass *ambientDimmer,
                       void(*buzzerTone)(unsigned int, unsigned long),
                       void(*buzzerNoTone)(), void(*writeEEPROM)(),

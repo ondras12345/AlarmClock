@@ -49,7 +49,7 @@ test(Alarm_trigger)
     while (myTest != last)
     {
         AlarmClass alarm;  // needs to be here to reset prev_activation_millis
-        alarm.set_hardware(lamp, &ambientDimmer, buzzerTone, buzzerNoTone,
+        alarm.set_hardware(&lamp, &ambientDimmer, buzzerTone, buzzerNoTone,
                            writeEEPROM, activation_callback, stop_callback);
         assertTrue(alarm.set_time(12, 13));
         assertTrue(alarm.set_enabled(Single));
@@ -167,7 +167,7 @@ test(Alarm_snooze)
 
     pinMode(pin_ambient, OUTPUT);
     PWMDimmerClass ambientDimmer(pin_ambient);
-    alarm.set_hardware(lamp, &ambientDimmer, buzzerTone, buzzerNoTone,
+    alarm.set_hardware(&lamp, &ambientDimmer, buzzerTone, buzzerNoTone,
                        writeEEPROM, activation_callback, stop_callback);
 
     assertTrue(alarm.set_time(12, 13));
@@ -203,7 +203,7 @@ test(Alarm_EEPROM_read)
     AlarmClass alarm;
     pinMode(pin_ambient, OUTPUT);
     PWMDimmerClass ambientDimmer(pin_ambient);
-    alarm.set_hardware(lamp, &ambientDimmer, buzzerTone, buzzerNoTone,
+    alarm.set_hardware(&lamp, &ambientDimmer, buzzerTone, buzzerNoTone,
                        writeEEPROM, activation_callback, stop_callback);
 
     // Bad id
@@ -264,7 +264,7 @@ test(Alarm_EEPROM_write)
     AlarmClass alarm;
     pinMode(pin_ambient, OUTPUT);
     PWMDimmerClass ambientDimmer(pin_ambient);
-    alarm.set_hardware(lamp, &ambientDimmer, buzzerTone, buzzerNoTone,
+    alarm.set_hardware(&lamp, &ambientDimmer, buzzerTone, buzzerNoTone,
                        writeEEPROM, activation_callback, stop_callback);
 
     assertTrue(alarm.set_time(23, 59));

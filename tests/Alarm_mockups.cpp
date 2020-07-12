@@ -1,6 +1,7 @@
 #include "Alarm_mockups.h"
 
 
+HALbool lamp(set_lamp);
 bool lamp_status;
 bool buzzer_status;
 unsigned int buzzer_freq;
@@ -10,7 +11,7 @@ bool activated;
 bool stopped;
 
 
-void lamp(bool status) { lamp_status = status; }
+void set_lamp(bool status) { lamp_status = status; }
 void writeEEPROM() { EEPROM_write = true; }
 void activation_callback() { activated = true; }
 void stop_callback() { stopped = true; }
@@ -29,6 +30,7 @@ void buzzerNoTone()
 
 void reset_alarm_mockups()
 {
+    lamp = HALbool(set_lamp);
     lamp_status = false;
     buzzer_status = false;
     buzzer_freq = 0;

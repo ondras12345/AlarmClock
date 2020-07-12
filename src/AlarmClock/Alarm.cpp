@@ -18,7 +18,7 @@ void AlarmClass::loop(DateTime time)
             // alarm is NOT ringing (snooze)
             if ((unsigned long)(millis() - prev_millis) >= (_snooze.time_minutes * 60000UL)) {
                 snooze_status = false;
-                if (_signalization.lamp) lamp(true);
+                if (_signalization.lamp) lamp->set(true);
                 // for Alarm_timeout - this allows snooze time to be longer than
                 // Alarm_timeout
                 prev_activation_millis = millis();
@@ -96,7 +96,7 @@ void AlarmClass::loop(DateTime time)
                 Alarm_ambient_dimming_duration);
         ambientDimmer->start();
 
-        if (_signalization.lamp) lamp(true);
+        if (_signalization.lamp) lamp->set(true);
         activation_callback();
         DEBUG_println(F("Alarm activated"));
     }
@@ -129,7 +129,7 @@ bool AlarmClass::should_trigger(DateTime time)
             This is not part of the constructor to make it easier to initialise
             an array of alarms.
 
-    @param lamp_  pointer to a function that controls the lamp output.
+    @param lamp_  pointer to a HALbool instance that control the lamp
 
     @param ambientDimmer_ pointer to an instance of `PWMDimmerClass` that
                           controls the ambient LED strip
@@ -150,7 +150,7 @@ bool AlarmClass::should_trigger(DateTime time)
                           is stopped.
                           WARNING: also called if the alarm times out.
 */
-void AlarmClass::set_hardware(void(*lamp_)(bool),
+void AlarmClass::set_hardware(HALbool *lamp_,
                               PWMDimmerClass *ambientDimmer_,
                               void(*buzzerTone_)(unsigned int, unsigned long),
                               void(*buzzerNoTone_)(), void(*writeEEPROM_)(),
@@ -186,7 +186,7 @@ void AlarmClass::button_snooze()
     // not changing ambient
 
     // otherwise it would disable other alarms' lamp
-    if (_signalization.lamp) lamp(false);
+    if (_signalization.lamp) lamp->set(false);
     buzzerNoTone();
     beeping = false;
 }
@@ -206,7 +206,7 @@ void AlarmClass::button_stop()
                                      Alarm_ambient_fade_out_duration);
     ambientDimmer->start();
     // otherwise it would disable other alarms' lamp
-    if (_signalization.lamp) lamp(false);
+    if (_signalization.lamp) lamp->set(false);
     buzzerNoTone();
     beeping = false;
     stop_callback();
