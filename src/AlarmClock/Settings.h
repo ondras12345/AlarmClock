@@ -74,9 +74,8 @@ Alarms
 
 
 // Alarm timeout
-// default: 30 * 60L
-// (long because RTClib uses int32_t)
-#define Alarm_timeout 30 * 60L  // s
+// default: 30 * 60UL * 1000UL
+#define Alarm_timeout 30 * 60UL * 1000UL  // ms
 
 
 

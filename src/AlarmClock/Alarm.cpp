@@ -19,6 +19,9 @@ void AlarmClass::loop(DateTime time)
             if ((unsigned long)(millis() - prev_millis) >= (_snooze.time_minutes * 60000UL)) {
                 snooze_status = false;
                 if (_signalization.lamp) lamp(true);
+                // for Alarm_timeout - this allows snooze time to be longer than
+                // Alarm_timeout
+                prev_activation_millis = millis();
                 DEBUG_println(F("Alarm waking from snooze"));
             }
         }
@@ -29,7 +32,7 @@ void AlarmClass::loop(DateTime time)
             // disable it's ambient (buzzer should enable again; lamp is
             // already solved)
             // # TODO
-            if ((time - last_alarm).totalseconds() >= Alarm_timeout) {
+            if ((unsigned long)(millis() - prev_activation_millis) >= Alarm_timeout) {
                 button_stop();
                 return;
             }
@@ -56,7 +59,7 @@ void AlarmClass::loop(DateTime time)
 
     // alarm is not active
     if (should_trigger(time)) {
-        last_alarm = time;
+        prev_activation_millis = millis();
 
         // Single must disable even if alarm is inhibited
         if (_enabled == Single) {
@@ -104,9 +107,10 @@ void AlarmClass::loop(DateTime time)
 // This function does NOT contain the !get_active() condition.
 bool AlarmClass::should_trigger(DateTime time)
 {
-    // check for last_alarm - in case the alarm gets canceled during the
+    // check for prev_activation_millis - in case the alarm gets stopped in the
     // same minute it started
-    if ((time - last_alarm).totalseconds() < 60)
+    // 62 seconds - time is fetched each 800 ms in AlarmClock.ino
+    if ((unsigned long)(millis() - prev_activation_millis) < 62*1000UL)
         return false;
 
     // time is not matching
@@ -217,7 +221,7 @@ AlarmClass::AlarmClass()
     _days_of_week.DaysOfWeek = 0;
     _snooze = { 0, 0 };
     _signalization = { 0, false, false };
-    last_alarm = DateTime(2000, 1, 1);
+    prev_activation_millis = prev_activation_millis_init;
     current_snooze_count = current_snooze_count_inactive;
     beeping = false;
     snooze_status = false;
@@ -267,7 +271,7 @@ bool AlarmClass::readEEPROM(byte data[EEPROM_AlarmClass_length])
     _signalization.buzzer = data[9];
 
     // not saved in the EEPROM:
-    last_alarm = DateTime(2000, 1, 1);
+    prev_activation_millis = prev_activation_millis_init;
     current_snooze_count = current_snooze_count_inactive;
     beeping = false;
     snooze_status = false;

@@ -34,12 +34,8 @@ void loop()
 
 test(Alarm_trigger)
 {
-    AlarmClass alarm;
-
     pinMode(pin_ambient, OUTPUT);
     PWMDimmerClass ambientDimmer(pin_ambient);
-    alarm.set_hardware(lamp, &ambientDimmer, buzzerTone, buzzerNoTone,
-                       writeEEPROM, activation_callback, stop_callback);
 
     enum test {
         inhibit = 0,
@@ -52,7 +48,9 @@ test(Alarm_trigger)
 
     while (myTest != last)
     {
-        alarm.button_stop();
+        AlarmClass alarm;  // needs to be here to reset prev_activation_millis
+        alarm.set_hardware(lamp, &ambientDimmer, buzzerTone, buzzerNoTone,
+                           writeEEPROM, activation_callback, stop_callback);
         assertTrue(alarm.set_time(12, 13));
         assertTrue(alarm.set_enabled(Single));
         DaysOfWeekClass dow;
@@ -64,8 +62,7 @@ test(Alarm_trigger)
 
         reset_alarm_mockups();
 
-        // The alarm would not trigger again if the day was the same
-        DateTime time(2020, 1, 1 + byte(myTest), 11, 10, 00);
+        DateTime time(2020, 1, 1, 11, 10, 00);
 
         switch (myTest)
         {
@@ -73,7 +70,7 @@ test(Alarm_trigger)
                 {
                 bool activation_time = false;
                 alarm.set_inhibit(true);
-                while (time < DateTime(2020, 1, 1 + byte(myTest), 13, 15, 00))
+                while (time < DateTime(2020, 1, 1, 13, 15, 00))
                 {
                     alarm.loop(time);
 
@@ -96,7 +93,7 @@ test(Alarm_trigger)
             case activate:
                 {
                 bool activation_time = false;
-                while (time < DateTime(2020, 1, 1 + byte(myTest), 13, 15, 00))
+                while (time < DateTime(2020, 1, 1, 13, 15, 00))
                 {
                     alarm.loop(time);
 
@@ -129,7 +126,7 @@ test(Alarm_trigger)
                 assertTrue(alarm.set_enabled(Skip));
 
                 bool activation_time = false;
-                while (time < DateTime(2020, 1, 1 + byte(myTest), 13, 15, 00))
+                while (time < DateTime(2020, 1, 1, 13, 15, 00))
                 {
                     alarm.loop(time);
 

@@ -62,8 +62,14 @@ protected:
     /*
     not saved in EEPROM:
     */
-    // needed in case the alarm gets canceled during the same minute it started
-    DateTime last_alarm;
+    // Needed in case the alarm gets canceled during the same minute it started
+    // Also used for Alarm_timeout
+    // Needs to be initialised to prev_activation_millis_init to prevent alarms
+    // starting in the first minute of runtime being ignored.
+    // This also makes unit tests work.
+    unsigned long prev_activation_millis;
+    // 0xFFFF0000 would also work...
+#define prev_activation_millis_init 0xDEADBEEF
 
 #define current_snooze_count_inactive 255
     byte current_snooze_count;  // max 9; 255 --> inactive alarm
