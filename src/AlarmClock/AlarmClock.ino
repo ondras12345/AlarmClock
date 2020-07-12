@@ -146,6 +146,7 @@ void loop() {
         else GUI.set_backlight(on);
     }
     if (buttons[button_index_stop].fell()) {
+        if(GUI.get_backlight() == off) GUI.set_backlight(on);
         for (byte i = 0; i < alarms_count; i++) alarms[i].button_stop();
         DEBUG_println(F("stop pressed"));
     }

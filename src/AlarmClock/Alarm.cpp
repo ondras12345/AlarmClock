@@ -28,9 +28,9 @@ void AlarmClass::loop(DateTime time)
         else {
             // alarm is ringing
 
-            // WARNING: If another alarm activated after this one, it would
-            // disable it's ambient (buzzer should enable again; lamp is
-            // already solved)
+            // WARNING: If another alarm activated after this one, this
+            // timed-out alarm would disable it's ambient (buzzer should enable
+            // again; lamp is already solved)
             // # TODO
             if ((unsigned long)(millis() - prev_activation_millis) >= Alarm_timeout) {
                 button_stop();
