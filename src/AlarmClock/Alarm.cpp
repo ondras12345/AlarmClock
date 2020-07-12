@@ -184,6 +184,8 @@ void AlarmClass::button_snooze()
     prev_millis = millis();
 
     // not changing ambient
+
+    // otherwise it would disable other alarms' lamp
     if (_signalization.lamp) lamp(false);
     buzzerNoTone();
     beeping = false;
@@ -203,6 +205,7 @@ void AlarmClass::button_stop()
     ambientDimmer->set_from_duration(ambientDimmer->get_value(), 0,
                                      Alarm_ambient_fade_out_duration);
     ambientDimmer->start();
+    // otherwise it would disable other alarms' lamp
     if (_signalization.lamp) lamp(false);
     buzzerNoTone();
     beeping = false;
