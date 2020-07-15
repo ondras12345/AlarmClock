@@ -1,5 +1,5 @@
 /*!
-    @file   LCDchars.cpp
+    @file
     @brief  The actual definitions of the arrays.
 */
 

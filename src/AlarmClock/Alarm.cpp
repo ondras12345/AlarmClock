@@ -1,5 +1,5 @@
 /*!
-    @file Alarm.cpp
+    @file
 */
 
 #include "Alarm.h"

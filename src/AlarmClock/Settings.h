@@ -1,5 +1,5 @@
 /*!
-    @file   Settings.h
+    @file
     @brief  User-modifiable settings.
             Doxygen could not be used to document these settings because some
             of them need to be commented out.

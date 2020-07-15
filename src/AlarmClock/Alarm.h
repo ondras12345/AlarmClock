@@ -1,5 +1,5 @@
 /*!
-    @file Alarm.h
+    @file
 */
 
 #ifndef _ALARM_h

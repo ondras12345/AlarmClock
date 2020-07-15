@@ -1,5 +1,5 @@
 /*!
-    @file   LCDchars.h
+    @file
     @brief  Custom characters for the LCD.
     Indexes are defined in Constants.h
     Character editor: https://maxpromer.github.io/LCD-Character-Creator/

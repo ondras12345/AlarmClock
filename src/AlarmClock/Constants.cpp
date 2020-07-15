@@ -1,5 +1,5 @@
 /*!
-    @file   Constants.cpp
+    @file
     @brief  Definition of global constants that cannot be macros.
 */
 #include "Constants.h"

@@ -1,5 +1,5 @@
 /*!
-    @file PWMdimmer.cpp
+    @file
 */
 
 #include "PWMDimmer.h"

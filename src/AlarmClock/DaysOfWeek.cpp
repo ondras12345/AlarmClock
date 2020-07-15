@@ -1,5 +1,5 @@
 /*!
-    @file DaysOfWeek.cpp
+    @file
 */
 
 #include "DaysOfWeek.h"

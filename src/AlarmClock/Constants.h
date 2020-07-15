@@ -1,5 +1,5 @@
 /*!
-    @file   Constants.h
+    @file
     @brief  Constants that are not meant to be changed by the user.
     User changable settings are in Settings.h
 */
