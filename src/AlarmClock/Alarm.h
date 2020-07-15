@@ -15,6 +15,7 @@
 #include "Constants.h"
 #include "PWMDimmer.h"
 #include "HALbool.h"
+#include "BuzzerManager.h"
 #include "DaysOfWeek.h"
 #include <RTClib.h> // for datetime
 
@@ -74,17 +75,13 @@ protected:
 
 #define current_snooze_count_inactive 255
     byte current_snooze_count;  // max 9; 255 --> inactive alarm
-    // used for inverting the buzzer (if active)
-    // or timing the snooze (if in snooze)
-    unsigned long prev_millis;
+    unsigned long prev_millis;  // used for timing snooze
     bool inhibit;
     bool snooze_status;  // currently in snooze
-    bool beeping; // currently beeping (used for inverting the buzzer)
 
     HALbool *lamp;
     PWMDimmerClass *ambientDimmer;
-    void(*buzzerTone)(unsigned int, unsigned long); // freq, duration
-    void(*buzzerNoTone)();
+    BuzzerManager *buzzer;
     void(*writeEEPROM_all)();  // write all alarms to EEPROM
     void(*activation_callback)();
     void(*stop_callback)();
@@ -114,9 +111,10 @@ public:
     void loop(DateTime time);
     void set_hardware(HALbool *lamp,
                       PWMDimmerClass *ambientDimmer,
-                      void(*buzzerTone)(unsigned int, unsigned long),
-                      void(*buzzerNoTone)(), void(*writeEEPROM)(),
-                      void(*activation_callback)(), void(*stop_callback)());
+                      BuzzerManager *buzzer,
+                      void(*writeEEPROM)(),
+                      void(*activation_callback)(),
+                      void(*stop_callback)());
     void button_snooze();
     void button_stop();
     AlarmClass();

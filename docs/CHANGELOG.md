@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Better LCD backlight control
 
+### Fixed
+- Buzzer collisions - multiple alarms active at the same time caused
+  unpredictable behavior of the buzzer
+
 
 ## [0.2.1] - 2020-02-14
 ### Fixed

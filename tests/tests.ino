@@ -49,7 +49,7 @@ test(Alarm_trigger)
     while (myTest != last)
     {
         AlarmClass alarm;  // needs to be here to reset prev_activation_millis
-        alarm.set_hardware(&lamp, &ambientDimmer, buzzerTone, buzzerNoTone,
+        alarm.set_hardware(&lamp, &ambientDimmer, &buzzer,
                            writeEEPROM, activation_callback, stop_callback);
         assertTrue(alarm.set_time(12, 13));
         assertTrue(alarm.set_enabled(Single));
@@ -101,7 +101,7 @@ test(Alarm_trigger)
                     {
                         assertTrue(activated);
                         assertTrue(lamp_status);
-                        assertTrue(buzzer_status);
+                        assertTrue(buzzer.get_status());
                         assertEqual(alarm.get_enabled(), Off);  // single
 
                         activation_time = true;
@@ -134,7 +134,7 @@ test(Alarm_trigger)
                     {
                         assertFalse(activated);
                         assertFalse(lamp_status);
-                        assertFalse(buzzer_status);
+                        assertFalse(buzzer.get_status());
                         assertEqual(alarm.get_enabled(), Repeat);  // Skip
 
                         activation_time = true;
@@ -167,7 +167,7 @@ test(Alarm_snooze)
 
     pinMode(pin_ambient, OUTPUT);
     PWMDimmerClass ambientDimmer(pin_ambient);
-    alarm.set_hardware(&lamp, &ambientDimmer, buzzerTone, buzzerNoTone,
+    alarm.set_hardware(&lamp, &ambientDimmer, &buzzer,
                        writeEEPROM, activation_callback, stop_callback);
 
     assertTrue(alarm.set_time(12, 13));
@@ -189,7 +189,7 @@ test(Alarm_snooze)
 
         assertTrue(activated);
         assertTrue(lamp_status);
-        //assertTrue(buzzer_status);  // depends on millis()
+        assertTrue(buzzer.get_status());
 
         alarm.button_snooze();
         if (snooze_remaining != 0) assertFalse(lamp_status);
@@ -203,7 +203,7 @@ test(Alarm_EEPROM_read)
     AlarmClass alarm;
     pinMode(pin_ambient, OUTPUT);
     PWMDimmerClass ambientDimmer(pin_ambient);
-    alarm.set_hardware(&lamp, &ambientDimmer, buzzerTone, buzzerNoTone,
+    alarm.set_hardware(&lamp, &ambientDimmer, &buzzer,
                        writeEEPROM, activation_callback, stop_callback);
 
     // Bad id
@@ -264,7 +264,7 @@ test(Alarm_EEPROM_write)
     AlarmClass alarm;
     pinMode(pin_ambient, OUTPUT);
     PWMDimmerClass ambientDimmer(pin_ambient);
-    alarm.set_hardware(&lamp, &ambientDimmer, buzzerTone, buzzerNoTone,
+    alarm.set_hardware(&lamp, &ambientDimmer, &buzzer,
                        writeEEPROM, activation_callback, stop_callback);
 
     assertTrue(alarm.set_time(23, 59));

@@ -19,6 +19,9 @@ void AlarmClass::loop(DateTime time)
             if ((unsigned long)(millis() - prev_millis) >= (_snooze.time_minutes * 60000UL)) {
                 snooze_status = false;
                 if (_signalization.lamp) lamp->set(true);
+                if (_signalization.buzzer)
+                    buzzer->set_ringing((current_snooze_count == 0) ?
+                            ringing_last : ringing_regular);
                 // for Alarm_timeout - this allows snooze time to be longer than
                 // Alarm_timeout
                 prev_activation_millis = millis();
@@ -29,28 +32,12 @@ void AlarmClass::loop(DateTime time)
             // alarm is ringing
 
             // WARNING: If another alarm activated after this one, this
-            // timed-out alarm would disable it's ambient (buzzer should enable
-            // again; lamp is already solved)
+            // timed-out alarm would disable it's ambient (buzzer and lamp are
+            // already solved)
             // # TODO
             if ((unsigned long)(millis() - prev_activation_millis) >= Alarm_timeout) {
                 button_stop();
                 return;
-            }
-
-            if (!_signalization.buzzer) return;
-
-            // select either the regular or last ringing parameters
-            unsigned long period = (current_snooze_count == 0) ?
-                Alarm_last_ringing_period : Alarm_regular_ringing_period;
-            unsigned int freq = (current_snooze_count == 0) ?
-                Alarm_last_ringing_freq : Alarm_regular_ringing_freq;
-
-            if ((unsigned long)(millis() - prev_millis) >= period) {
-                // invert buzzer
-                prev_millis = millis();
-                if (beeping) buzzerNoTone();
-                else buzzerTone(freq, 0);
-                beeping = !beeping;
             }
         }
 
@@ -81,8 +68,9 @@ void AlarmClass::loop(DateTime time)
         current_snooze_count = _snooze.count;
         snooze_status = false;
 
-        // safety feature - in case ambientDimmer got stuck:
-        if (_signalization.buzzer) buzzerTone(Alarm_regular_ringing_freq, 0);
+        if (_signalization.buzzer)
+            buzzer->set_ringing((current_snooze_count == 0) ?
+                    ringing_last : ringing_regular);
 
         // Do events - can only switch on
         ambientDimmer->set_from_duration(
@@ -134,10 +122,7 @@ bool AlarmClass::should_trigger(DateTime time)
     @param ambientDimmer_ pointer to an instance of `PWMDimmerClass` that
                           controls the ambient LED strip
 
-    @param buzzerTone_ pointer to a function that turns the buzzer on and sets
-                       the frequency and duration
-
-    @param buzzerNoTone_ pointer to a function that turns the buzzer off
+    @param buzzer_ pointer to an instance of `BuzzerManager`
 
     @param writeEEPROM_ pointer to a function that writes all the alarms to the
                         EEPROM. This is needed when a "Single" or "Skip" alarms
@@ -152,15 +137,14 @@ bool AlarmClass::should_trigger(DateTime time)
 */
 void AlarmClass::set_hardware(HALbool *lamp_,
                               PWMDimmerClass *ambientDimmer_,
-                              void(*buzzerTone_)(unsigned int, unsigned long),
-                              void(*buzzerNoTone_)(), void(*writeEEPROM_)(),
+                              BuzzerManager *buzzer_,
+                              void(*writeEEPROM_)(),
                               void(*activation_callback_)(),
                               void(*stop_callback_)())
 {
     lamp = lamp_;
     ambientDimmer = ambientDimmer_;
-    buzzerTone = buzzerTone_;
-    buzzerNoTone = buzzerNoTone_;
+    buzzer = buzzer_;
     writeEEPROM_all = writeEEPROM_;
     activation_callback = activation_callback_;
     stop_callback = stop_callback_;
@@ -187,8 +171,7 @@ void AlarmClass::button_snooze()
 
     // otherwise it would disable other alarms' lamp
     if (_signalization.lamp) lamp->set(false);
-    buzzerNoTone();
-    beeping = false;
+    buzzer->set_ringing(ringing_off);
 }
 
 
@@ -207,8 +190,7 @@ void AlarmClass::button_stop()
     ambientDimmer->start();
     // otherwise it would disable other alarms' lamp
     if (_signalization.lamp) lamp->set(false);
-    buzzerNoTone();
-    beeping = false;
+    buzzer->set_ringing(ringing_off);
     stop_callback();
 }
 
@@ -226,7 +208,6 @@ AlarmClass::AlarmClass()
     _signalization = { 0, false, false };
     prev_activation_millis = prev_activation_millis_init;
     current_snooze_count = current_snooze_count_inactive;
-    beeping = false;
     snooze_status = false;
     inhibit = false;
 }
@@ -276,7 +257,6 @@ bool AlarmClass::readEEPROM(byte data[EEPROM_AlarmClass_length])
     // not saved in the EEPROM:
     prev_activation_millis = prev_activation_millis_init;
     current_snooze_count = current_snooze_count_inactive;
-    beeping = false;
     snooze_status = false;
     inhibit = false;
 
