@@ -198,11 +198,11 @@ void SerialCLIClass::_print_help()
     _indent(2);
     Serial.println(F("time{h}:{m} - set time"));
     _indent(2);
-    Serial.println(F("dow{d}:{s} - set day {d} of week to {s} 1|0"));
+    Serial.println(F("dow{d}:{s} - set day {d}1-7 of week to {s}1|0"));
     _indent(2);
     Serial.println(F("snz{t};{c} - set snooze: time{t}min;count{c}"));
     _indent(2);
-    Serial.println(F("sig{a};{l};{b} - set signalization: ambient{a};lamp{l}1|0;{buzzer}1|0"));
+    Serial.println(F("sig{a};{l};{b} - set signalization: ambient{a}0-255;lamp{l}1|0;buzzer{b}1|0"));
     _indent(1);
     Serial.println(F("sav - save all"));
     _indent(1);
