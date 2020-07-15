@@ -16,10 +16,10 @@ void AlarmClass::loop(DateTime time)
         // alarm is already active
         if (snooze_status) {
             // alarm is NOT ringing (snooze)
-            if ((unsigned long)(millis() - prev_millis) >= (_snooze.time_minutes * 60000UL)) {
+            if ((unsigned long)(millis() - prev_millis) >= (snooze.time_minutes * 60000UL)) {
                 snooze_status = false;
-                if (_signalization.lamp) lamp->set(true);
-                if (_signalization.buzzer)
+                if (signalization.lamp) lamp->set(true);
+                if (signalization.buzzer)
                     buzzer->set_ringing((current_snooze_count == 0) ?
                             ringing_last : ringing_regular);
                 // for Alarm_timeout - this allows snooze time to be longer than
@@ -52,13 +52,13 @@ void AlarmClass::loop(DateTime time)
         prev_activation_millis = millis();
 
         // Single must disable even if alarm is inhibited
-        if (_enabled == Single) {
-            _enabled = Off;
+        if (enabled == Single) {
+            enabled = Off;
             writeEEPROM_all();
         }
 
-        if (_enabled == Skip) {
-            _enabled = Repeat;
+        if (enabled == Skip) {
+            enabled = Repeat;
             writeEEPROM_all();
             return;
         }
@@ -68,18 +68,18 @@ void AlarmClass::loop(DateTime time)
             return;
         }
 
-        current_snooze_count = _snooze.count;
+        current_snooze_count = snooze.count;
         snooze_status = false;
 
-        if (_signalization.buzzer)
+        if (signalization.buzzer)
             buzzer->set_ringing((current_snooze_count == 0) ?
                     ringing_last : ringing_regular);
 
         // Do events - can only switch on
         ambientDimmer->set_from_duration(
                 ambientDimmer->get_value(),
-                _signalization.ambient > ambientDimmer->get_stop() ?
-                _signalization.ambient : ambientDimmer->get_stop(),
+                signalization.ambient > ambientDimmer->get_stop() ?
+                signalization.ambient : ambientDimmer->get_stop(),
                 (ambientDimmer->get_remaining() > 0 &&
                  ambientDimmer->get_remaining() <
                  Alarm_ambient_dimming_duration) ?
@@ -87,7 +87,7 @@ void AlarmClass::loop(DateTime time)
                 Alarm_ambient_dimming_duration);
         ambientDimmer->start();
 
-        if (_signalization.lamp) lamp->set(true);
+        if (signalization.lamp) lamp->set(true);
         activation_callback();
         DEBUG_println(F("Alarm activated"));
     }
@@ -105,9 +105,9 @@ bool AlarmClass::should_trigger(DateTime time)
         return false;
 
     // time is not matching
-    if (!(_days_of_week.getDayOfWeek_Adafruit(time.dayOfTheWeek()) &&
-            time.hour() == _when.hours && time.minute() == _when.minutes &&
-            _enabled != Off))
+    if (!(days_of_week.getDayOfWeek_Adafruit(time.dayOfTheWeek()) &&
+            time.hour() == when.hours && time.minute() == when.minutes &&
+            enabled != Off))
         return false;
 
     return true;
@@ -173,7 +173,7 @@ void AlarmClass::button_snooze()
     // not changing ambient
 
     // otherwise it would disable other alarms' lamp
-    if (_signalization.lamp) lamp->set(false);
+    if (signalization.lamp) lamp->set(false);
     buzzer->set_ringing(ringing_off);
 }
 
@@ -192,7 +192,7 @@ void AlarmClass::button_stop()
                                      Alarm_ambient_fade_out_duration);
     ambientDimmer->start();
     // otherwise it would disable other alarms' lamp
-    if (_signalization.lamp) lamp->set(false);
+    if (signalization.lamp) lamp->set(false);
     buzzer->set_ringing(ringing_off);
     stop_callback();
 }
@@ -204,11 +204,11 @@ void AlarmClass::button_stop()
 */
 AlarmClass::AlarmClass()
 {
-    _when = { 0, 0 };
-    _enabled = Off;
-    _days_of_week.DaysOfWeek = 0;
-    _snooze = { 0, 0 };
-    _signalization = { 0, false, false };
+    when = { 0, 0 };
+    enabled = Off;
+    days_of_week.DaysOfWeek = 0;
+    snooze = { 0, 0 };
+    signalization = { 0, false, false };
     prev_activation_millis = prev_activation_millis_init;
     current_snooze_count = current_snooze_count_inactive;
     snooze_status = false;
@@ -237,25 +237,25 @@ bool AlarmClass::readEEPROM(byte data[EEPROM_AlarmClass_length])
 
     if (data[0] != EEPROM_alarms_id) return false;
 
-    if (data[1] <= 23) _when.hours = data[1];
+    if (data[1] <= 23) when.hours = data[1];
     else return false;
-    if (data[2] <= 59) _when.minutes = data[2];
-    else return false;
-
-    if (data[3] <= AlarmEnabled_max) _enabled = AlarmEnabled(data[3]);
+    if (data[2] <= 59) when.minutes = data[2];
     else return false;
 
-    _days_of_week.DaysOfWeek = data[4];
-
-    if (data[5] <= 99) _snooze.time_minutes = data[5];
+    if (data[3] <= AlarmEnabled_max) enabled = AlarmEnabled(data[3]);
     else return false;
 
-    if (data[6] <= 9) _snooze.count = data[6];
+    days_of_week.DaysOfWeek = data[4];
+
+    if (data[5] <= 99) snooze.time_minutes = data[5];
     else return false;
 
-    _signalization.ambient = data[7];
-    _signalization.lamp = data[8];
-    _signalization.buzzer = data[9];
+    if (data[6] <= 9) snooze.count = data[6];
+    else return false;
+
+    signalization.ambient = data[7];
+    signalization.lamp = data[8];
+    signalization.buzzer = data[9];
 
     // not saved in the EEPROM:
     prev_activation_millis = prev_activation_millis_init;
@@ -274,80 +274,80 @@ bool AlarmClass::readEEPROM(byte data[EEPROM_AlarmClass_length])
 */
 byte * AlarmClass::writeEEPROM()
 {
-    _EEPROM_data[0] = EEPROM_alarms_id;
+    EEPROM_data_[0] = EEPROM_alarms_id;
 
-    _EEPROM_data[1] = _when.hours;
-    _EEPROM_data[2] = _when.minutes;
-    _EEPROM_data[3] = byte(_enabled);
-    _EEPROM_data[4] = _days_of_week.DaysOfWeek;
-    _EEPROM_data[5] = _snooze.time_minutes;
-    _EEPROM_data[6] = _snooze.count;
-    _EEPROM_data[7] = _signalization.ambient;
-    _EEPROM_data[8] = _signalization.lamp;
-    _EEPROM_data[9] = _signalization.buzzer;
+    EEPROM_data_[1] = when.hours;
+    EEPROM_data_[2] = when.minutes;
+    EEPROM_data_[3] = byte(enabled);
+    EEPROM_data_[4] = days_of_week.DaysOfWeek;
+    EEPROM_data_[5] = snooze.time_minutes;
+    EEPROM_data_[6] = snooze.count;
+    EEPROM_data_[7] = signalization.ambient;
+    EEPROM_data_[8] = signalization.lamp;
+    EEPROM_data_[9] = signalization.buzzer;
 
 #if defined(DEBUG) && defined(DEBUG_EEPROM_alarms)
     Serial.println(F("EEPROM alarm write:"));
     for (byte i = 0; i < EEPROM_AlarmClass_length; i++) {
-        Serial.print(_EEPROM_data[i], HEX);
+        Serial.print(EEPROM_data_[i], HEX);
         Serial.print(' ');
     }
     Serial.println();
 #endif // DEBUG
 
-    return _EEPROM_data;
+    return EEPROM_data_;
 }
 
 
-bool AlarmClass::set_enabled(AlarmEnabled __enabled)
+bool AlarmClass::set_enabled(AlarmEnabled enabled_)
 {
-    if (__enabled > AlarmEnabled_max) return false;
-    _enabled = __enabled;
+    if (enabled_ > AlarmEnabled_max) return false;
+    enabled = enabled_;
     return true;
 }
 
 
-bool AlarmClass::set_time(byte __hours, byte __minutes)
+bool AlarmClass::set_time(byte hours, byte minutes)
 {
-    if (__hours > 23 || __minutes > 59) return false;
-    _when = { __hours, __minutes };
+    if (hours > 23 || minutes > 59) return false;
+    when = { hours, minutes };
     return true;
 }
 
 
-bool AlarmClass::set_days_of_week(DaysOfWeekClass __days_of_week)
+bool AlarmClass::set_days_of_week(DaysOfWeekClass days_of_week_)
 {
-    _days_of_week = __days_of_week;
+    days_of_week = days_of_week_;
     return true;
 }
 
 
-bool AlarmClass::set_day_of_week(byte __day, bool __status)
+bool AlarmClass::set_day_of_week(byte day, bool status)
 {
-    return _days_of_week.setDayOfWeek(__day, __status);
+    return days_of_week.setDayOfWeek(day, status);
 }
 
 
-bool AlarmClass::set_snooze(byte __time_minutes, byte __count)
+bool AlarmClass::set_snooze(byte time_minutes, byte count)
 {
-    if (__time_minutes > 99 || __count > 9) return false;
-    _snooze.time_minutes = __time_minutes;
-    _snooze.count = __count;
+    if (time_minutes > 99 || count > 9) return false;
+    snooze.time_minutes = time_minutes;
+    snooze.count = count;
     return true;
 }
 
 
-bool AlarmClass::set_signalization(byte __ambient, bool __lamp, bool __buzzer)
+bool AlarmClass::set_signalization(byte ambient, bool lamp, bool buzzer)
 {
-    _signalization.ambient = __ambient;
-    _signalization.lamp = __lamp;
-    _signalization.buzzer = __buzzer;
+    signalization.ambient = ambient;
+    signalization.lamp = lamp;
+    signalization.buzzer = buzzer;
     return true;
 }
 
 
-bool AlarmClass::set_inhibit(bool __inhibit)
+bool AlarmClass::set_inhibit(bool inhibit_)
 {
-    inhibit = __inhibit;
+    inhibit = inhibit_;
     return true;
 }

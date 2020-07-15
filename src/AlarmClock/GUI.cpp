@@ -9,9 +9,9 @@ void GUIClass::set_backlight(backlight_t status)
 }
 
 
-void GUIClass::loop(DateTime __time)
+void GUIClass::loop(DateTime time_)
 {
-    _now = __time;
+    _now = time_;
 
 
 
@@ -504,22 +504,22 @@ void GUIClass::_update()
     if (_cursor_clicked) _lcd->blink();
 }
 
-GUIClass::GUIClass(AlarmClass *__alarms, void(*__writeEEPROM)(),
-        RTC_DS3231 * __rtc, Encoder * __encoder, Bounce * __encoder_button,
-        LiquidCrystal_I2C *__lcd,
-        void(*__set_inhibit)(bool), bool(*__get_inhibit)(),
-        PWMDimmerClass *__ambientDimmer, HALbool *__lamp)
+GUIClass::GUIClass(AlarmClass *alarms_, void(*writeEEPROM_)(),
+        RTC_DS3231 * rtc_, Encoder * encoder_, Bounce * encoder_button_,
+        LiquidCrystal_I2C *lcd_,
+        void(*set_inhibit_)(bool), bool(*get_inhibit_)(),
+        PWMDimmerClass *ambientDimmer_, HALbool *lamp_)
 {
-    _alarms = __alarms;
-    _writeEEPROM = __writeEEPROM;
-    _rtc = __rtc;
-    _encoder = __encoder;
-    _encoder_button = __encoder_button;
-    _lcd = __lcd;
-    _set_inhibit = __set_inhibit;
-    _get_inhibit = __get_inhibit;
-    _ambientDimmer = __ambientDimmer;
-    _lamp = __lamp;
+    _alarms = alarms_;
+    _writeEEPROM = writeEEPROM_;
+    _rtc = rtc_;
+    _encoder = encoder_;
+    _encoder_button = encoder_button_;
+    _lcd = lcd_;
+    _set_inhibit = set_inhibit_;
+    _get_inhibit = get_inhibit_;
+    _ambientDimmer = ambientDimmer_;
+    _lamp = lamp_;
 
     // First alarm. I can't initialize it in the header because the compiler
     // doesn't know the address yet.

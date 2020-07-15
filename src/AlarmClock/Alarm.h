@@ -59,7 +59,7 @@ class AlarmClass
 protected:
     // This variable needs to exist all the time because a function is
     // returning a pointer to it
-    byte _EEPROM_data[EEPROM_AlarmClass_length];
+    byte EEPROM_data_[EEPROM_AlarmClass_length];
 
     /*
     not saved in EEPROM:
@@ -89,11 +89,11 @@ protected:
     /*
     saved in the EEPROM:
     */
-    hours_minutes _when;
-    AlarmEnabled _enabled;
-    DaysOfWeekClass _days_of_week;
-    Snooze _snooze;
-    Signalization _signalization;
+    hours_minutes when;
+    AlarmEnabled enabled;
+    DaysOfWeekClass days_of_week;
+    Snooze snooze;
+    Signalization signalization;
 
     // true --> alarm is on (ringing or snooze)
     bool get_active() const {
@@ -120,22 +120,22 @@ public:
     AlarmClass();
 
 
-    bool set_enabled(AlarmEnabled enabled);
-    AlarmEnabled get_enabled() const { return _enabled; };
+    bool set_enabled(AlarmEnabled enabled_);
+    AlarmEnabled get_enabled() const { return enabled; };
 
     bool set_time(byte hours, byte minutes);
-    hours_minutes get_time() const { return _when; };
+    hours_minutes get_time() const { return when; };
 
     bool set_days_of_week(DaysOfWeekClass days_of_week);
     bool set_day_of_week(byte day, bool status);
-    DaysOfWeekClass get_days_of_week() const { return _days_of_week; };
-    bool get_day_of_week(byte day) const { return _days_of_week.getDayOfWeek(day); }
+    DaysOfWeekClass get_days_of_week() const { return days_of_week; };
+    bool get_day_of_week(byte day) const { return days_of_week.getDayOfWeek(day); }
 
     bool set_snooze(byte time_minutes, byte count);
-    Snooze get_snooze() const { return _snooze; };
+    Snooze get_snooze() const { return snooze; };
 
     bool set_signalization(byte ambient, bool lamp, bool buzzer);
-    Signalization get_signalization() const { return _signalization; };
+    Signalization get_signalization() const { return signalization; };
 
     bool get_inhibit() const { return inhibit; };
     bool set_inhibit(bool inhibit);

@@ -1,8 +1,8 @@
 #include "SerialCLI.h"
 
-void SerialCLIClass::loop(DateTime __time)
+void SerialCLIClass::loop(DateTime time_)
 {
-    _now = __time;
+    _now = time_;
     bool complete_message = false;
 
     while (Serial.available() && !complete_message) {
@@ -151,20 +151,20 @@ void SerialCLIClass::loop(DateTime __time)
     }
 }
 
-SerialCLIClass::SerialCLIClass(AlarmClass *__alarms, void(*__writeEEPROM)(),
-                               RTC_DS3231 *__rtc,
-                               PWMDimmerClass * __ambientDimmer,
-                               HALbool * __lamp,
-                               void(*__set_inhibit)(bool),
-                               bool(*__get_inhibit)())
+SerialCLIClass::SerialCLIClass(AlarmClass *alarms_, void(*writeEEPROM_)(),
+                               RTC_DS3231 *rtc_,
+                               PWMDimmerClass * ambientDimmer_,
+                               HALbool * lamp_,
+                               void(*set_inhibit_)(bool),
+                               bool(*get_inhibit_)())
 {
-    _alarms = __alarms;
-    _writeEEPROM = __writeEEPROM;
-    _rtc = __rtc;
-    _ambientDimmer = __ambientDimmer;
-    _lamp = __lamp;
-    _set_inhibit = __set_inhibit;
-    _get_inhibit = __get_inhibit;
+    _alarms = alarms_;
+    _writeEEPROM = writeEEPROM_;
+    _rtc = rtc_;
+    _ambientDimmer = ambientDimmer_;
+    _lamp = lamp_;
+    _set_inhibit = set_inhibit_;
+    _get_inhibit = get_inhibit_;
 
     strcpy(_prompt, _prompt_default);
 }
@@ -306,12 +306,12 @@ SerialCLIClass::error_t SerialCLIClass::_set_inh(char *status)
     return 0;
 }
 
-SerialCLIClass::error_t SerialCLIClass::_select_alarm(byte __index)
+SerialCLIClass::error_t SerialCLIClass::_select_alarm(byte index_)
 {
-    if (__index >= alarms_count && __index != _sel_alarm_index_none)
+    if (index_ >= alarms_count && index_ != _sel_alarm_index_none)
         return Serial_err_argument;
 
-    _sel_alarm_index = __index;
+    _sel_alarm_index = index_;
     if (_sel_alarm_index == _sel_alarm_index_none) strcpy(_prompt, _prompt_default);
     else sprintf(_prompt, "A%u%s", _sel_alarm_index, _prompt_default);
 
