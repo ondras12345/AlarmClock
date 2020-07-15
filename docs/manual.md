@@ -43,6 +43,10 @@ alarm enables it. [PWM][Wikipedia PWM] is used for dimming. It can also be
 controlled manually trough the [Serial CLI](#Serial-CLI) and
 the LCD GUI (home screen).
 
+If only one alarm is stopped (e.g. it times out), it disables ambient even
+though other alarms may be active. However, this shouldn't happen in normal
+use and thus will likely not be fixed.
+
 
 ## Lamp
 An output pin that can be used to control a lamp. It can be controlled from
