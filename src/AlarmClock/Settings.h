@@ -72,6 +72,11 @@ Alarms
 #define Alarm_ambient_fade_out_duration 2000UL  // ms
 
 
+// Alarm timeout
+// default: 30 * 60UL * 1000UL
+#define Alarm_timeout 30 * 60UL * 1000UL  // ms
+
+
 
 /*
 Hardware

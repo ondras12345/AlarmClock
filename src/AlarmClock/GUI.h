@@ -13,6 +13,7 @@
 #include "Constants.h"
 #include "Alarm.h"
 #include "PWMDimmer.h"
+#include "HALbool.h"
 #include <Encoder.h>
 #include <Bounce2.h>
 #include <LiquidCrystal_I2C.h>
@@ -93,8 +94,7 @@ class GUIClass
      void(*_set_inhibit)(bool);
      bool(*_get_inhibit)();
      PWMDimmerClass * _ambientDimmer;
-     void(*_lamp)(bool);
-     bool(*_get_lamp)();
+     HALbool * _lamp;
 
      byte _sel_alarm_index = 0;
      AlarmClass *_sel_alarm;  // set when switching alarms
@@ -150,8 +150,7 @@ class GUIClass
               Encoder *encoder, Bounce *encoder_button,
               LiquidCrystal_I2C *lcd,
               void(*set_inhibit)(bool), bool(*get_inhibit)(),
-              PWMDimmerClass *ambientDimmer, void(*lamp)(bool),
-              bool(*get_lamp)());
+              PWMDimmerClass *ambientDimmer, HALbool *lamp);
 };
 
 #endif

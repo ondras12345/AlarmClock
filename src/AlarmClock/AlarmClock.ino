@@ -47,13 +47,12 @@ enum SelfTest_level {
 #include "SerialCLI.h"
 #include "GUI.h"
 #include "LCDchars.h"
+#include "HALbool.h"
+#include "BuzzerManager.h"
 
 // Function prototypes
 // Hardware
-void lamp(bool status);
-bool get_lamp();
-void buzzerTone(unsigned int freq, unsigned long duration = 0); // specifies default duration=0
-//void buzzerNoTone();
+void lamp_set(bool status);
 
 // Arduino IDE needs these before SerialCLI definition:
 void writeEEPROM();
@@ -69,26 +68,21 @@ Encoder encoder(pin_encoder_clk, pin_encoder_dt);
 AlarmClass alarms[alarms_count];
 //CountdownTimerClass countdownTimer;  // # TODO implement CountdownTimer
 PWMDimmerClass ambientDimmer(pin_ambient);
+HALbool lamp(lamp_set);
+HALbool permanent_backlight(set_backlight_permanent);
+BuzzerManager buzzer(pin_buzzer);
 DateTime now;
-SerialCLIClass CLI(alarms, writeEEPROM, &rtc, &ambientDimmer, lamp, get_lamp,
+SerialCLIClass CLI(alarms, writeEEPROM, &rtc, &ambientDimmer, &lamp,
                    set_inhibit, get_inhibit);
 GUIClass GUI(alarms, writeEEPROM, &rtc, &encoder,
              &buttons[button_index_encoder], &lcd, set_inhibit, get_inhibit,
-             &ambientDimmer, lamp, get_lamp);
+             &ambientDimmer, &lamp);
 
 
 unsigned long loop_rtc_prev_millis = 0;
 
 bool inhibit = false;
 unsigned long inhibit_prev_millis = 0;
-
-bool lamp_status = false;
-
-#ifdef active_buzzer
-unsigned long active_buzzer_prev_millis = 0;
-unsigned long active_buzzer_duration = 0;
-bool active_buzzer_status = false;
-#endif
 
 
 void setup() {
@@ -125,6 +119,7 @@ void setup() {
 }
 
 void loop() {
+    buzzer.loop();
     if ((unsigned long)(millis() - loop_rtc_prev_millis) >= 800UL) {
         now = rtc.now(); // # TODO + summer_time
         loop_rtc_prev_millis = millis();
@@ -145,41 +140,37 @@ void loop() {
         else GUI.set_backlight(on);
     }
     if (buttons[button_index_stop].fell()) {
+        if(GUI.get_backlight() == off) GUI.set_backlight(on);
         for (byte i = 0; i < alarms_count; i++) alarms[i].button_stop();
         DEBUG_println(F("stop pressed"));
     }
     if (inhibit && (unsigned long)(millis() - inhibit_prev_millis) >= Alarm_inhibit_duration) {
         set_inhibit(false);
     }
-
-    // active buzzer
-#ifdef active_buzzer
-    if (active_buzzer_status && active_buzzer_duration > 0 &&
-        (unsigned long)(millis() - active_buzzer_prev_millis) >= active_buzzer_duration) {
-        buzzerNoTone();
-    }
-#endif
 }
 
 void init_hardware() {
     for (byte i = 0; i < alarms_count; i++)
-        alarms[i].set_hardware(lamp, &ambientDimmer, buzzerTone, buzzerNoTone,
-                               writeEEPROM, alarm_activation_callback,
-                               alarm_stop_callback);
+        alarms[i].set_hardware(&lamp, &ambientDimmer, &buzzer, writeEEPROM,
+                               alarm_activation_callback, alarm_stop_callback);
 
-    // # TODO implement CountdownTimer WARNING: ambient implementation changed.
+    // # TODO implement CountdownTimer
+    // WARNING: ambient implementation changed.
+    // WARNING: lamp implementation changed.
+    // WARNING: buzzer implementation changed.
     //countdownTimer.set_hardware(lamp, ambient, buzzerTone, buzzerNoTone);
 }
 
 
 void alarm_activation_callback()
 {
-    GUI.set_backlight(permanent);
+    permanent_backlight.set(true);
 }
 
+// WARNING: stop_callback is also called if the alarm times out.
 void alarm_stop_callback()
 {
-    GUI.set_backlight(on);  // disable permanent backlight
+    permanent_backlight.set(false);
 }
 
 
@@ -299,9 +290,18 @@ unsigned int SelfTest(SelfTest_level level) {
 
     if (level == POST) {
         //digitalWrite(..., HIGH);  // # TODO
+#ifdef active_buzzer
+        digitalWrite(pin_buzzer, HIGH);
+#else
+        tone(pin_buzzer, 1000);
+#endif
         delay(400);
+#ifdef active_buzzer
+        digitalWrite(pin_buzzer, LOW);
+#else
+        noTone(pin_buzzer);
+#endif
         //digitalWrite(..., LOW);
-        buzzerTone(1000, 100);
     }
 
     return err;
@@ -312,41 +312,14 @@ bool I2C_ping(byte addr) {
     return (Wire.endTransmission() == 0);
 }
 
+
 /*
 Hardware
 Included classes can control the hardware trough these functions
 */
-void lamp(bool status)
+void lamp_set(bool status)
 {
     digitalWrite(pin_lamp, status);
-    lamp_status = status;
-}
-
-bool get_lamp() { return lamp_status; }
-
-void buzzerTone(unsigned int freq, unsigned long duration)
-{
-    // default value duration=0 specified in prototype
-#ifdef active_buzzer
-    active_buzzer_duration = duration;
-    active_buzzer_prev_millis = millis();
-    active_buzzer_status = true;
-    digitalWrite(pin_buzzer, HIGH);
-
-#else
-    tone(pin_buzzer, freq, duration);
-#endif
-}
-
-void buzzerNoTone()
-{
-#ifdef active_buzzer
-    active_buzzer_status = false;
-    digitalWrite(pin_buzzer, LOW);
-
-#else
-    noTone(pin_buzzer);
-#endif
 }
 
 
@@ -361,3 +334,9 @@ void set_inhibit(bool status) {
     else DEBUG_println(F("inhibit disabled"));
 }
 bool get_inhibit() { return inhibit; }
+
+void set_backlight_permanent(bool s)
+{
+    if (s) GUI.set_backlight(permanent);
+    else GUI.set_backlight(on);  // disable permanent backlight
+}

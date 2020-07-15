@@ -70,7 +70,7 @@ void GUIClass::loop(DateTime __time)
                             break;
 
                         case cph_lamp:
-                            _lamp(!_get_lamp());
+                            _lamp->set_manu(!_lamp->get());
                             break;
 
                         default:
@@ -428,7 +428,7 @@ void GUIClass::_update()
         _lcd->setCursor(0, 1);
         sprintf(_line_buffer, "%c  RTC %c    %02d%c ",
                 char(LCD_char_bell_index), _get_inhibit() ? 'I' : 'i',
-                _ambientDimmer->get_stop() / 10, _get_lamp() ? 'L' : 'l');
+                _ambientDimmer->get_stop() / 10, _lamp->get() ? 'L' : 'l');
         _lcd->print(_line_buffer);
 
         break;
@@ -508,8 +508,7 @@ GUIClass::GUIClass(AlarmClass *__alarms, void(*__writeEEPROM)(),
         RTC_DS3231 * __rtc, Encoder * __encoder, Bounce * __encoder_button,
         LiquidCrystal_I2C *__lcd,
         void(*__set_inhibit)(bool), bool(*__get_inhibit)(),
-        PWMDimmerClass *__ambientDimmer, void(*__lamp)(bool),
-        bool(*__get_lamp)())
+        PWMDimmerClass *__ambientDimmer, HALbool *__lamp)
 {
     _alarms = __alarms;
     _writeEEPROM = __writeEEPROM;
@@ -521,7 +520,6 @@ GUIClass::GUIClass(AlarmClass *__alarms, void(*__writeEEPROM)(),
     _get_inhibit = __get_inhibit;
     _ambientDimmer = __ambientDimmer;
     _lamp = __lamp;
-    _get_lamp = __get_lamp;
 
     // First alarm. I can't initialize it in the header because the compiler
     // doesn't know the address yet.

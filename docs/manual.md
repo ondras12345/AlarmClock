@@ -25,11 +25,27 @@ disables automatically after the set time, but it can be manually disabled by
 pressing the same button again.
 
 
+## Ringing
+There are 2 types of ringing: "regular" (used when the snooze button can be
+used) and "last". These differ in frequency and period.
+
+Please note that it can happen that the "last" ringing sounds even if
+"regular" should be used, but this is only if there are multiple alarms active
+at the same time and only one of them is stopped (e.g. it times out). Even
+though the remaining alarm may have requested "regular" ringing, "last" is
+used if the timed-out alarm requested it because it has a higher priority.
+This is not considered a major problem and will likely not be fixed.
+
+
 ## Ambient LED strip
 A LED strip can be connected to the device. It slowly lights up when the
 alarm enables it. [PWM][Wikipedia PWM] is used for dimming. It can also be
 controlled manually trough the [Serial CLI](#Serial-CLI) and
 the LCD GUI (home screen).
+
+If only one alarm is stopped (e.g. it times out), it disables ambient even
+though other alarms may be active. However, this shouldn't happen in normal
+use and thus will likely not be fixed.
 
 
 ## Lamp

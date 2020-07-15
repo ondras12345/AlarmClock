@@ -51,6 +51,14 @@
         - `inh1`
         - Do the 'Trigger' steps. The alarm shouldn't trigger
 
+    - [ ] Timeout
+        - [ ] Does the alarm time out?
+        - [ ] When the alarm times out, does it break other alarms' lamp and
+              ambient? (it shouldn't, but ambient is not solved yet)
+
+    - [ ] Multiple alarm active at the same time
+        - [ ] Do they fight over the buzzer? (they shouldn't)
+
 - [ ] RTC
     - Get time - see 'Serial CLI'
     - Set time - see 'Serial CLI'

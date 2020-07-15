@@ -154,7 +154,7 @@ void SerialCLIClass::loop(DateTime __time)
 SerialCLIClass::SerialCLIClass(AlarmClass *__alarms, void(*__writeEEPROM)(),
                                RTC_DS3231 *__rtc,
                                PWMDimmerClass * __ambientDimmer,
-                               void(*__lamp)(bool), bool(*__get_lamp)(),
+                               HALbool * __lamp,
                                void(*__set_inhibit)(bool),
                                bool(*__get_inhibit)())
 {
@@ -163,7 +163,6 @@ SerialCLIClass::SerialCLIClass(AlarmClass *__alarms, void(*__writeEEPROM)(),
     _rtc = __rtc;
     _ambientDimmer = __ambientDimmer;
     _lamp = __lamp;
-    _get_lamp = __get_lamp;
     _set_inhibit = __set_inhibit;
     _get_inhibit = __get_inhibit;
 
@@ -288,10 +287,10 @@ SerialCLIClass::error_t SerialCLIClass::_set_lamp(char *status)
     status = _find_next_digit(status);
     if (*status == '\0') {
         Serial.print(F("lamp: "));
-        Serial.println(_get_lamp());
+        Serial.println(_lamp->get());
         return 0;
     }
-    _lamp(_strbyte(status));
+    _lamp->set_manu(_strbyte(status));
     return 0;
 }
 

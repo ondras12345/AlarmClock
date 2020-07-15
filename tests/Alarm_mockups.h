@@ -7,11 +7,23 @@
 #include "WProgram.h"
 #endif
 
+#include "src/AlarmClock/HALbool.h"
+#include "src/AlarmClock/BuzzerManager.h"
+
+class MockupBuzzerManager : public BuzzerManager
+{
+public:
+    MockupBuzzerManager() : BuzzerManager(255) { };
+    bool get_status() const { return status_; };
+    BuzzerTone get_tone() const { return tone_; };
+
+};
+
+extern HALbool lamp;
+extern MockupBuzzerManager buzzer;
 extern bool lamp_status;
 
 extern bool buzzer_status;
-extern unsigned int buzzer_freq;
-extern unsigned long buzzer_duration;
 
 extern bool EEPROM_write;
 
@@ -20,10 +32,7 @@ extern bool stopped;
 
 void reset_alarm_mockups();
 
-void lamp(bool status);
-
-void buzzerTone(unsigned int freq, unsigned long duration = 0);
-void buzzerNoTone();
+void set_lamp(bool status);
 
 void writeEEPROM();
 

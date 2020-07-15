@@ -9,9 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unit tests
 - Doxygen documentation (incomplete)
 - "Skip" added to Alarm "Enabled" options
+- Timeout for alarms - the alarm stops if it is active for too long
 
 ### Changed
 - Better LCD backlight control
+
+### Fixed
+- Buzzer collisions - multiple alarms active at the same time caused
+  unpredictable behavior of the buzzer
 
 
 ## [0.2.1] - 2020-02-14

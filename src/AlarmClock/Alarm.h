@@ -14,6 +14,8 @@
 #include "Settings.h"
 #include "Constants.h"
 #include "PWMDimmer.h"
+#include "HALbool.h"
+#include "BuzzerManager.h"
 #include "DaysOfWeek.h"
 #include <RTClib.h> // for datetime
 
@@ -62,22 +64,24 @@ protected:
     /*
     not saved in EEPROM:
     */
-    // needed in case the alarm gets canceled during the same minute it started
-    DateTime last_alarm;
+    // Needed in case the alarm gets canceled during the same minute it started
+    // Also used for Alarm_timeout
+    // Needs to be initialised to prev_activation_millis_init to prevent alarms
+    // starting in the first minute of runtime being ignored.
+    // This also makes unit tests work.
+    unsigned long prev_activation_millis;
+    // 0xFFFF0000 would also work...
+#define prev_activation_millis_init 0xDEADBEEF
 
 #define current_snooze_count_inactive 255
     byte current_snooze_count;  // max 9; 255 --> inactive alarm
-    // used for inverting the buzzer (if active)
-    // or timing the snooze (if in snooze)
-    unsigned long prev_millis;
+    unsigned long prev_millis;  // used for timing snooze
     bool inhibit;
     bool snooze_status;  // currently in snooze
-    bool beeping; // currently beeping (used for inverting the buzzer)
 
-    void(*lamp)(bool);
+    HALbool *lamp;
     PWMDimmerClass *ambientDimmer;
-    void(*buzzerTone)(unsigned int, unsigned long); // freq, duration
-    void(*buzzerNoTone)();
+    BuzzerManager *buzzer;
     void(*writeEEPROM_all)();  // write all alarms to EEPROM
     void(*activation_callback)();
     void(*stop_callback)();
@@ -105,11 +109,12 @@ public:
     byte * writeEEPROM();
 
     void loop(DateTime time);
-    void set_hardware(void(*lamp)(bool),
+    void set_hardware(HALbool *lamp,
                       PWMDimmerClass *ambientDimmer,
-                      void(*buzzerTone)(unsigned int, unsigned long),
-                      void(*buzzerNoTone)(), void(*writeEEPROM)(),
-                      void(*activation_callback)(), void(*stop_callback)());
+                      BuzzerManager *buzzer,
+                      void(*writeEEPROM)(),
+                      void(*activation_callback)(),
+                      void(*stop_callback)());
     void button_snooze();
     void button_stop();
     AlarmClass();
