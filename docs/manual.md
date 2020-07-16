@@ -9,8 +9,8 @@ All the dates and times are in the `dd.mm.yyyy hh:mm:ss` format.
 
 # Features
 ## Inhibit
-This feature allows you to inhibit all alarms for a set time (see the
-Alarm_inhibit_duration compile-time option). I plan to use it when I get up
+This feature allows you to inhibit all alarms for a set amount time (see the
+`Alarm_inhibit_duration` compile-time option). I plan to use it when I get up
 before the alarm rings, so that I don't have to wait for the alarm to activate
 nor disable it (I know that I'd forget to re-enable it).
 
@@ -21,8 +21,8 @@ inhibited.
 
 This feature can by enabled by clicking on the `i` button in the GUI. The
 button should change to uppercase `I`, indicating that the feature is on. It
-disables automatically after the set time, but it can be manually disabled by
-pressing the same button again.
+disables automatically after the set amount time, but it can be manually
+disabled by pressing the same button again.
 
 
 ## Ringing
@@ -44,8 +44,8 @@ controlled manually trough the [Serial CLI](#Serial-CLI) and
 the LCD GUI (home screen).
 
 If only one alarm is stopped (e.g. it times out), it disables ambient even
-though other alarms may be active. However, this shouldn't happen in normal
-use and thus will likely not be fixed.
+though other alarms may still be active. However, this shouldn't happen in
+normal use and thus will likely not be fixed.
 
 
 ## Lamp
