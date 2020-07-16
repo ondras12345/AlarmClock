@@ -144,8 +144,10 @@ void GUIClass::loop(DateTime time_)
                             break;
 
                         case cpr_apply_button:
-                            _rtc->adjust(_RTC_set);
-                            _switch_screen(screen_home);
+                            if (_RTC_set.isValid()) {
+                                _rtc->adjust(_RTC_set);
+                                _switch_screen(screen_home);
+                            }
                             break;
 
                         default:
@@ -299,21 +301,7 @@ void GUIClass::loop(DateTime time_)
                             break;
 
                         case cpr_date_d:
-                            // If incorrect date is entered (31. 2., 31.4., ...), the
-                            // operation is undefined (
-                            // https://datasheets.maximintegrated.com/en/ds/DS3231.pdf
-                            // page 12)
-                            //
-                            // RTClib doesn't handle it.
-                            //
-                            // I would have to check for leap years, etc.
-                            //
-                            // I added a warning to the manual,
-                            // # TODO implement
-                            // I opened an issue
-                            // https://github.com/adafruit/RTClib/issues/127
-                            // so it could possibly be fixed in the library
-                            // itself.
+                            // _RTC_set validity is checked when the apply button is pressed.
                             _RTC_set = DateTime(_RTC_set.year(),
                                 _RTC_set.month(),
                                 _apply_limits(_RTC_set.day(),

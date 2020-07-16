@@ -526,7 +526,9 @@ SerialCLIClass::error_t SerialCLIClass::_rtc_date(char * date)
     if (month > 12 || day > 31) return Serial_err_argument;
 
     _now = _rtc->now();
-    _rtc->adjust(DateTime(year, month, day, _now.hour(), _now.minute()));
+    DateTime new_date(year, month, day, _now.hour(), _now.minute());
+    if (!new_date.isValid()) return Serial_err_argument;
+    _rtc->adjust(new_date);
     return 0;
 }
 

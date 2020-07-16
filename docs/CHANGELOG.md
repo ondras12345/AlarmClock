@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Doxygen documentation (incomplete)
 - "Skip" added to Alarm "Enabled" options
 - Timeout for alarms - the alarm stops if it is active for too long
+- User input validation for the date supplied to the `sd` command and in the
+  RTC section of the GUI.
 
 ### Changed
 - Better LCD backlight control
