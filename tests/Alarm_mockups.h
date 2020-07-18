@@ -9,6 +9,7 @@
 
 #include "src/AlarmClock/HALbool.h"
 #include "src/AlarmClock/BuzzerManager.h"
+#include "src/AlarmClock/Alarm.h"
 
 class MockupBuzzerManager : public BuzzerManager
 {
@@ -17,6 +18,14 @@ public:
     bool get_status() const { return status_; };
     BuzzerTone get_tone() const { return tone_; };
 
+};
+
+class TestAlarm : public AlarmClass
+{
+public:
+    byte test_get_current_snooze_count() { return current_snooze_count; };
+    bool test_get_snooze_status() { return snooze_status; };
+    bool test_get_ambient_status() { return ambient_status; };
 };
 
 extern HALbool lamp;
