@@ -43,6 +43,17 @@ alarm enables it. [PWM][Wikipedia PWM] is used for dimming. It can also be
 controlled manually trough the [Serial CLI](#Serial-CLI) and
 the LCD GUI (home screen).
 
+Ambient is turned on `Alarm_ambient_dimming_duration` before the alarm
+triggers, so that it already has full brightness when the alarm triggers.
+This is not a full activation, and thus does not handle Single and Skip (will
+be handled once the alarm triggers at the set time).  If you notice the
+ambient is on, but the alarm hasn't triggered yet, you can use the stop button
+to stop the ambient. This will not inhibit the full activation, you need to
+use the inhibit feature for that.
+If the alarm only has "Signalization: Ambient" enabled, you can use the LCD
+backlight to determine whether the alarm is active or not. If the backlight is
+permanently on, the alarm is active.
+
 If only one alarm is stopped (e.g. it times out), it disables ambient even
 though other alarms may still be active. However, this shouldn't happen in
 normal use and thus will likely not be fixed.

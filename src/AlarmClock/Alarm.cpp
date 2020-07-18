@@ -53,6 +53,28 @@ void AlarmClass::loop(DateTime time)
     }
 
     // alarm is not active
+
+    if (should_trigger_ambient(time))
+    {
+        ambientDimmer->set_from_duration(
+                ambientDimmer->get_value(),
+                signalization.ambient > ambientDimmer->get_stop() ?
+                signalization.ambient : ambientDimmer->get_stop(),
+                (ambientDimmer->get_remaining() > 0 &&
+                 ambientDimmer->get_remaining() <
+                 Alarm_ambient_dimming_duration) ?
+                ambientDimmer->get_remaining() :
+                Alarm_ambient_dimming_duration);
+
+        ambientDimmer->start();
+        ambient_status = true;
+        // I am borrowing snooze's variable here, but it shouldn't cause any
+        // conflicts.
+        prev_millis = millis();
+        DEBUG_println(F("Alarm enabled ambient"));
+    }
+
+
     if (should_trigger(time))
     {
         prev_activation_millis = millis();
@@ -85,17 +107,6 @@ void AlarmClass::loop(DateTime time)
                     ringing_last : ringing_regular);
 
         // Do events - can only switch on
-        ambientDimmer->set_from_duration(
-                ambientDimmer->get_value(),
-                signalization.ambient > ambientDimmer->get_stop() ?
-                signalization.ambient : ambientDimmer->get_stop(),
-                (ambientDimmer->get_remaining() > 0 &&
-                 ambientDimmer->get_remaining() <
-                 Alarm_ambient_dimming_duration) ?
-                ambientDimmer->get_remaining() :
-                Alarm_ambient_dimming_duration);
-        ambientDimmer->start();
-
         if (signalization.lamp) lamp->set(true);
         activation_callback();
         DEBUG_println(F("Alarm activated"));
@@ -117,6 +128,33 @@ bool AlarmClass::should_trigger(DateTime time)
     if (!(days_of_week.getDayOfWeek_Adafruit(time.dayOfTheWeek()) &&
             time.hour() == when.hours && time.minute() == when.minutes &&
             enabled != Off))
+        return false;
+
+    return true;
+}
+
+
+bool AlarmClass::should_trigger_ambient(DateTime time)
+{
+    // I do not directly make use of the prev_activation_millis condition
+    // inside should_trigger for ambient, but it shouldn't break anything.
+    // It helps in case inhibit gets disabled after the normal trigger was
+    // inhibited as it prevents ambient from triggering again.
+    if (ambient_status || inhibit)
+        return false;
+
+    if (signalization.ambient == 0)
+        return false;
+
+    if (!should_trigger(time + TimeSpan(long(Alarm_ambient_dimming_duration / 1000UL))))
+        return false;
+
+    // check for prev_millis - in case the alarm gets stopped in the
+    // same minute it started.
+    // I am borrowing snooze's variable here, but it shouldn't cause any
+    // conflicts.
+    // 62 seconds - time is fetched each 800 ms in AlarmClock.ino
+    if ((unsigned long)(millis() - prev_millis) < 62*1000UL)
         return false;
 
     return true;
@@ -193,13 +231,18 @@ void AlarmClass::button_snooze()
  */
 void AlarmClass::button_stop()
 {
+    if(ambient_status)
+    {
+        ambientDimmer->set_from_duration(ambientDimmer->get_value(), 0,
+                                         Alarm_ambient_fade_out_duration);
+        ambientDimmer->start();
+
+        ambient_status = false;
+    }
+
     if(!get_active()) return;
 
     current_snooze_count = current_snooze_count_inactive;
-
-    ambientDimmer->set_from_duration(ambientDimmer->get_value(), 0,
-                                     Alarm_ambient_fade_out_duration);
-    ambientDimmer->start();
 
     stop_callback();
 
@@ -224,6 +267,7 @@ AlarmClass::AlarmClass()
     prev_activation_millis = prev_activation_millis_init;
     current_snooze_count = current_snooze_count_inactive;
     snooze_status = false;
+    ambient_status = false;
     inhibit = false;
 }
 
@@ -274,6 +318,7 @@ bool AlarmClass::readEEPROM(byte data[EEPROM_AlarmClass_length])
     prev_activation_millis = prev_activation_millis_init;
     current_snooze_count = current_snooze_count_inactive;
     snooze_status = false;
+    ambient_status = false;
     inhibit = false;
 
     DEBUG_println(F("EEPROM alarm read OK"));
