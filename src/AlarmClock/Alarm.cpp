@@ -191,10 +191,13 @@ void AlarmClass::button_stop()
     ambientDimmer->set_from_duration(ambientDimmer->get_value(), 0,
                                      Alarm_ambient_fade_out_duration);
     ambientDimmer->start();
-    // otherwise it would disable other alarms' lamp
+
+    stop_callback();
+
+    // do not disable buzzer and lamp if already disabled
+    if (snooze_status) return;
     if (signalization.lamp) lamp->set(false);
     if (signalization.buzzer) buzzer->set_ringing(ringing_off);
-    stop_callback();
 }
 
 
