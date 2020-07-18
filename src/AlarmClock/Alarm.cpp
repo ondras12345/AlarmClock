@@ -174,7 +174,7 @@ void AlarmClass::button_snooze()
 
     // otherwise it would disable other alarms' lamp
     if (signalization.lamp) lamp->set(false);
-    buzzer->set_ringing(ringing_off);
+    if (signalization.buzzer) buzzer->set_ringing(ringing_off);
 }
 
 
@@ -193,7 +193,7 @@ void AlarmClass::button_stop()
     ambientDimmer->start();
     // otherwise it would disable other alarms' lamp
     if (signalization.lamp) lamp->set(false);
-    buzzer->set_ringing(ringing_off);
+    if (signalization.buzzer) buzzer->set_ringing(ringing_off);
     stop_callback();
 }
 
