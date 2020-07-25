@@ -51,6 +51,10 @@ enum SelfTest_level
 #include "HALbool.h"
 #include "BuzzerManager.h"
 
+#ifdef internal_WDT
+#include <avr/wdt.h>
+#endif
+
 // Function prototypes
 // Hardware
 void lamp_set(bool status);
@@ -85,6 +89,10 @@ unsigned long loop_rtc_prev_millis = 0;
 bool inhibit = false;
 unsigned long inhibit_prev_millis = 0;
 
+#ifdef internal_WDT
+byte WDT_prev_seconds = 61;  // 61 to avoid random behavior
+#endif
+
 
 void setup()
 {
@@ -106,7 +114,7 @@ void setup()
 
     unsigned int err = SelfTest(POST);
     if ((err & err_critical_mask) == 0) err |= (readEEPROM() ? 0 : err_EEPROM);
-    err |= SelfTest(time); // rtc.begin() can be omited (only calls Wire.begin())
+    err |= SelfTest(time); // rtc.begin() can be omitted (only calls Wire.begin())
 
     if (err & err_time_lost)
     {
@@ -120,16 +128,33 @@ void setup()
     }
 
     Serial.println(F("boot"));
+
+#ifdef internal_WDT
+    wdt_enable(WDTO_2S);
+    DEBUG_println(F("WDT enabled"));
+#endif
+
 }
 
 void loop()
 {
     buzzer.loop();
+
     if ((unsigned long)(millis() - loop_rtc_prev_millis) >= 800UL)
     {
         now = rtc.now(); // # TODO + summer_time
         loop_rtc_prev_millis = millis();
     }
+
+#ifdef internal_WDT
+    // WDT depends on RTC time. This allows it to detect RTC failures.
+    if (now.second() != WDT_prev_seconds)
+    {
+        wdt_reset();
+        WDT_prev_seconds = now.second();
+    }
+#endif
+
     CLI.loop(now);
     GUI.loop(now);
     for (byte i = 0; i < alarms_count; i++) alarms[i].loop(now);
@@ -178,7 +203,7 @@ void alarm_activation_callback()
     permanent_backlight.set(true);
 }
 
-// WARNING: stop_callback is also called if the alarm times out.
+// WARNING: stop_callback is also called when the alarm times out.
 void alarm_stop_callback()
 {
     permanent_backlight.set(false);

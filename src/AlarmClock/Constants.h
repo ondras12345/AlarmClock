@@ -26,6 +26,18 @@ DEBUG
 #define DEBUG_println(x)
 #endif // DEBUG
 
+/*
+WDT
+*/
+#ifdef use_internal_WDT
+#if defined(__AVR__)
+#define internal_WDT
+#else
+// warning is not a standard C feature, but GCC should support it.
+#warning "WDT is not supported on this platform."
+#endif
+#endif // use_internal_WDT
+
 
 /*
 String constants

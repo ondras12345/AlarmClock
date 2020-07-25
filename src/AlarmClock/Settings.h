@@ -92,6 +92,17 @@ Hardware
 //#define active_buzzer
 
 
+// Internal watchdog timer.
+// It resets the board if the software gets stuck or if the RTC fails.
+// This only works on the AVR platform, otherwise a warning is generated.
+// Only enable this setting if you are compiling this project for an Arduino
+// board with a bootloader that does not have bugs in WDT implementation.
+// An example of an unsupported platform is "Arduino Nano (old bootloader)".
+// https://github.com/arduino/ArduinoCore-avr/issues/150
+// Boards with Optiboot bootloader should not have this problem.
+#define use_internal_WDT
+
+
 
 /*
 Pins
