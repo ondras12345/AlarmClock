@@ -3,8 +3,8 @@
 */
 
 
-#ifndef _PWMDIMMER_h
-#define _PWMDIMMER_h
+#ifndef PWMDIMMER_H
+#define PWMDIMMER_H
 
 #if defined(ARDUINO) && ARDUINO >= 100
     #include "arduino.h"

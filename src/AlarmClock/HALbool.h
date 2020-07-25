@@ -2,8 +2,8 @@
     @file
 */
 
-#ifndef _HALBOOL_h
-#define _HALBOOL_h
+#ifndef HALBOOL_H
+#define HALBOOL_H
 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "arduino.h"

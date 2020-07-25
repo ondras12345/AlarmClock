@@ -3,8 +3,8 @@
 */
 
 
-#ifndef _DAYSOFWEEK_h
-#define _DAYSOFWEEK_h
+#ifndef DAYSOFWEEK_H
+#define DAYSOFWEEK_H
 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "arduino.h"

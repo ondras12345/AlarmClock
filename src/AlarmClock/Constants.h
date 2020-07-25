@@ -4,8 +4,8 @@
     User changable settings are in Settings.h
 */
 
-#ifndef _CONSTANTS_h
-#define _CONSTANTS_h
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "arduino.h"

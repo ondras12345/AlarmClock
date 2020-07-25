@@ -2,8 +2,8 @@
     @file
 */
 
-#ifndef _ALARM_h
-#define _ALARM_h
+#ifndef ALARM_H
+#define ALARM_H
 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "arduino.h"

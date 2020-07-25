@@ -1,7 +1,7 @@
 // SerialCLI.h
 
-#ifndef _SERIALCLI_h
-#define _SERIALCLI_h
+#ifndef SERIALCLI_H
+#define SERIALCLI_H
 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "arduino.h"

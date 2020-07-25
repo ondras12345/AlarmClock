@@ -2,8 +2,8 @@
     @file
 */
 
-#ifndef BUZZERMANAGER_h
-#define BUZZERMANAGER_h
+#ifndef BUZZERMANAGER_H
+#define BUZZERMANAGER_H
 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "arduino.h"

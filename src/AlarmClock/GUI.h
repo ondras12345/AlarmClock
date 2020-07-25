@@ -1,7 +1,7 @@
 // GUI.h
 
-#ifndef _GUI_h
-#define _GUI_h
+#ifndef GUI_H
+#define GUI_H
 
 #if defined(ARDUINO) && ARDUINO >= 100
     #include "arduino.h"

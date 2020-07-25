@@ -1,7 +1,5 @@
-// CountdownTimer.h
-
-#ifndef _COUNTDOWNTIMER_h
-#define _COUNTDOWNTIMER_h
+#ifndef COUNTDOWNTIMER_H
+#define COUNTDOWNTIMER_H
 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "arduino.h"

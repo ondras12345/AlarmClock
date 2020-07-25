@@ -11,8 +11,8 @@
       be unsigned long
 */
 
-#ifndef _SETTINGS_h
-#define _SETTINGS_h
+#ifndef SETTINGS_H
+#define SETTINGS_H
 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "arduino.h"

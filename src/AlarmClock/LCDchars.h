@@ -6,8 +6,8 @@
 */
 
 
-#ifndef _LCDchars_h
-#define _LCDchars_h
+#ifndef LCDCHARS_H
+#define LCDCHARS_H
 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "arduino.h"
