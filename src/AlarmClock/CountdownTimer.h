@@ -10,7 +10,8 @@
 #define CountdownTimer_freq 3000 // in Hz
 #define CountdownTimer_period 1000 // in ms
 
-struct TimedEvents {
+struct TimedEvents
+{
     // the status after the timer times out - timers can be used for both turning off and on
     byte ambient;
     bool lamp;

@@ -24,30 +24,37 @@ void GUIClass::loop(DateTime time_)
         set_backlight(off);
     }
 
-    if (_encoder_button->fell() || abs(_encoder->read()) >= encoder_step) {
+    if (_encoder_button->fell() || abs(_encoder->read()) >= encoder_step)
+    {
         _backlight_prev_millis = millis();
-        if (_backlight == off) {
+        if (_backlight == off)
+        {
             set_backlight(on);
             _encoder->write(_encoder->read() % encoder_step);
         }
-        else {
+        else
+        {
 
             /*
             Button
             */
             //_encoder_button->update();  // Already done in loop() of AlarmClock.ino
-            if (_encoder_button->fell()) {
-                if (_cursor_clicked) {
+            if (_encoder_button->fell())
+            {
+                if (_cursor_clicked)
+                {
                     _cursor_clicked = false;
                 }
-                else {
+                else
+                {
                     if (_current_screen == screen_alarms &&
                         _cursor_position != cpa_home_button &&
                         _cursor_position != cpa_alarm_index
                         )
                         _change = true;
 
-                    switch (_current_screen) {
+                    switch (_current_screen)
+                    {
                         // Each screen should have its own switch
                         // (_cursor_position) here. This section fully handles
                         // button presses that don't result in _cursor_clicked,
@@ -55,7 +62,8 @@ void GUIClass::loop(DateTime time_)
                         // handled by `default` of each switch statement by
                         // setting _cursor_clicked = true.
                     case screen_home:
-                        switch (_cursor_position) {
+                        switch (_cursor_position)
+                        {
                         case cph_alarms_button:
                             _switch_screen(screen_alarms);
                             break;
@@ -84,10 +92,12 @@ void GUIClass::loop(DateTime time_)
                     {
                         Signalization prev_sig = _sel_alarm->get_signalization();
 
-                        switch (_cursor_position) {
+                        switch (_cursor_position)
+                        {
                         case cpa_home_button:
                             _switch_screen(screen_home);
-                            if (_change) {
+                            if (_change)
+                            {
                                 // Data is written to the EEPROM when returning
                                 // to home screen.
                                 _change = false;
@@ -138,13 +148,15 @@ void GUIClass::loop(DateTime time_)
 
 
                     case screen_RTC:
-                        switch (_cursor_position) {
+                        switch (_cursor_position)
+                        {
                         case cpr_cancel_button:
                             _switch_screen(screen_home);
                             break;
 
                         case cpr_apply_button:
-                            if (_RTC_set.isValid()) {
+                            if (_RTC_set.isValid())
+                            {
                                 _rtc->adjust(_RTC_set);
                                 _switch_screen(screen_home);
                             }
@@ -170,7 +182,8 @@ void GUIClass::loop(DateTime time_)
             Encoder
             */
             int encoder_position = _encoder->read();
-            if (abs(encoder_position) >= encoder_step) {
+            if (abs(encoder_position) >= encoder_step)
+            {
                 _encoder_prev_millis = millis();
                 int encoder_full_steps = encoder_position / encoder_step;
 #if defined(DEBUG) && defined(DEBUG_encoder)
@@ -181,11 +194,14 @@ void GUIClass::loop(DateTime time_)
 #endif
                 _encoder->write(encoder_position - (encoder_full_steps * encoder_step));
 
-                if (_cursor_clicked) {
+                if (_cursor_clicked)
+                {
                     // Handle encoder rotations that should change some values.
-                    switch (_current_screen) {
+                    switch (_current_screen)
+                    {
                     case screen_home:
-                        switch (_cursor_position) {
+                        switch (_cursor_position)
+                        {
                         case cph_ambient:
                             _ambientDimmer->set_from_duration(
                                     _ambientDimmer->get_value(),
@@ -201,7 +217,8 @@ void GUIClass::loop(DateTime time_)
 
 
                     case screen_alarms:
-                        switch (_cursor_position) {
+                        switch (_cursor_position)
+                        {
                         case cpa_alarm_index:
                             _sel_alarm_index = _apply_limits(
                                 _sel_alarm_index, encoder_full_steps, 0,
@@ -273,7 +290,8 @@ void GUIClass::loop(DateTime time_)
 
 
                     case screen_RTC:
-                        switch (_cursor_position) {
+                        switch (_cursor_position)
+                        {
                         case cpr_time_h:
                             _RTC_set = DateTime(_RTC_set.year(), _RTC_set.month(),
                                 _RTC_set.day(),
@@ -335,7 +353,8 @@ void GUIClass::loop(DateTime time_)
                     }
 
                 }
-                else {
+                else
+                {
                     // Move the cursor
                     _cursor_position = _apply_limits(_cursor_position,
                         encoder_full_steps,
@@ -379,13 +398,15 @@ byte GUIClass::_apply_limits(byte value, int step, byte limit_low,
     if (value < limit_low)
         return limit_low;
 
-    if (step < 0 && -step > (value - limit_low)) {
+    if (step < 0 && -step > (value - limit_low))
+    {
         if (loop)
             return limit_high - (-step - (value - limit_low) - 1);
         else return limit_low;
     }
 
-    if (step > (limit_high - value)) {
+    if (step > (limit_high - value))
+    {
         if (loop)
             return limit_low + ((value + step) - limit_high - 1);
         else return limit_high;
@@ -406,7 +427,8 @@ void GUIClass::_update()
     _lcd->noCursor();
     _lcd->noBlink();
     _lcd->setCursor(0, 0);
-    switch (_current_screen) {
+    switch (_current_screen)
+    {
     case screen_home:
         sprintf(_line_buffer, "%02d.%02d %d %02d:%02d:%02d",
                 _now.day(), _now.month(),
@@ -426,14 +448,16 @@ void GUIClass::_update()
     {
         char days_of_week[8] = "";  // 7 + \0
         days_of_week[7] = '\0';
-        for (byte i = 1; i <= 7; i++) {
+        for (byte i = 1; i <= 7; i++)
+        {
             if (_sel_alarm->get_days_of_week().getDayOfWeek(i))
                 days_of_week[i - 1] = char('0' + i);
             else days_of_week[i - 1] = ' ';
         }
 
         char enabled[4] = "";
-        switch (_sel_alarm->get_enabled()) {
+        switch (_sel_alarm->get_enabled())
+        {
         case Off:
             strcpy(enabled, "Off");
             break;

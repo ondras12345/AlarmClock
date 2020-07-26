@@ -5,7 +5,8 @@ void SerialCLIClass::loop(DateTime time_)
     _now = time_;
     bool complete_message = false;
 
-    while (Serial.available() && !complete_message) {
+    while (Serial.available() && !complete_message)
+    {
         // !complete_message - this prevents the _Serial_buffer being rewritten
         // by new data when 2 messages are sent with very little delay (index
         // is set to 0 when complete_message is received).
@@ -13,9 +14,11 @@ void SerialCLIClass::loop(DateTime time_)
 
         _Serial_buffer[_Serial_buffer_index] = tolower(Serial.read());
 
-        if (_Serial_buffer[_Serial_buffer_index] == '\n' || _Serial_buffer[_Serial_buffer_index] == '\r') {
+        if (_Serial_buffer[_Serial_buffer_index] == '\n' || _Serial_buffer[_Serial_buffer_index] == '\r')
+        {
             //  CR/LF
-            if (_Serial_buffer_index != 0) {
+            if (_Serial_buffer_index != 0)
+            {
                 // ignore if it is the first character (to avoid problems with CR+LF/LF)
 
                 _Serial_buffer[_Serial_buffer_index] = '\0';  // rewrite CR/LF
@@ -29,7 +32,8 @@ void SerialCLIClass::loop(DateTime time_)
                 Serial.println(_Serial_buffer);
 
                 char *ptr = &_Serial_buffer[0];
-                while (*ptr != '\0') {
+                while (*ptr != '\0')
+                {
                     Serial.print(byte(*ptr), HEX);
                     Serial.print(' ');
                     ptr++;
@@ -38,15 +42,18 @@ void SerialCLIClass::loop(DateTime time_)
 #endif // DEBUG
             }
         }
-        else {
+        else
+        {
             // Character playback - this needs to be before index++ and should
             // not happen when the character is CR/LF
             Serial.print(_Serial_buffer[_Serial_buffer_index]);
 
-            if (_Serial_buffer_index < Serial_buffer_length - 1) {
+            if (_Serial_buffer_index < Serial_buffer_length - 1)
+            {
                 _Serial_buffer_index++;
             }
-            else {
+            else
+            {
                 Serial.println();
                 Serial.print(F("Cmd too long: "));
                 for (byte i = 0; i <= _Serial_buffer_index; i++)
@@ -65,19 +72,23 @@ void SerialCLIClass::loop(DateTime time_)
     }
 
 
-    if (complete_message) {
+    if (complete_message)
+    {
         DEBUG_println();
         DEBUG_println(F("Processing"));
 
         char *cmd_ptr = nullptr;
 
-        if (!strcmp(_Serial_buffer, "help")) { // ! - strcmp returns 0 if matches
+        // ! - strcmp returns 0 if matches
+        if (!strcmp(_Serial_buffer, "help")) {
             _print_help();
         }
-        else if ((cmd_ptr = strstr(_Serial_buffer, "sel")) != nullptr) {
+        else if ((cmd_ptr = strstr(_Serial_buffer, "sel")) != nullptr)
+        {
             char *index = _find_digit(cmd_ptr);
             if (*index == '\0') _print_error(_select_alarm(_sel_alarm_index_none));
-            else {
+            else
+            {
                 byte index_num = _strbyte(index);
                 _print_error(_select_alarm(index_num));
             }
@@ -131,7 +142,8 @@ void SerialCLIClass::loop(DateTime time_)
         else if ((cmd_ptr = strstr(_Serial_buffer, "st")) != nullptr) {
             _print_error(_rtc_time(cmd_ptr));
         }
-        else {
+        else
+        {
             Serial.println(F("? SYNTAX ERROR"));
             _print_help();
         }
@@ -144,7 +156,8 @@ void SerialCLIClass::loop(DateTime time_)
     }
 
     // autosave
-    if ((unsigned long)(millis() - _prev_command_millis) >= Serial_autosave_interval && _change) {
+    if ((unsigned long)(millis() - _prev_command_millis) >= Serial_autosave_interval && _change)
+    {
         Serial.println();
         Serial.println(F("Autosaving"));
         _print_error(_save());
@@ -218,7 +231,8 @@ void SerialCLIClass::_print_help()
 byte SerialCLIClass::_strbyte(char *str)
 {
     byte result = 0;
-    while (isDigit(*str)) {
+    while (isDigit(*str))
+    {
         result = result * 10 + (*str - '0');
         str++;
     }
@@ -240,7 +254,8 @@ char * SerialCLIClass::_find_next_digit(char * str)
 
 void SerialCLIClass::_indent(byte level)
 {
-    for (byte i = 0; i < level * Serial_indentation_width; i++) {
+    for (byte i = 0; i < level * Serial_indentation_width; i++)
+    {
         Serial.print(' ');
     }
 }
@@ -270,7 +285,8 @@ SerialCLIClass::error_t SerialCLIClass::_set_ambient(char * duty)
     byte ambient;
 
     duty = _find_next_digit(duty);
-    if (*duty == '\0') {
+    if (*duty == '\0')
+    {
         Serial.print(F("amb: "));
         Serial.println(_ambientDimmer->get_value());
         return 0;
@@ -285,7 +301,8 @@ SerialCLIClass::error_t SerialCLIClass::_set_ambient(char * duty)
 SerialCLIClass::error_t SerialCLIClass::_set_lamp(char *status)
 {
     status = _find_next_digit(status);
-    if (*status == '\0') {
+    if (*status == '\0')
+    {
         Serial.print(F("lamp: "));
         Serial.println(_lamp->get());
         return 0;
@@ -297,7 +314,8 @@ SerialCLIClass::error_t SerialCLIClass::_set_lamp(char *status)
 SerialCLIClass::error_t SerialCLIClass::_set_inh(char *status)
 {
     status = _find_next_digit(status);
-    if (*status == '\0') {
+    if (*status == '\0')
+    {
         Serial.print(F("inhibit: "));
         Serial.println(_get_inhibit());
         return 0;
@@ -327,7 +345,8 @@ SerialCLIClass::error_t SerialCLIClass::_list_selected_alarm()
 
     _indent(1);
     Serial.print(F("Enabled: "));
-    switch ((_alarms + _sel_alarm_index)->get_enabled()) {
+    switch ((_alarms + _sel_alarm_index)->get_enabled())
+    {
     case Off:
         Serial.println(F("Off"));
         break;
@@ -347,8 +366,10 @@ SerialCLIClass::error_t SerialCLIClass::_list_selected_alarm()
 
     _indent(1);
     Serial.print(F("Days of week: "));
-    for (byte i = 1; i <= 7; i++) {
-        if ((_alarms + _sel_alarm_index)->get_days_of_week().getDayOfWeek(i)) {
+    for (byte i = 1; i <= 7; i++)
+    {
+        if ((_alarms + _sel_alarm_index)->get_days_of_week().getDayOfWeek(i))
+        {
             Serial.print(days_of_the_week_names_short[i]);
             Serial.print(' ');
         }
@@ -409,7 +430,8 @@ SerialCLIClass::error_t SerialCLIClass::_set_time(char *time)
     if (*time == '\0') return Serial_err_argument;
     minutes = _strbyte(time);
 
-    if ((_alarms + _sel_alarm_index)->set_time(hours, minutes)) {
+    if ((_alarms + _sel_alarm_index)->set_time(hours, minutes))
+    {
         _change = true;
         return 0;
     }
@@ -429,7 +451,8 @@ SerialCLIClass::error_t SerialCLIClass::_set_day_of_week(char *dow)
     if (*dow == '\0') return Serial_err_argument;
     status = _strbyte(dow);
 
-    if ((_alarms + _sel_alarm_index)->set_day_of_week(day, status)) {
+    if ((_alarms + _sel_alarm_index)->set_day_of_week(day, status))
+    {
         _change = true;
         return 0;
     }
@@ -449,7 +472,8 @@ SerialCLIClass::error_t SerialCLIClass::_set_snooze(char * snooze)
     if (*snooze == '\0') return Serial_err_argument;
     count = _strbyte(snooze);
 
-    if ((_alarms + _sel_alarm_index)->set_snooze(time, count)) {
+    if ((_alarms + _sel_alarm_index)->set_snooze(time, count))
+    {
         _change = true;
         return 0;
     }
@@ -473,7 +497,8 @@ SerialCLIClass::error_t SerialCLIClass::_set_signalization(char * sig)
     if (*sig == '\0') return Serial_err_argument;
     buzzer = _strbyte(sig);
 
-    if ((_alarms + _sel_alarm_index)->set_signalization(ambient, lamp, buzzer)) {
+    if ((_alarms + _sel_alarm_index)->set_signalization(ambient, lamp, buzzer))
+    {
         _change = true;
         return 0;
     }
@@ -482,7 +507,8 @@ SerialCLIClass::error_t SerialCLIClass::_set_signalization(char * sig)
 
 SerialCLIClass::error_t SerialCLIClass::_save()
 {
-    if (_change) {
+    if (_change)
+    {
         _change = false;
         _writeEEPROM();
         return 0;

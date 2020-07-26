@@ -20,7 +20,8 @@
 
 // Must be contiguous
 // Don't forget to update Screens_count when changing
-enum Screen {
+enum Screen
+{
     screen_home = 0,
     screen_alarms = 1,
     screen_RTC = 2
@@ -28,12 +29,14 @@ enum Screen {
 };
 #define Screens_count 3
 
-struct cursor_position_t {
+struct cursor_position_t
+{
     byte column;
     byte row;
 };
 
-enum cursor_position_home {
+enum cursor_position_home
+{
     cph_alarms_button = 0,
     cph_RTC_button = 1,
     cph_inhibit_button = 2,
@@ -41,7 +44,8 @@ enum cursor_position_home {
     cph_lamp = 4
 };
 
-enum cursor_position_alarms {
+enum cursor_position_alarms
+{
     cpa_home_button = 0,
     cpa_alarm_index = 1,
     cpa_alarm_day_1 = 2,
@@ -63,7 +67,8 @@ enum cursor_position_alarms {
     cpa_alarm_sig_b = 16
 };
 
-enum cursor_position_RTC {
+enum cursor_position_RTC
+{
     cpr_cancel_button = 0,
     cpr_apply_button = 1,
     cpr_time_h = 2,
@@ -74,7 +79,8 @@ enum cursor_position_RTC {
     cpr_date_y = 7
 };
 
-enum backlight_t {
+enum backlight_t
+{
     off = 0,
     on = 1,
     permanent = 2

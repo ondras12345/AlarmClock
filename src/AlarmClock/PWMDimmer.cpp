@@ -94,8 +94,10 @@ void PWMDimmerClass::stop()
 //! Call this function in the loop() of your sketch.
 void PWMDimmerClass::loop()
 {
-    if (_active && ((unsigned long)(millis() - _prev_change_millis) >= _interval)) {
-        if ((_step > 0 && _value >= _stop) || (_step < 0 && _value <= _stop)) {
+    if (_active && ((unsigned long)(millis() - _prev_change_millis) >= _interval))
+    {
+        if ((_step > 0 && _value >= _stop) || (_step < 0 && _value <= _stop))
+        {
             _value = _stop;
             analogWrite(_pin, _value);
 
@@ -110,7 +112,8 @@ void PWMDimmerClass::loop()
             else if (_value >= 250) digitalWrite(_pin, HIGH);
             _active = false;
         }
-        else {
+        else
+        {
             _value += _step;
             if (_value > 255) _value = 255;
             else if (_value < 0) _value = 0;

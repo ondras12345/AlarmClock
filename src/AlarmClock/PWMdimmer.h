@@ -61,7 +61,8 @@ class PWMDimmerClass
         @brief  Get time remaining before the target value is reached.
         @return time in ms
      */
-     unsigned long get_remaining() const {
+     unsigned long get_remaining() const
+     {
          if (!_active) return 0;
          byte diff_remaining = abs(_stop - _value);
          return (unsigned long)(diff_remaining * _interval) / _step;

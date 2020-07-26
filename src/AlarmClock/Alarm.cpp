@@ -12,11 +12,14 @@
 */
 void AlarmClass::loop(DateTime time)
 {
-    if (get_active()) {
+    if (get_active())
+    {
         // alarm is already active
-        if (snooze_status) {
+        if (snooze_status)
+        {
             // alarm is NOT ringing (snooze)
-            if ((unsigned long)(millis() - prev_millis) >= (snooze.time_minutes * 60000UL)) {
+            if ((unsigned long)(millis() - prev_millis) >= (snooze.time_minutes * 60000UL))
+            {
                 snooze_status = false;
                 if (signalization.lamp) lamp->set(true);
                 if (signalization.buzzer)
@@ -28,7 +31,8 @@ void AlarmClass::loop(DateTime time)
                 DEBUG_println(F("Alarm waking from snooze"));
             }
         }
-        else {
+        else
+        {
             // alarm is ringing
 
             // WARNING: If another alarm activated after this one, this
@@ -38,7 +42,8 @@ void AlarmClass::loop(DateTime time)
             // docs and I'm leaving it as-is, at least for now.
             // A class derived from PWMDimmerClass could be used to keep track
             // of the number of alarms that want the ambient to be on.
-            if ((unsigned long)(millis() - prev_activation_millis) >= Alarm_timeout) {
+            if ((unsigned long)(millis() - prev_activation_millis) >= Alarm_timeout)
+            {
                 button_stop();
                 return;
             }
@@ -48,22 +53,26 @@ void AlarmClass::loop(DateTime time)
     }
 
     // alarm is not active
-    if (should_trigger(time)) {
+    if (should_trigger(time))
+    {
         prev_activation_millis = millis();
 
         // Single must disable even if alarm is inhibited
-        if (enabled == Single) {
+        if (enabled == Single)
+        {
             enabled = Off;
             writeEEPROM_all();
         }
 
-        if (enabled == Skip) {
+        if (enabled == Skip)
+        {
             enabled = Repeat;
             writeEEPROM_all();
             return;
         }
 
-        if (inhibit) {
+        if (inhibit)
+        {
             DEBUG_println(F("Alarm inhibited"));
             return;
         }
@@ -231,7 +240,8 @@ bool AlarmClass::readEEPROM(byte data[EEPROM_AlarmClass_length])
 #if defined(DEBUG) && defined(DEBUG_EEPROM_alarms)
     Serial.println();
     Serial.println(F("EEPROM alarm read:"));
-    for (byte i = 0; i < EEPROM_AlarmClass_length; i++) {
+    for (byte i = 0; i < EEPROM_AlarmClass_length; i++)
+    {
         Serial.print(data[i], HEX);
         Serial.print(' ');
     }
@@ -291,7 +301,8 @@ byte * AlarmClass::writeEEPROM()
 
 #if defined(DEBUG) && defined(DEBUG_EEPROM_alarms)
     Serial.println(F("EEPROM alarm write:"));
-    for (byte i = 0; i < EEPROM_AlarmClass_length; i++) {
+    for (byte i = 0; i < EEPROM_AlarmClass_length; i++)
+    {
         Serial.print(EEPROM_data_[i], HEX);
         Serial.print(' ');
     }

@@ -23,18 +23,21 @@
 //#define AlarmClass_EEPROM_length identifier(1B) + sizeof(TimeStampClass - jen  2 byte) + sizeof(AlarmsEnabled - 1 byte) + sizeof(DaysOfWeekClass - jen 1 byte (eeprom)) + sizeof(Snooze) + sizeOf(Signalization)
 
 #define AlarmEnabled_max 3  // for input validation
-enum AlarmEnabled {
+enum AlarmEnabled
+{
     Off = 0,
     Single = 1,
     Repeat = 2,
     Skip = 3
 };
-struct Snooze {
+struct Snooze
+{
     byte time_minutes; //!< max 99
     byte count; //!< max 9
 };
 
-struct hours_minutes {
+struct hours_minutes
+{
     byte hours;
     byte minutes;
 };
@@ -43,7 +46,8 @@ struct hours_minutes {
     @brief  Stores information about the means that should be used to wake the
             user up when the alarm activates.
 */
-struct Signalization {
+struct Signalization
+{
     byte ambient; //!< ambient light intensity - dimmable LED strips
     bool lamp;
     bool buzzer;
@@ -96,7 +100,8 @@ protected:
     Signalization signalization;
 
     // true --> alarm is on (ringing or snooze)
-    bool get_active() const {
+    bool get_active() const
+    {
         return current_snooze_count < current_snooze_count_inactive;
     };
 

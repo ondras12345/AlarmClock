@@ -48,7 +48,7 @@ void BuzzerManager::set_ringing(BuzzerTone tone)
     if (tone == ringing_off)
     {
         on_count_--;
-        if(on_count_ == 0)
+        if (on_count_ == 0)
         {
             tone_ = ringing_off;
             set_buzzer(false);

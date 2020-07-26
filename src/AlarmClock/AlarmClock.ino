@@ -29,7 +29,8 @@ Code directives:
 #include "Constants.h"
 
 
-enum SelfTest_level {
+enum SelfTest_level
+{
     POST,
     time
 };
@@ -85,7 +86,8 @@ bool inhibit = false;
 unsigned long inhibit_prev_millis = 0;
 
 
-void setup() {
+void setup()
+{
     pinMode(pin_ambient, OUTPUT);
     pinMode(pin_lamp, OUTPUT);
     pinMode(pin_buzzer, OUTPUT);
@@ -106,21 +108,25 @@ void setup() {
     if ((err & err_critical_mask) == 0) err |= (readEEPROM() ? 0 : err_EEPROM);
     err |= SelfTest(time); // rtc.begin() can be omited (only calls Wire.begin())
 
-    if (err & err_time_lost) {
+    if (err & err_time_lost)
+    {
         Serial.println(F("RTC time lost"));
         // # TODO
     }
 
-    if ((err & err_critical_mask) != 0) {
+    if ((err & err_critical_mask) != 0)
+    {
         factory_reset(); // # TODO show the error first, write to log if it is not EEPROM error, the wait for the user
     }
 
     Serial.println(F("boot"));
 }
 
-void loop() {
+void loop()
+{
     buzzer.loop();
-    if ((unsigned long)(millis() - loop_rtc_prev_millis) >= 800UL) {
+    if ((unsigned long)(millis() - loop_rtc_prev_millis) >= 800UL)
+    {
         now = rtc.now(); // # TODO + summer_time
         loop_rtc_prev_millis = millis();
     }
@@ -132,24 +138,29 @@ void loop() {
 
     // buttons
     for (byte i = 0; i < button_count; i++) buttons[i].update();
-    if (buttons[button_index_snooze].fell()) {
-        if(GUI.get_backlight() != off) {
+    if (buttons[button_index_snooze].fell())
+    {
+        if(GUI.get_backlight() != off)
+        {
             for (byte i = 0; i < alarms_count; i++) alarms[i].button_snooze();
             DEBUG_println(F("snooze pressed"));
         }
         else GUI.set_backlight(on);
     }
-    if (buttons[button_index_stop].fell()) {
+    if (buttons[button_index_stop].fell())
+    {
         if(GUI.get_backlight() == off) GUI.set_backlight(on);
         for (byte i = 0; i < alarms_count; i++) alarms[i].button_stop();
         DEBUG_println(F("stop pressed"));
     }
-    if (inhibit && (unsigned long)(millis() - inhibit_prev_millis) >= Alarm_inhibit_duration) {
+    if (inhibit && (unsigned long)(millis() - inhibit_prev_millis) >= Alarm_inhibit_duration)
+    {
         set_inhibit(false);
     }
 }
 
-void init_hardware() {
+void init_hardware()
+{
     for (byte i = 0; i < alarms_count; i++)
         alarms[i].set_hardware(&lamp, &ambientDimmer, &buzzer, writeEEPROM,
                                alarm_activation_callback, alarm_stop_callback);
@@ -177,12 +188,15 @@ void alarm_stop_callback()
 /*
 EEPROM
 */
-bool readEEPROM() {
+bool readEEPROM()
+{
 #ifdef DEBUG
     Serial.print(F("EEPROM dump"));
     byte val;
-    for (byte i = 0; i < EEPROM_DEBUG_dump_length; i++) {
-        if (i % 16 == 0) {
+    for (byte i = 0; i < EEPROM_DEBUG_dump_length; i++)
+    {
+        if (i % 16 == 0)
+        {
             Serial.println();
             if (i < 16) Serial.print('0');
             Serial.print(i, HEX); // address
@@ -201,9 +215,11 @@ bool readEEPROM() {
     // basic config:
 
     // alarms:
-    for (byte i = 0; i < alarms_count && !err; i++) {
+    for (byte i = 0; i < alarms_count && !err; i++)
+    {
         byte data[EEPROM_AlarmClass_length];
-        for (byte j = 0; j < EEPROM_AlarmClass_length; j++) {
+        for (byte j = 0; j < EEPROM_AlarmClass_length; j++)
+        {
             data[j] = EEPROM.read((i * EEPROM_AlarmClass_length) + j + EEPROM_alarms_offset);
         }
         err |= !alarms[i].readEEPROM(data);
@@ -212,18 +228,21 @@ bool readEEPROM() {
     return !err;
 }
 
-void writeEEPROM() {
+void writeEEPROM()
+{
     DEBUG_println(F("EEPROM write"));
     // basic config:
 
     // alarms:
-    for (byte i = 0; i < alarms_count; i++) {
+    for (byte i = 0; i < alarms_count; i++)
+    {
 #if defined(DEBUG) && defined(DEBUG_EEPROM_writes)
         Serial.print(F("Alarm "));
         Serial.println(i);
 #endif
         byte * data = alarms[i].writeEEPROM();
-        for (byte j = 0; j < EEPROM_AlarmClass_length; j++) {
+        for (byte j = 0; j < EEPROM_AlarmClass_length; j++)
+        {
             unsigned int address = (i * EEPROM_AlarmClass_length) + j + EEPROM_alarms_offset;
 #if defined(DEBUG) && defined(DEBUG_EEPROM_writes)
             Serial.print(F("Saving "));
@@ -241,7 +260,8 @@ void writeEEPROM() {
 /*
 Factory reset
 */
-void factory_reset() {
+void factory_reset()
+{
     Serial.println(F("Factory reset"));
     for (byte i = 0; i < alarms_count; i++) alarms[i] = AlarmClass();
     //countdownTimer = CountdownTimerClass();  // # TODO implement CountdownTimer
@@ -253,8 +273,10 @@ void factory_reset() {
 /*
 LCD
 */
-bool lcd_init() {
-    if (I2C_ping(I2C_LCD_address)) {
+bool lcd_init()
+{
+    if (I2C_ping(I2C_LCD_address))
+    {
         lcd.init();
         lcd.backlight();
         // Add custom characters
@@ -273,22 +295,28 @@ bool lcd_init() {
 /*
 Self test
 */
-unsigned int SelfTest(SelfTest_level level) {
+unsigned int SelfTest(SelfTest_level level)
+{
     unsigned int err = 0; // each bit signalizes an error
 
-    if (level == POST || level == time) {
+    if (level == POST || level == time)
+    {
         if (!I2C_ping(I2C_DS3231_address)) err |= err_I2C_ping_DS3231;
 
     }
 
-    if (level == time) {
-        if ((err & err_I2C_ping_DS3231) == 0) { // DS3231 is responding ((POST || time) code block was executed earlier)
+    if (level == time)
+    {
+        if ((err & err_I2C_ping_DS3231) == 0)
+        {
+            // DS3231 is responding ((POST || time) code block was executed earlier)
             if (rtc.lostPower()) err |= err_time_lost;
             if (rtc.now().year() == 2000) err |= err_time_lost;
         }
     }
 
-    if (level == POST) {
+    if (level == POST)
+    {
         //digitalWrite(..., HIGH);  // # TODO
 #ifdef active_buzzer
         digitalWrite(pin_buzzer, HIGH);
@@ -307,7 +335,8 @@ unsigned int SelfTest(SelfTest_level level) {
     return err;
 }
 
-bool I2C_ping(byte addr) {
+bool I2C_ping(byte addr)
+{
     Wire.beginTransmission(addr);
     return (Wire.endTransmission() == 0);
 }
@@ -326,7 +355,8 @@ void lamp_set(bool status)
 /*
 Utils
 */
-void set_inhibit(bool status) {
+void set_inhibit(bool status)
+{
     inhibit_prev_millis = millis();
     inhibit = status;
     for (byte i = 0; i < alarms_count; i++) alarms[i].set_inhibit(status);
