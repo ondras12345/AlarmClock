@@ -9,10 +9,10 @@
     - [ ] `sel{i}` - select
     - [ ] `sel` - deselect
     - [ ] `ls`
+    - [ ] `en-off`
     - [ ] `en-sgl`
     - [ ] `en-rpt`
     - [ ] `en-skp`
-    - [ ] `dis`
     - [ ] `time{h}:{m}`
     - [ ] `dow{d}:{s}`
     - [ ] `snz{t};{c}`
