@@ -78,10 +78,14 @@ protected:
 #define prev_activation_millis_init 0xDEADBEEF
 
 #define current_snooze_count_inactive 255
-    byte current_snooze_count;  // max 9; 255 --> inactive alarm
-    unsigned long prev_millis;  // used for timing snooze
+    byte current_snooze_count;  // max 9; 255 has special meaning defined above
+    // Used to time snooze and as prev_activation_millis for ambient.
+    // Also needs to be initialised to prev_activation_millis_init to prevent
+    // alarms starting in the first minute of runtime being ignored.
+    unsigned long prev_millis = prev_activation_millis_init;
     bool inhibit;
     bool snooze_status;  // currently in snooze
+    bool ambient_status;  // ambient is active
 
     HALbool *lamp;
     PWMDimmerClass *ambientDimmer;
@@ -107,6 +111,7 @@ protected:
 
 
     bool should_trigger(DateTime time);
+    bool should_trigger_ambient(DateTime time);
 
 
 public:
