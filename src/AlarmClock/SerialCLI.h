@@ -29,6 +29,8 @@ protected:
 
     static const command_t commands[];
 
+    Stream& ser;
+
     AlarmClass *_alarms;
     DateTime _now;
     RTC_DS3231 *_rtc;
@@ -80,9 +82,22 @@ protected:
 
 public:
     void loop(DateTime time);
-    SerialCLIClass(AlarmClass *alarms, void(*writeEEPROM)(), RTC_DS3231 *rtc,
+    SerialCLIClass(Stream& ser_,
+                   AlarmClass *alarms, void(*writeEEPROM)(), RTC_DS3231 *rtc,
                    PWMDimmerClass *ambientDimmer, HALbool *lamp,
-                   void(*set_inhibit)(bool), bool(*get_inhibit)());
+                   void(*set_inhibit)(bool), bool(*get_inhibit)()) : ser(ser_)
+{
+    _alarms = alarms;
+    _writeEEPROM = writeEEPROM;
+    _rtc = rtc;
+    _ambientDimmer = ambientDimmer;
+    _lamp = lamp;
+    _set_inhibit = set_inhibit;
+    _get_inhibit = get_inhibit;
+
+    strcpy(_prompt, _prompt_default);
+}
+
 };
 
 #endif

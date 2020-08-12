@@ -24,14 +24,14 @@ void SerialCLIClass::loop(DateTime time_)
     _now = time_;
     bool complete_message = false;
 
-    while (Serial.available() && !complete_message)
+    while (ser.available() && !complete_message)
     {
         // !complete_message - this prevents the _Serial_buffer being rewritten
         // by new data when 2 messages are sent with very little delay (index
         // is set to 0 when complete_message is received).
         // I need to process the data before I receive the next message.
 
-        _Serial_buffer[_Serial_buffer_index] = tolower(Serial.read());
+        _Serial_buffer[_Serial_buffer_index] = tolower(ser.read());
 
         if (_Serial_buffer[_Serial_buffer_index] == '\n' || _Serial_buffer[_Serial_buffer_index] == '\r')
         {
@@ -43,7 +43,7 @@ void SerialCLIClass::loop(DateTime time_)
                 _Serial_buffer[_Serial_buffer_index] = '\0';  // rewrite CR/LF
                 complete_message = true;
                 _Serial_buffer_index = 0;
-                Serial.println();
+                ser.println();
 
 #if defined(DEBUG) && defined(DEBUG_Serial_CLI)
                 Serial.println();
@@ -65,7 +65,7 @@ void SerialCLIClass::loop(DateTime time_)
         {
             // Character playback - this needs to be before index++ and should
             // not happen when the character is CR/LF
-            Serial.print(_Serial_buffer[_Serial_buffer_index]);
+            ser.print(_Serial_buffer[_Serial_buffer_index]);
 
             if (_Serial_buffer_index < Serial_buffer_length - 1)
             {
@@ -73,16 +73,16 @@ void SerialCLIClass::loop(DateTime time_)
             }
             else
             {
-                Serial.println();
-                Serial.print(F("Cmd too long: "));
+                ser.println();
+                ser.print(F("Cmd too long: "));
                 for (byte i = 0; i <= _Serial_buffer_index; i++)
-                    Serial.print(_Serial_buffer[i]);
+                    ser.print(_Serial_buffer[i]);
 
                 delay(40);  // to receive the rest of the message
-                while (Serial.available())
-                    Serial.print(char(Serial.read()));
+                while (ser.available())
+                    ser.print(char(ser.read()));
 
-                Serial.println();
+                ser.println();
 
                 _Serial_buffer_index = 0;
                 _Serial_buffer[0] = '\0';  // this is currently not necessary
@@ -111,88 +111,69 @@ void SerialCLIClass::loop(DateTime time_)
 
         if (!cmd_found)
         {
-            Serial.println(F("? SYNTAX ERROR"));
+            ser.println(F("? SYNTAX ERROR"));
             _print_help();
         }
 
         _prev_command_millis = millis();
 
         // Prompt will be missing after reboot, but this can't be easily fixed.
-        Serial.println();
-        Serial.print(_prompt);
+        ser.println();
+        ser.print(_prompt);
     }
 
     // autosave
     if ((unsigned long)(millis() - _prev_command_millis) >= Serial_autosave_interval && _change)
     {
-        Serial.println();
-        Serial.println(F("Autosaving"));
+        ser.println();
+        ser.println(F("Autosaving"));
         _print_error(_save());
     }
 }
 
 
-SerialCLIClass::SerialCLIClass(AlarmClass *alarms_, void(*writeEEPROM_)(),
-                               RTC_DS3231 *rtc_,
-                               PWMDimmerClass * ambientDimmer_,
-                               HALbool * lamp_,
-                               void(*set_inhibit_)(bool),
-                               bool(*get_inhibit_)())
-{
-    _alarms = alarms_;
-    _writeEEPROM = writeEEPROM_;
-    _rtc = rtc_;
-    _ambientDimmer = ambientDimmer_;
-    _lamp = lamp_;
-    _set_inhibit = set_inhibit_;
-    _get_inhibit = get_inhibit_;
-
-    strcpy(_prompt, _prompt_default);
-}
-
-
 void SerialCLIClass::_print_help()
 {
-    Serial.println();
-    Serial.println(F("Help:"));
+    ser.println();
+    ser.println(F("Help:"));
     _indent(1);
-    Serial.println(F("amb - get ambient 0-255"));
+    ser.println(F("amb - get ambient 0-255"));
     _indent(1);
-    Serial.println(F("amb{nnn} - ambient 0-255"));
+    ser.println(F("amb{nnn} - ambient 0-255"));
     _indent(1);
-    Serial.println(F("lamp - get 0|1"));
+    ser.println(F("lamp - get 0|1"));
     _indent(1);
-    Serial.println(F("lamp{l} - set 0|1"));
+    ser.println(F("lamp{l} - set 0|1"));
     _indent(1);
-    Serial.println(F("inh - get inhibit 0|1"));
+    ser.println(F("inh - get inhibit 0|1"));
     _indent(1);
-    Serial.println(F("inh{i} - set inhibit 0|1"));
+    ser.println(F("inh{i} - set inhibit 0|1"));
     _indent(1);
-    Serial.println(F("sel{i} - select alarm{i}"));
+    ser.println(F("sel{i} - select alarm{i}"));
     _indent(1);
-    Serial.println(F("Selected alarm:"));
+    ser.println(F("Selected alarm:"));
     _indent(2);
-    Serial.println(F("ls - list"));
+    ser.println(F("ls - list"));
     _indent(2);
-    Serial.println(F("en-off/en-sgl/en-rpt/en-skp - enable - off/single/repeat/skip"));
+    ser.println(F("en-off/en-sgl/en-rpt/en-skp - enable - off/single/repeat/skip"));
     _indent(2);
-    Serial.println(F("time{h}:{m} - set time"));
+    ser.println(F("time{h}:{m} - set time"));
     _indent(2);
-    Serial.println(F("dow{d}:{s} - set day {d}1-7 of week to {s}1|0"));
+    ser.println(F("dow{d}:{s} - set day {d}1-7 of week to {s}1|0"));
     _indent(2);
-    Serial.println(F("snz{t};{c} - set snooze: time{t}min;count{c}"));
+    ser.println(F("snz{t};{c} - set snooze: time{t}min;count{c}"));
     _indent(2);
-    Serial.println(F("sig{a};{l};{b} - set signalization: ambient{a}0-255;lamp{l}1|0;buzzer{b}1|0"));
+    ser.println(F("sig{a};{l};{b} - set signalization: ambient{a}0-255;lamp{l}1|0;buzzer{b}1|0"));
     _indent(1);
-    Serial.println(F("sav - save all"));
+    ser.println(F("sav - save all"));
     _indent(1);
-    Serial.println(F("RTC:"));
+    ser.println(F("RTC:"));
     _indent(2);
-    Serial.println(F("rtc - get RTC time"));
+    ser.println(F("rtc - get RTC time"));
     _indent(2);
-    Serial.println(F("sd{dd}.{mm}.{yy} - set RTC date"));
+    ser.println(F("sd{dd}.{mm}.{yy} - set RTC date"));
     _indent(2);
-    Serial.println(F("st{h}:{m} - set RTC time"));
+    ser.println(F("st{h}:{m} - set RTC time"));
 }
 
 
@@ -227,29 +208,29 @@ void SerialCLIClass::_indent(byte level)
 {
     for (byte i = 0; i < level * Serial_indentation_width; i++)
     {
-        Serial.print(' ');
+        ser.print(' ');
     }
 }
 
 
 void SerialCLIClass::_print_error(error_t error_code)
 {
-    Serial.println();
-    Serial.print(F("err "));
-    Serial.print(error_code);
-    Serial.print(F(": "));
+    ser.println();
+    ser.print(F("err "));
+    ser.print(error_code);
+    ser.print(F(": "));
 
     if (!error_code)
-        Serial.println(F("OK"));
+        ser.println(F("OK"));
 
     if (error_code & Serial_err_argument)
-        Serial.println(F("Invalid args"));
+        ser.println(F("Invalid args"));
 
     if (error_code & Serial_err_select)
-        Serial.println(F("Sel first"));
+        ser.println(F("Sel first"));
 
     if (error_code & Serial_err_useless_save)
-        Serial.println(F("Nothing to save"));
+        ser.println(F("Nothing to save"));
 }
 
 
@@ -271,8 +252,8 @@ SerialCLIClass::error_t SerialCLIClass::_cmd_amb(char * duty)
     duty = _find_next_digit(duty);
     if (*duty == '\0')
     {
-        Serial.print(F("amb: "));
-        Serial.println(_ambientDimmer->get_value());
+        ser.print(F("amb: "));
+        ser.println(_ambientDimmer->get_value());
         return 0;
     }
     ambient = _strbyte(duty);
@@ -288,8 +269,8 @@ SerialCLIClass::error_t SerialCLIClass::_cmd_lamp(char *status)
     status = _find_next_digit(status);
     if (*status == '\0')
     {
-        Serial.print(F("lamp: "));
-        Serial.println(_lamp->get());
+        ser.print(F("lamp: "));
+        ser.println(_lamp->get());
         return 0;
     }
     _lamp->set_manu(_strbyte(status));
@@ -302,8 +283,8 @@ SerialCLIClass::error_t SerialCLIClass::_cmd_inh(char *status)
     status = _find_next_digit(status);
     if (*status == '\0')
     {
-        Serial.print(F("inhibit: "));
-        Serial.println(_get_inhibit());
+        ser.print(F("inhibit: "));
+        ser.println(_get_inhibit());
         return 0;
     }
     _set_inhibit(_strbyte(status));
@@ -451,21 +432,21 @@ SerialCLIClass::error_t SerialCLIClass::_cmd_rtc(char *ignored)
 {
     (void)ignored;
 
-    Serial.print(F("Time: "));
-    if (_now.dayOfTheWeek() == 0) Serial.print(days_of_the_week_names_short[7]);
-    else Serial.print(days_of_the_week_names_short[_now.dayOfTheWeek()]);
-    Serial.print(' ');
-    Serial.print(_now.day());
-    Serial.print(". ");
-    Serial.print(_now.month());
-    Serial.print(". ");
-    Serial.print(_now.year());
-    Serial.print("  ");
-    Serial.print(_now.hour());
-    Serial.print(':');
-    Serial.print(_now.minute());
-    Serial.print(':');
-    Serial.println(_now.second());
+    ser.print(F("Time: "));
+    if (_now.dayOfTheWeek() == 0) ser.print(days_of_the_week_names_short[7]);
+    else ser.print(days_of_the_week_names_short[_now.dayOfTheWeek()]);
+    ser.print(' ');
+    ser.print(_now.day());
+    ser.print(". ");
+    ser.print(_now.month());
+    ser.print(". ");
+    ser.print(_now.year());
+    ser.print("  ");
+    ser.print(_now.hour());
+    ser.print(':');
+    ser.print(_now.minute());
+    ser.print(':');
+    ser.println(_now.second());
 
     return 0;
 }
@@ -478,70 +459,70 @@ SerialCLIClass::error_t SerialCLIClass::_cmd_ls(char *ignored)
     if (_sel_alarm_index == _sel_alarm_index_none)
         return Serial_err_select;
 
-    Serial.print(F("Num: "));
-    Serial.println(_sel_alarm_index);
+    ser.print(F("Num: "));
+    ser.println(_sel_alarm_index);
 
     _indent(1);
-    Serial.print(F("Enabled: "));
+    ser.print(F("Enabled: "));
     switch ((_alarms + _sel_alarm_index)->get_enabled())
     {
     case Off:
-        Serial.println(F("Off"));
+        ser.println(F("Off"));
         break;
 
     case Single:
-        Serial.println(F("Single"));
+        ser.println(F("Single"));
         break;
 
     case Repeat:
-        Serial.println(F("Repeat"));
+        ser.println(F("Repeat"));
         break;
 
     case Skip:
-        Serial.println(F("Skip"));
+        ser.println(F("Skip"));
         break;
     }
 
     _indent(1);
-    Serial.print(F("Days of week: "));
+    ser.print(F("Days of week: "));
     for (byte i = 1; i <= 7; i++)
     {
         if ((_alarms + _sel_alarm_index)->get_days_of_week().getDayOfWeek(i))
         {
-            Serial.print(days_of_the_week_names_short[i]);
-            Serial.print(' ');
+            ser.print(days_of_the_week_names_short[i]);
+            ser.print(' ');
         }
-        else Serial.print("   ");
+        else ser.print("   ");
     }
-    Serial.println();
+    ser.println();
 
     _indent(1);
-    Serial.print(F("Time: "));
-    Serial.print((_alarms + _sel_alarm_index)->get_time().hours);
-    Serial.print(":");
-    Serial.println((_alarms + _sel_alarm_index)->get_time().minutes);
+    ser.print(F("Time: "));
+    ser.print((_alarms + _sel_alarm_index)->get_time().hours);
+    ser.print(":");
+    ser.println((_alarms + _sel_alarm_index)->get_time().minutes);
 
     _indent(1);
-    Serial.println(F("Snooze: "));
+    ser.println(F("Snooze: "));
     _indent(2);
-    Serial.print(F("Time: "));
-    Serial.print((_alarms + _sel_alarm_index)->get_snooze().time_minutes);
-    Serial.println(F(" min"));
+    ser.print(F("Time: "));
+    ser.print((_alarms + _sel_alarm_index)->get_snooze().time_minutes);
+    ser.println(F(" min"));
     _indent(2);
-    Serial.print(F("Count: "));
-    Serial.println((_alarms + _sel_alarm_index)->get_snooze().count);
+    ser.print(F("Count: "));
+    ser.println((_alarms + _sel_alarm_index)->get_snooze().count);
 
     _indent(1);
-    Serial.println(F("Signalization: "));
+    ser.println(F("Signalization: "));
     _indent(2);
-    Serial.print(F("Ambient: "));
-    Serial.println((_alarms + _sel_alarm_index)->get_signalization().ambient);
+    ser.print(F("Ambient: "));
+    ser.println((_alarms + _sel_alarm_index)->get_signalization().ambient);
     _indent(2);
-    Serial.print(F("Lamp: "));
-    Serial.println((_alarms + _sel_alarm_index)->get_signalization().lamp);
+    ser.print(F("Lamp: "));
+    ser.println((_alarms + _sel_alarm_index)->get_signalization().lamp);
     _indent(2);
-    Serial.print(F("Buzzer: "));
-    Serial.println((_alarms + _sel_alarm_index)->get_signalization().buzzer);
+    ser.print(F("Buzzer: "));
+    ser.println((_alarms + _sel_alarm_index)->get_signalization().buzzer);
 
     return 0;
 }
