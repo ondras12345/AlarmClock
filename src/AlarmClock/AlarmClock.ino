@@ -8,11 +8,13 @@ Days of week in GUI and EEPROM: 1=Monday
 # TODO implement watchdog - external or internal (bootloader problems - flash optiboot)
 
 Code directives:
+ - try to follow https://google.github.io/styleguide/cppguide.html
+
  - all comments in English
 
  - Todo comments must contain '# TODO' (for automated searching)
 
- - constants should be #defined or const, never write te actual number to the code
+ - constants should be #defined or const, never write the actual number to the code
 
  - millis() checking: https://www.baldengineer.com/arduino-how-do-you-reset-millis.html
      if ((unsigned long)(millis() - previousMillis) >= interval)
@@ -70,18 +72,18 @@ LiquidCrystal_I2C lcd(I2C_LCD_address, LCD_width, LCD_height);
 RTC_DS3231 rtc; // DS3231
 Bounce buttons[button_count];
 Encoder encoder(pin_encoder_clk, pin_encoder_dt);
-AlarmClass alarms[alarms_count];
-//CountdownTimerClass countdownTimer;  // # TODO implement CountdownTimer
-PWMDimmerClass ambientDimmer(pin_ambient);
+Alarm alarms[alarms_count];
+//CountdownTimer countdownTimer;  // # TODO implement CountdownTimer
+PWMDimmer ambientDimmer(pin_ambient);
 HALbool lamp(lamp_set);
 HALbool permanent_backlight(set_backlight_permanent);
 BuzzerManager buzzer(pin_buzzer);
 DateTime now;
-SerialCLIClass CLI(Serial, alarms, writeEEPROM, &rtc, &ambientDimmer, &lamp,
-                   set_inhibit, get_inhibit);
-GUIClass GUI(alarms, writeEEPROM, &rtc, &encoder,
-             &buttons[button_index_encoder], &lcd, set_inhibit, get_inhibit,
-             &ambientDimmer, &lamp);
+SerialCLI CLI(Serial, alarms, writeEEPROM, &rtc, &ambientDimmer, &lamp,
+              set_inhibit, get_inhibit);
+GUI myGUI(alarms, writeEEPROM, &rtc, &encoder,
+          &buttons[button_index_encoder], &lcd, set_inhibit, get_inhibit,
+          &ambientDimmer, &lamp);
 
 
 unsigned long loop_rtc_prev_millis = 0;
@@ -156,7 +158,7 @@ void loop()
 #endif
 
     CLI.loop(now);
-    GUI.loop(now);
+    myGUI.loop(now);
     for (byte i = 0; i < alarms_count; i++) alarms[i].loop(now);
     //countdownTimer.loop();  // # TODO implement CountdownTimer
     ambientDimmer.loop();
@@ -165,17 +167,17 @@ void loop()
     for (byte i = 0; i < button_count; i++) buttons[i].update();
     if (buttons[button_index_snooze].fell())
     {
-        if(GUI.get_backlight() != off)
+        if(myGUI.get_backlight() != off)
         {
-            for (byte i = 0; i < alarms_count; i++) alarms[i].button_snooze();
+            for (byte i = 0; i < alarms_count; i++) alarms[i].ButtonSnooze();
             DEBUG_println(F("snooze pressed"));
         }
-        else GUI.set_backlight(on);
+        else myGUI.set_backlight(on);
     }
     if (buttons[button_index_stop].fell())
     {
-        if(GUI.get_backlight() == off) GUI.set_backlight(on);
-        for (byte i = 0; i < alarms_count; i++) alarms[i].button_stop();
+        if(myGUI.get_backlight() == off) myGUI.set_backlight(on);
+        for (byte i = 0; i < alarms_count; i++) alarms[i].ButtonStop();
         DEBUG_println(F("stop pressed"));
     }
     if (inhibit && (unsigned long)(millis() - inhibit_prev_millis) >= Alarm_inhibit_duration)
@@ -187,7 +189,7 @@ void loop()
 void init_hardware()
 {
     for (byte i = 0; i < alarms_count; i++)
-        alarms[i].set_hardware(&lamp, &ambientDimmer, &buzzer, writeEEPROM,
+        alarms[i].SetHardware(&lamp, &ambientDimmer, &buzzer, writeEEPROM,
                                alarm_activation_callback, alarm_stop_callback);
 
     // # TODO implement CountdownTimer
@@ -242,12 +244,12 @@ bool readEEPROM()
     // alarms:
     for (byte i = 0; i < alarms_count && !err; i++)
     {
-        byte data[EEPROM_AlarmClass_length];
-        for (byte j = 0; j < EEPROM_AlarmClass_length; j++)
+        byte data[EEPROM_Alarm_length];
+        for (byte j = 0; j < EEPROM_Alarm_length; j++)
         {
-            data[j] = EEPROM.read((i * EEPROM_AlarmClass_length) + j + EEPROM_alarms_offset);
+            data[j] = EEPROM.read((i * EEPROM_Alarm_length) + j + EEPROM_alarms_offset);
         }
-        err |= !alarms[i].readEEPROM(data);
+        err |= !alarms[i].ReadEEPROM(data);
     }
 
     return !err;
@@ -265,10 +267,10 @@ void writeEEPROM()
         Serial.print(F("Alarm "));
         Serial.println(i);
 #endif
-        byte * data = alarms[i].writeEEPROM();
-        for (byte j = 0; j < EEPROM_AlarmClass_length; j++)
+        byte * data = alarms[i].WriteEPROM();
+        for (byte j = 0; j < EEPROM_Alarm_length; j++)
         {
-            unsigned int address = (i * EEPROM_AlarmClass_length) + j + EEPROM_alarms_offset;
+            unsigned int address = (i * EEPROM_Alarm_length) + j + EEPROM_alarms_offset;
 #if defined(DEBUG) && defined(DEBUG_EEPROM_writes)
             Serial.print(F("Saving "));
             if (data[j] < 16) Serial.print('0');
@@ -288,8 +290,8 @@ Factory reset
 void factory_reset()
 {
     Serial.println(F("Factory reset"));
-    for (byte i = 0; i < alarms_count; i++) alarms[i] = AlarmClass();
-    //countdownTimer = CountdownTimerClass();  // # TODO implement CountdownTimer
+    for (byte i = 0; i < alarms_count; i++) alarms[i] = Alarm();
+    //countdownTimer = CountdownTimer();  // # TODO implement CountdownTimer
 
     writeEEPROM();
 }
@@ -392,6 +394,6 @@ bool get_inhibit() { return inhibit; }
 
 void set_backlight_permanent(bool s)
 {
-    if (s) GUI.set_backlight(permanent);
-    else GUI.set_backlight(on);  // disable permanent backlight
+    if (s) myGUI.set_backlight(permanent);
+    else myGUI.set_backlight(on);  // disable permanent backlight
 }

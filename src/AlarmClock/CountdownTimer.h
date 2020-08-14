@@ -1,3 +1,6 @@
+// This file is out-of-date and most likely doesn't work with the rest of the
+// code. TODO fix
+
 #ifndef COUNTDOWNTIMER_H
 #define COUNTDOWNTIMER_H
 
@@ -18,7 +21,7 @@ struct TimedEvents
     bool buzzer;
 };
 
-class CountdownTimerClass
+class CountdownTimer
 {
 protected:
     void(*lamp)(bool);
@@ -39,7 +42,7 @@ public:
 
     void set_hardware(void(*lamp_)(bool), void(*ambient_)(byte, byte, unsigned long), void(*buzzerTone_)(unsigned int, unsigned long), void(*buzzerNoTone_)());
 
-    CountdownTimerClass();
+    CountdownTimer();
 
 };
 

@@ -1,19 +1,19 @@
 #include "CountdownTimer.h"
 
-void CountdownTimerClass::start()
+void CountdownTimer::start()
 {
     prev_millis = millis();
     running = true;
 }
 
-void CountdownTimerClass::stop()
+void CountdownTimer::stop()
 {
     running = false;
     beeping = false;
     buzzerNoTone();
 }
 
-void CountdownTimerClass::loop()
+void CountdownTimer::loop()
 {
     if ((unsigned long)(millis() - prev_millis) >= 1000 && time_left > 0)
     {
@@ -42,7 +42,7 @@ void CountdownTimerClass::loop()
     }
 }
 
-void CountdownTimerClass::set_hardware(void(*lamp_)(bool), void(*ambient_)(byte, byte, unsigned long), void(*buzzerTone_)(unsigned int, unsigned long), void(*buzzerNoTone_)())
+void CountdownTimer::set_hardware(void(*lamp_)(bool), void(*ambient_)(byte, byte, unsigned long), void(*buzzerTone_)(unsigned int, unsigned long), void(*buzzerNoTone_)())
 {
     lamp = lamp_;
     ambient = ambient_;
@@ -50,7 +50,7 @@ void CountdownTimerClass::set_hardware(void(*lamp_)(bool), void(*ambient_)(byte,
     buzzerNoTone = buzzerNoTone_;
 }
 
-CountdownTimerClass::CountdownTimerClass()
+CountdownTimer::CountdownTimer()
 {
     running = false;
     beeping = false;

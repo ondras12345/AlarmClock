@@ -36,7 +36,7 @@ struct Snooze
     byte count; //!< max 9
 };
 
-struct hours_minutes
+struct HoursMinutes
 {
     byte hours;
     byte minutes;
@@ -58,96 +58,96 @@ struct Signalization
     @brief  An alarm. In normal use, there is an array of multiple instances of
             this class.
 */
-class AlarmClass
+class Alarm
 {
 protected:
     // This variable needs to exist all the time because a function is
     // returning a pointer to it
-    byte EEPROM_data_[EEPROM_AlarmClass_length];
+    byte EEPROM_data_[EEPROM_Alarm_length];
 
     /*
     not saved in EEPROM:
     */
     // Needed in case the alarm gets canceled during the same minute it started
     // Also used for Alarm_timeout
-    // Needs to be initialised to prev_activation_millis_init to prevent alarms
-    // starting in the first minute of runtime being ignored.
-    // This also makes unit tests work.
-    unsigned long prev_activation_millis;
-    // 0xFFFF0000 would also work...
-#define prev_activation_millis_init 0xDEADBEEF
-
-#define current_snooze_count_inactive 255
-    byte current_snooze_count;  // max 9; 255 has special meaning defined above
-    // Used to time snooze and as prev_activation_millis for ambient.
-    // Also needs to be initialised to prev_activation_millis_init to prevent
+    // Needs to be initialised to prev_activation_millis_init_ to prevent
     // alarms starting in the first minute of runtime being ignored.
-    unsigned long prev_millis = prev_activation_millis_init;
-    bool inhibit;
-    bool snooze_status;  // currently in snooze
-    bool ambient_status;  // ambient is active
+    // This also makes unit tests work.
+    unsigned long prev_activation_millis_;
+    // 0xFFFF0000 would also work...
+#define prev_activation_millis_init_ 0xDEADBEEF
 
-    HALbool *lamp;
-    PWMDimmerClass *ambientDimmer;
-    BuzzerManager *buzzer;
-    void(*writeEEPROM_all)();  // write all alarms to EEPROM
-    void(*activation_callback)();
-    void(*stop_callback)();
+#define current_snooze_count_inactive_ 255
+    byte current_snooze_count_;  // max 9; 255 has special meaning defined above
+    // Used to time snooze and as prev_activation_millis_ for ambient.
+    // Also needs to be initialised to prev_activation_millis_init_ to prevent
+    // alarms starting in the first minute of runtime being ignored.
+    unsigned long prev_millis_ = prev_activation_millis_init_;
+    bool inhibit_;
+    bool snooze_status_;  // currently in snooze
+    bool ambient_status_;  // ambient is active
+
+    HALbool *lamp_;
+    PWMDimmer *ambient_dimmer_;
+    BuzzerManager *buzzer_;
+    void(*write_EEPROM_all_)();  // write all alarms to EEPROM
+    void(*activation_callback_)();
+    void(*stop_callback_)();
 
     /*
     saved in the EEPROM:
     */
-    hours_minutes when;
-    AlarmEnabled enabled;
-    DaysOfWeekClass days_of_week;
-    Snooze snooze;
-    Signalization signalization;
+    HoursMinutes when_;
+    AlarmEnabled enabled_;
+    DaysOfWeek days_of_week_;
+    Snooze snooze_;
+    Signalization signalization_;
 
     // true --> alarm is on (ringing or snooze)
     bool get_active() const
     {
-        return current_snooze_count < current_snooze_count_inactive;
+        return current_snooze_count_ < current_snooze_count_inactive_;
     };
 
 
-    bool should_trigger(DateTime time);
-    bool should_trigger_ambient(DateTime time);
+    bool ShouldTrigger(DateTime time);
+    bool ShouldTriggerAmbient(DateTime time);
 
 
 public:
-    bool readEEPROM(byte data[EEPROM_AlarmClass_length]);
-    byte * writeEEPROM();
+    bool ReadEEPROM(byte data[EEPROM_Alarm_length]);
+    byte * WriteEPROM();
 
     void loop(DateTime time);
-    void set_hardware(HALbool *lamp,
-                      PWMDimmerClass *ambientDimmer,
+    void SetHardware(HALbool *lamp,
+                      PWMDimmer *ambient_dimmer,
                       BuzzerManager *buzzer,
                       void(*writeEEPROM)(),
                       void(*activation_callback)(),
                       void(*stop_callback)());
-    void button_snooze();
-    void button_stop();
-    AlarmClass();
+    void ButtonSnooze();
+    void ButtonStop();
+    Alarm();
 
 
-    bool set_enabled(AlarmEnabled enabled_);
-    AlarmEnabled get_enabled() const { return enabled; };
+    bool set_enabled(AlarmEnabled enabled);
+    AlarmEnabled get_enabled() const { return enabled_; };
 
     bool set_time(byte hours, byte minutes);
-    hours_minutes get_time() const { return when; };
+    HoursMinutes get_time() const { return when_; };
 
-    bool set_days_of_week(DaysOfWeekClass days_of_week);
+    bool set_days_of_week(DaysOfWeek days_of_week);
     bool set_day_of_week(byte day, bool status);
-    DaysOfWeekClass get_days_of_week() const { return days_of_week; };
-    bool get_day_of_week(byte day) const { return days_of_week.getDayOfWeek(day); }
+    DaysOfWeek get_days_of_week() const { return days_of_week_; };
+    bool get_day_of_week(byte day) const { return days_of_week_.getDayOfWeek(day); }
 
     bool set_snooze(byte time_minutes, byte count);
-    Snooze get_snooze() const { return snooze; };
+    Snooze get_snooze() const { return snooze_; };
 
     bool set_signalization(byte ambient, bool lamp, bool buzzer);
-    Signalization get_signalization() const { return signalization; };
+    Signalization get_signalization() const { return signalization_; };
 
-    bool get_inhibit() const { return inhibit; };
+    bool get_inhibit() const { return inhibit_; };
     bool set_inhibit(bool inhibit);
 };
 

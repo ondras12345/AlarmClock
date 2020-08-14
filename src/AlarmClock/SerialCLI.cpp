@@ -1,56 +1,62 @@
+/*!
+    @file
+*/
 #include "SerialCLI.h"
 
 
-const SerialCLIClass::command_t SerialCLIClass::commands[] = {
-    {"sel", &SerialCLIClass::_cmd_sel},
-    {"amb", &SerialCLIClass::_cmd_amb},
-    {"lamp", &SerialCLIClass::_cmd_lamp},
-    {"inh", &SerialCLIClass::_cmd_inh},
-    {"en-", &SerialCLIClass::_cmd_en},
-    {"time", &SerialCLIClass::_cmd_time},
-    {"dow", &SerialCLIClass::_cmd_dow},
-    {"snz", &SerialCLIClass::_cmd_snz},
-    {"sig", &SerialCLIClass::_cmd_sig},
-    {"st", &SerialCLIClass::_cmd_st},
-    {"sd", &SerialCLIClass::_cmd_sd},
-    {"sav", &SerialCLIClass::_cmd_sav},
-    {"rtc", &SerialCLIClass::_cmd_rtc},
-    {"ls", &SerialCLIClass::_cmd_ls}
+const SerialCLI::command_t SerialCLI::commands_[] = {
+    {"sel",     &SerialCLI::cmd_sel_},
+    {"amb",     &SerialCLI::cmd_amb_},
+    {"lamp",    &SerialCLI::cmd_lamp_},
+    {"inh",     &SerialCLI::cmd_inh_},
+    {"en-",     &SerialCLI::cmd_en_},
+    {"time",    &SerialCLI::cmd_time_},
+    {"dow",     &SerialCLI::cmd_dow_},
+    {"snz",     &SerialCLI::cmd_snz_},
+    {"sig",     &SerialCLI::cmd_sig_},
+    {"st",      &SerialCLI::cmd_st_},
+    {"sd",      &SerialCLI::cmd_sd_},
+    {"sav",     &SerialCLI::cmd_sav_},
+    {"rtc",     &SerialCLI::cmd_rtc_},
+    {"ls",      &SerialCLI::cmd_ls_}
 };
 
 
-void SerialCLIClass::loop(DateTime time_)
+/*!
+    @brief  Call this function in your loop().
+*/
+void SerialCLI::loop(DateTime time)
 {
-    _now = time_;
+    now_ = time;
     bool complete_message = false;
 
-    while (ser.available() && !complete_message)
+    while (ser_.available() && !complete_message)
     {
-        // !complete_message - this prevents the _Serial_buffer being rewritten
+        // !complete_message - this prevents the Serial_buffer_ being rewritten
         // by new data when 2 messages are sent with very little delay (index
         // is set to 0 when complete_message is received).
         // I need to process the data before I receive the next message.
 
-        _Serial_buffer[_Serial_buffer_index] = tolower(ser.read());
+        Serial_buffer_[Serial_buffer_index_] = tolower(ser_.read());
 
-        if (_Serial_buffer[_Serial_buffer_index] == '\n' || _Serial_buffer[_Serial_buffer_index] == '\r')
+        if (Serial_buffer_[Serial_buffer_index_] == '\n' || Serial_buffer_[Serial_buffer_index_] == '\r')
         {
             //  CR/LF
-            if (_Serial_buffer_index != 0)
+            if (Serial_buffer_index_ != 0)
             {
                 // ignore if it is the first character (to avoid problems with CR+LF/LF)
 
-                _Serial_buffer[_Serial_buffer_index] = '\0';  // rewrite CR/LF
+                Serial_buffer_[Serial_buffer_index_] = '\0';  // rewrite CR/LF
                 complete_message = true;
-                _Serial_buffer_index = 0;
-                ser.println();
+                Serial_buffer_index_ = 0;
+                ser_.println();
 
 #if defined(DEBUG) && defined(DEBUG_Serial_CLI)
                 Serial.println();
                 Serial.print(">> ");
-                Serial.println(_Serial_buffer);
+                Serial.println(Serial_buffer_);
 
-                char *ptr = &_Serial_buffer[0];
+                char *ptr = &Serial_buffer_[0];
                 while (*ptr != '\0')
                 {
                     Serial.print(byte(*ptr), HEX);
@@ -65,27 +71,27 @@ void SerialCLIClass::loop(DateTime time_)
         {
             // Character playback - this needs to be before index++ and should
             // not happen when the character is CR/LF
-            ser.print(_Serial_buffer[_Serial_buffer_index]);
+            ser_.print(Serial_buffer_[Serial_buffer_index_]);
 
-            if (_Serial_buffer_index < Serial_buffer_length - 1)
+            if (Serial_buffer_index_ < Serial_buffer_length - 1)
             {
-                _Serial_buffer_index++;
+                Serial_buffer_index_++;
             }
             else
             {
-                ser.println();
-                ser.print(F("Cmd too long: "));
-                for (byte i = 0; i <= _Serial_buffer_index; i++)
-                    ser.print(_Serial_buffer[i]);
+                ser_.println();
+                ser_.print(F("Cmd too long: "));
+                for (byte i = 0; i <= Serial_buffer_index_; i++)
+                    ser_.print(Serial_buffer_[i]);
 
                 delay(40);  // to receive the rest of the message
-                while (ser.available())
-                    ser.print(char(ser.read()));
+                while (ser_.available())
+                    ser_.print(char(ser_.read()));
 
-                ser.println();
+                ser_.println();
 
-                _Serial_buffer_index = 0;
-                _Serial_buffer[0] = '\0';  // this is currently not necessary
+                Serial_buffer_index_ = 0;
+                Serial_buffer_[0] = '\0';  // this is currently not necessary
             }
         }
     }
@@ -99,11 +105,11 @@ void SerialCLIClass::loop(DateTime time_)
         char *cmd_ptr = nullptr;
         bool cmd_found = false;
 
-        for (byte i = 0; i < (sizeof(commands) / sizeof(command_t)); i++)
+        for (byte i = 0; i < (sizeof(commands_) / sizeof(command_t)); i++)
         {
-            if ((cmd_ptr = strstr(_Serial_buffer, commands[i].text)) != nullptr)
+            if ((cmd_ptr = strstr(Serial_buffer_, commands_[i].text)) != nullptr)
             {
-                _print_error((this->*(commands[i].handler))(cmd_ptr));
+                print_error_((this->*(commands_[i].handler))(cmd_ptr));
                 cmd_found = true;
                 break;  // do not process any further commands
             }
@@ -111,73 +117,73 @@ void SerialCLIClass::loop(DateTime time_)
 
         if (!cmd_found)
         {
-            ser.println(F("? SYNTAX ERROR"));
-            _print_help();
+            ser_.println(F("? SYNTAX ERROR"));
+            print_help_();
         }
 
-        _prev_command_millis = millis();
+        prev_command_millis_ = millis();
 
         // Prompt will be missing after reboot, but this can't be easily fixed.
-        ser.println();
-        ser.print(_prompt);
+        ser_.println();
+        ser_.print(prompt_);
     }
 
     // autosave
-    if ((unsigned long)(millis() - _prev_command_millis) >= Serial_autosave_interval && _change)
+    if ((unsigned long)(millis() - prev_command_millis_) >= Serial_autosave_interval && change_)
     {
-        ser.println();
-        ser.println(F("Autosaving"));
-        _print_error(_save());
+        ser_.println();
+        ser_.println(F("Autosaving"));
+        print_error_(save_());
     }
 }
 
 
-void SerialCLIClass::_print_help()
+void SerialCLI::print_help_()
 {
-    ser.println();
-    ser.println(F("Help:"));
-    _indent(1);
-    ser.println(F("amb - get ambient 0-255"));
-    _indent(1);
-    ser.println(F("amb{nnn} - ambient 0-255"));
-    _indent(1);
-    ser.println(F("lamp - get 0|1"));
-    _indent(1);
-    ser.println(F("lamp{l} - set 0|1"));
-    _indent(1);
-    ser.println(F("inh - get inhibit 0|1"));
-    _indent(1);
-    ser.println(F("inh{i} - set inhibit 0|1"));
-    _indent(1);
-    ser.println(F("sel{i} - select alarm{i}"));
-    _indent(1);
-    ser.println(F("Selected alarm:"));
-    _indent(2);
-    ser.println(F("ls - list"));
-    _indent(2);
-    ser.println(F("en-off/en-sgl/en-rpt/en-skp - enable - off/single/repeat/skip"));
-    _indent(2);
-    ser.println(F("time{h}:{m} - set time"));
-    _indent(2);
-    ser.println(F("dow{d}:{s} - set day {d}1-7 of week to {s}1|0"));
-    _indent(2);
-    ser.println(F("snz{t};{c} - set snooze: time{t}min;count{c}"));
-    _indent(2);
-    ser.println(F("sig{a};{l};{b} - set signalization: ambient{a}0-255;lamp{l}1|0;buzzer{b}1|0"));
-    _indent(1);
-    ser.println(F("sav - save all"));
-    _indent(1);
-    ser.println(F("RTC:"));
-    _indent(2);
-    ser.println(F("rtc - get RTC time"));
-    _indent(2);
-    ser.println(F("sd{dd}.{mm}.{yy} - set RTC date"));
-    _indent(2);
-    ser.println(F("st{h}:{m} - set RTC time"));
+    ser_.println();
+    ser_.println(F("Help:"));
+    indent_(1);
+    ser_.println(F("amb - get ambient 0-255"));
+    indent_(1);
+    ser_.println(F("amb{nnn} - ambient 0-255"));
+    indent_(1);
+    ser_.println(F("lamp - get 0|1"));
+    indent_(1);
+    ser_.println(F("lamp{l} - set 0|1"));
+    indent_(1);
+    ser_.println(F("inh - get inhibit 0|1"));
+    indent_(1);
+    ser_.println(F("inh{i} - set inhibit 0|1"));
+    indent_(1);
+    ser_.println(F("sel{i} - select alarm{i}"));
+    indent_(1);
+    ser_.println(F("Selected alarm:"));
+    indent_(2);
+    ser_.println(F("ls - list"));
+    indent_(2);
+    ser_.println(F("en-off/en-sgl/en-rpt/en-skp - enable - off/single/repeat/skip"));
+    indent_(2);
+    ser_.println(F("time{h}:{m} - set time"));
+    indent_(2);
+    ser_.println(F("dow{d}:{s} - set day {d}1-7 of week to {s}1|0"));
+    indent_(2);
+    ser_.println(F("snz{t};{c} - set snooze: time{t}min;count{c}"));
+    indent_(2);
+    ser_.println(F("sig{a};{l};{b} - set signalization: ambient{a}0-255;lamp{l}1|0;buzzer{b}1|0"));
+    indent_(1);
+    ser_.println(F("sav - save all"));
+    indent_(1);
+    ser_.println(F("RTC:"));
+    indent_(2);
+    ser_.println(F("rtc - get RTC time"));
+    indent_(2);
+    ser_.println(F("sd{dd}.{mm}.{yy} - set RTC date"));
+    indent_(2);
+    ser_.println(F("st{h}:{m} - set RTC time"));
 }
 
 
-byte SerialCLIClass::_strbyte(char *str)
+byte SerialCLI::strbyte_(char *str)
 {
     byte result = 0;
     while (isDigit(*str))
@@ -189,400 +195,400 @@ byte SerialCLIClass::_strbyte(char *str)
 }
 
 
-char * SerialCLIClass::_find_digit(char * str)
+char * SerialCLI::find_digit_(char * str)
 {
     while (!isDigit(*str) && *str != '\0') str++;
     return str;
 }
 
 
-char * SerialCLIClass::_find_next_digit(char * str)
+char * SerialCLI::find_next_digit_(char * str)
 {
     while (isDigit(*str) && *str != '\0') str++;
-    str = _find_digit(str);
+    str = find_digit_(str);
     return str;
 }
 
 
-void SerialCLIClass::_indent(byte level)
+void SerialCLI::indent_(byte level)
 {
     for (byte i = 0; i < level * Serial_indentation_width; i++)
     {
-        ser.print(' ');
+        ser_.print(' ');
     }
 }
 
 
-void SerialCLIClass::_print_error(error_t error_code)
+void SerialCLI::print_error_(error_t error_code)
 {
-    ser.println();
-    ser.print(F("err "));
-    ser.print(error_code);
-    ser.print(F(": "));
+    ser_.println();
+    ser_.print(F("err "));
+    ser_.print(error_code);
+    ser_.print(F(": "));
 
     if (!error_code)
-        ser.println(F("OK"));
+        ser_.println(F("OK"));
 
     if (error_code & Serial_err_argument)
-        ser.println(F("Invalid args"));
+        ser_.println(F("Invalid args"));
 
     if (error_code & Serial_err_select)
-        ser.println(F("Sel first"));
+        ser_.println(F("Sel first"));
 
     if (error_code & Serial_err_useless_save)
-        ser.println(F("Nothing to save"));
+        ser_.println(F("Nothing to save"));
 }
 
 
-SerialCLIClass::error_t SerialCLIClass::_cmd_sel(char *index)
+SerialCLI::error_t SerialCLI::cmd_sel_(char *index)
 {
-    index = _find_digit(index);
+    index = find_digit_(index);
     if (*index == '\0')
-        return _select_alarm(_sel_alarm_index_none);
+        return select_alarm_(sel_alarm_index_none_);
 
-    byte index_num = _strbyte(index);
-    return _select_alarm(index_num);
+    byte index_num = strbyte_(index);
+    return select_alarm_(index_num);
 }
 
 
-SerialCLIClass::error_t SerialCLIClass::_cmd_amb(char * duty)
+SerialCLI::error_t SerialCLI::cmd_amb_(char * duty)
 {
     byte ambient;
 
-    duty = _find_next_digit(duty);
+    duty = find_next_digit_(duty);
     if (*duty == '\0')
     {
-        ser.print(F("amb: "));
-        ser.println(_ambientDimmer->get_value());
+        ser_.print(F("amb: "));
+        ser_.println(ambientDimmer_->get_value());
         return 0;
     }
-    ambient = _strbyte(duty);
-    _ambientDimmer->set_from_duration(_ambientDimmer->get_value(), ambient,
+    ambient = strbyte_(duty);
+    ambientDimmer_->set_from_duration(ambientDimmer_->get_value(), ambient,
                                     Serial_ambient_dimming_duration);
-    _ambientDimmer->start();
+    ambientDimmer_->start();
     return 0;
 }
 
 
-SerialCLIClass::error_t SerialCLIClass::_cmd_lamp(char *status)
+SerialCLI::error_t SerialCLI::cmd_lamp_(char *status)
 {
-    status = _find_next_digit(status);
+    status = find_next_digit_(status);
     if (*status == '\0')
     {
-        ser.print(F("lamp: "));
-        ser.println(_lamp->get());
+        ser_.print(F("lamp: "));
+        ser_.println(lamp_->get());
         return 0;
     }
-    _lamp->set_manu(_strbyte(status));
+    lamp_->set_manu(strbyte_(status));
     return 0;
 }
 
 
-SerialCLIClass::error_t SerialCLIClass::_cmd_inh(char *status)
+SerialCLI::error_t SerialCLI::cmd_inh_(char *status)
 {
-    status = _find_next_digit(status);
+    status = find_next_digit_(status);
     if (*status == '\0')
     {
-        ser.print(F("inhibit: "));
-        ser.println(_get_inhibit());
+        ser_.print(F("inhibit: "));
+        ser_.println(get_inhibit_());
         return 0;
     }
-    _set_inhibit(_strbyte(status));
+    set_inhibit_(strbyte_(status));
     return 0;
 }
 
 
-SerialCLIClass::error_t SerialCLIClass::_cmd_en(char *type)
+SerialCLI::error_t SerialCLI::cmd_en_(char *type)
 {
     // ! - strcmp returns 0 if matches
     if (!strcmp(type, "en-off"))
-        return _set_enabled(Off);
+        return set_enabled_(Off);
 
     if (!strcmp(type, "en-sgl"))
-        return _set_enabled(Single);
+        return set_enabled_(Single);
 
     if (!strcmp(type, "en-rpt"))
-        return _set_enabled(Repeat);
+        return set_enabled_(Repeat);
 
     if (!strcmp(type, "en-skp"))
-        return _set_enabled(Skip);
+        return set_enabled_(Skip);
 
     return Serial_err_argument;
 }
 
 
-SerialCLIClass::error_t SerialCLIClass::_cmd_time(char *time)
+SerialCLI::error_t SerialCLI::cmd_time_(char *time)
 {
-    if (_sel_alarm_index == _sel_alarm_index_none) return Serial_err_select;
+    if (sel_alarm_index_ == sel_alarm_index_none_) return Serial_err_select;
 
     byte hours, minutes;
-    time = _find_next_digit(time);
+    time = find_next_digit_(time);
     if (*time == '\0') return Serial_err_argument;
-    hours = _strbyte(time);
-    time = _find_next_digit(time);
+    hours = strbyte_(time);
+    time = find_next_digit_(time);
     if (*time == '\0') return Serial_err_argument;
-    minutes = _strbyte(time);
+    minutes = strbyte_(time);
 
-    if ((_alarms + _sel_alarm_index)->set_time(hours, minutes))
+    if ((alarms_ + sel_alarm_index_)->set_time(hours, minutes))
     {
-        _change = true;
+        change_ = true;
         return 0;
     }
     else return Serial_err_argument;
 }
 
 
-SerialCLIClass::error_t SerialCLIClass::_cmd_dow(char *dow)
+SerialCLI::error_t SerialCLI::cmd_dow_(char *dow)
 {
-    if (_sel_alarm_index == _sel_alarm_index_none) return Serial_err_select;
+    if (sel_alarm_index_ == sel_alarm_index_none_) return Serial_err_select;
 
     byte day;
     bool status;
-    dow = _find_next_digit(dow);
+    dow = find_next_digit_(dow);
     if (*dow == '\0') return Serial_err_argument;
-    day = _strbyte(dow);
-    dow = _find_next_digit(dow);
+    day = strbyte_(dow);
+    dow = find_next_digit_(dow);
     if (*dow == '\0') return Serial_err_argument;
-    status = _strbyte(dow);
+    status = strbyte_(dow);
 
-    if ((_alarms + _sel_alarm_index)->set_day_of_week(day, status))
+    if ((alarms_ + sel_alarm_index_)->set_day_of_week(day, status))
     {
-        _change = true;
+        change_ = true;
         return 0;
     }
     else return Serial_err_argument;
 }
 
 
-SerialCLIClass::error_t SerialCLIClass::_cmd_snz(char *snooze)
+SerialCLI::error_t SerialCLI::cmd_snz_(char *snooze)
 {
-    if (_sel_alarm_index == _sel_alarm_index_none) return Serial_err_select;
+    if (sel_alarm_index_ == sel_alarm_index_none_) return Serial_err_select;
 
     byte time, count;
 
-    snooze = _find_next_digit(snooze);
+    snooze = find_next_digit_(snooze);
     if (*snooze == '\0') return Serial_err_argument;
-    time = _strbyte(snooze);
-    snooze = _find_next_digit(snooze);
+    time = strbyte_(snooze);
+    snooze = find_next_digit_(snooze);
     if (*snooze == '\0') return Serial_err_argument;
-    count = _strbyte(snooze);
+    count = strbyte_(snooze);
 
-    if ((_alarms + _sel_alarm_index)->set_snooze(time, count))
+    if ((alarms_ + sel_alarm_index_)->set_snooze(time, count))
     {
-        _change = true;
+        change_ = true;
         return 0;
     }
     else return Serial_err_argument;
 }
 
 
-SerialCLIClass::error_t SerialCLIClass::_cmd_sig(char *sig)
+SerialCLI::error_t SerialCLI::cmd_sig_(char *sig)
 {
-    if (_sel_alarm_index == _sel_alarm_index_none) return Serial_err_select;
+    if (sel_alarm_index_ == sel_alarm_index_none_) return Serial_err_select;
 
     byte ambient;
     bool lamp, buzzer;
 
-    sig = _find_next_digit(sig);
+    sig = find_next_digit_(sig);
     if (*sig == '\0') return Serial_err_argument;
-    ambient = _strbyte(sig);
-    sig = _find_next_digit(sig);
+    ambient = strbyte_(sig);
+    sig = find_next_digit_(sig);
     if (*sig == '\0') return Serial_err_argument;
-    lamp = _strbyte(sig);
-    sig = _find_next_digit(sig);
+    lamp = strbyte_(sig);
+    sig = find_next_digit_(sig);
     if (*sig == '\0') return Serial_err_argument;
-    buzzer = _strbyte(sig);
+    buzzer = strbyte_(sig);
 
-    if ((_alarms + _sel_alarm_index)->set_signalization(ambient, lamp, buzzer))
+    if ((alarms_ + sel_alarm_index_)->set_signalization(ambient, lamp, buzzer))
     {
-        _change = true;
+        change_ = true;
         return 0;
     }
     else return Serial_err_argument;
 }
 
 
-SerialCLIClass::error_t SerialCLIClass::_cmd_st(char *time)
+SerialCLI::error_t SerialCLI::cmd_st_(char *time)
 {
     byte hour, minute;
-    time = _find_next_digit(time);
+    time = find_next_digit_(time);
     if (*time == '\0') return Serial_err_argument;
-    hour = _strbyte(time);
-    time = _find_next_digit(time);
+    hour = strbyte_(time);
+    time = find_next_digit_(time);
     if (*time == '\0') return Serial_err_argument;
-    minute = _strbyte(time);
+    minute = strbyte_(time);
 
     if (hour > 23 || minute > 59) return Serial_err_argument;
 
 
-    _now = _rtc->now();
-    _rtc->adjust(DateTime(_now.year(), _now.month(), _now.day(), hour, minute));
+    now_ = rtc_->now();
+    rtc_->adjust(DateTime(now_.year(), now_.month(), now_.day(), hour, minute));
     return 0;
 }
 
 
-SerialCLIClass::error_t SerialCLIClass::_cmd_sav(char *ignored)
+SerialCLI::error_t SerialCLI::cmd_sav_(char *ignored)
 {
     (void)ignored;
-    return _save();
+    return save_();
 }
 
 
-SerialCLIClass::error_t SerialCLIClass::_cmd_rtc(char *ignored)
+SerialCLI::error_t SerialCLI::cmd_rtc_(char *ignored)
 {
     (void)ignored;
 
-    ser.print(F("Time: "));
-    if (_now.dayOfTheWeek() == 0) ser.print(days_of_the_week_names_short[7]);
-    else ser.print(days_of_the_week_names_short[_now.dayOfTheWeek()]);
-    ser.print(' ');
-    ser.print(_now.day());
-    ser.print(". ");
-    ser.print(_now.month());
-    ser.print(". ");
-    ser.print(_now.year());
-    ser.print("  ");
-    ser.print(_now.hour());
-    ser.print(':');
-    ser.print(_now.minute());
-    ser.print(':');
-    ser.println(_now.second());
+    ser_.print(F("Time: "));
+    if (now_.dayOfTheWeek() == 0) ser_.print(days_of_the_week_names_short[7]);
+    else ser_.print(days_of_the_week_names_short[now_.dayOfTheWeek()]);
+    ser_.print(' ');
+    ser_.print(now_.day());
+    ser_.print(". ");
+    ser_.print(now_.month());
+    ser_.print(". ");
+    ser_.print(now_.year());
+    ser_.print("  ");
+    ser_.print(now_.hour());
+    ser_.print(':');
+    ser_.print(now_.minute());
+    ser_.print(':');
+    ser_.println(now_.second());
 
     return 0;
 }
 
 
-SerialCLIClass::error_t SerialCLIClass::_cmd_ls(char *ignored)
+SerialCLI::error_t SerialCLI::cmd_ls_(char *ignored)
 {
     (void)ignored;
 
-    if (_sel_alarm_index == _sel_alarm_index_none)
+    if (sel_alarm_index_ == sel_alarm_index_none_)
         return Serial_err_select;
 
-    ser.print(F("Num: "));
-    ser.println(_sel_alarm_index);
+    ser_.print(F("Num: "));
+    ser_.println(sel_alarm_index_);
 
-    _indent(1);
-    ser.print(F("Enabled: "));
-    switch ((_alarms + _sel_alarm_index)->get_enabled())
+    indent_(1);
+    ser_.print(F("Enabled: "));
+    switch ((alarms_ + sel_alarm_index_)->get_enabled())
     {
     case Off:
-        ser.println(F("Off"));
+        ser_.println(F("Off"));
         break;
 
     case Single:
-        ser.println(F("Single"));
+        ser_.println(F("Single"));
         break;
 
     case Repeat:
-        ser.println(F("Repeat"));
+        ser_.println(F("Repeat"));
         break;
 
     case Skip:
-        ser.println(F("Skip"));
+        ser_.println(F("Skip"));
         break;
     }
 
-    _indent(1);
-    ser.print(F("Days of week: "));
+    indent_(1);
+    ser_.print(F("Days of week: "));
     for (byte i = 1; i <= 7; i++)
     {
-        if ((_alarms + _sel_alarm_index)->get_days_of_week().getDayOfWeek(i))
+        if ((alarms_ + sel_alarm_index_)->get_days_of_week().getDayOfWeek(i))
         {
-            ser.print(days_of_the_week_names_short[i]);
-            ser.print(' ');
+            ser_.print(days_of_the_week_names_short[i]);
+            ser_.print(' ');
         }
-        else ser.print("   ");
+        else ser_.print("   ");
     }
-    ser.println();
+    ser_.println();
 
-    _indent(1);
-    ser.print(F("Time: "));
-    ser.print((_alarms + _sel_alarm_index)->get_time().hours);
-    ser.print(":");
-    ser.println((_alarms + _sel_alarm_index)->get_time().minutes);
+    indent_(1);
+    ser_.print(F("Time: "));
+    ser_.print((alarms_ + sel_alarm_index_)->get_time().hours);
+    ser_.print(":");
+    ser_.println((alarms_ + sel_alarm_index_)->get_time().minutes);
 
-    _indent(1);
-    ser.println(F("Snooze: "));
-    _indent(2);
-    ser.print(F("Time: "));
-    ser.print((_alarms + _sel_alarm_index)->get_snooze().time_minutes);
-    ser.println(F(" min"));
-    _indent(2);
-    ser.print(F("Count: "));
-    ser.println((_alarms + _sel_alarm_index)->get_snooze().count);
+    indent_(1);
+    ser_.println(F("Snooze: "));
+    indent_(2);
+    ser_.print(F("Time: "));
+    ser_.print((alarms_ + sel_alarm_index_)->get_snooze().time_minutes);
+    ser_.println(F(" min"));
+    indent_(2);
+    ser_.print(F("Count: "));
+    ser_.println((alarms_ + sel_alarm_index_)->get_snooze().count);
 
-    _indent(1);
-    ser.println(F("Signalization: "));
-    _indent(2);
-    ser.print(F("Ambient: "));
-    ser.println((_alarms + _sel_alarm_index)->get_signalization().ambient);
-    _indent(2);
-    ser.print(F("Lamp: "));
-    ser.println((_alarms + _sel_alarm_index)->get_signalization().lamp);
-    _indent(2);
-    ser.print(F("Buzzer: "));
-    ser.println((_alarms + _sel_alarm_index)->get_signalization().buzzer);
+    indent_(1);
+    ser_.println(F("Signalization: "));
+    indent_(2);
+    ser_.print(F("Ambient: "));
+    ser_.println((alarms_ + sel_alarm_index_)->get_signalization().ambient);
+    indent_(2);
+    ser_.print(F("Lamp: "));
+    ser_.println((alarms_ + sel_alarm_index_)->get_signalization().lamp);
+    indent_(2);
+    ser_.print(F("Buzzer: "));
+    ser_.println((alarms_ + sel_alarm_index_)->get_signalization().buzzer);
 
     return 0;
 }
 
 
-SerialCLIClass::error_t SerialCLIClass::_cmd_sd(char *date)
+SerialCLI::error_t SerialCLI::cmd_sd_(char *date)
 {
     int year;
     byte month, day;
 
-    date = _find_next_digit(date);
+    date = find_next_digit_(date);
     if (*date == '\0') return Serial_err_argument;
-    day = _strbyte(date);
-    date = _find_next_digit(date);
+    day = strbyte_(date);
+    date = find_next_digit_(date);
     if (*date == '\0') return Serial_err_argument;
-    month = _strbyte(date);
-    date = _find_next_digit(date);
+    month = strbyte_(date);
+    date = find_next_digit_(date);
     if (*date == '\0') return Serial_err_argument;
-    year = _strbyte(date);
+    year = strbyte_(date);
 
     if (month > 12 || day > 31) return Serial_err_argument;
 
-    _now = _rtc->now();
-    DateTime new_date(year, month, day, _now.hour(), _now.minute());
+    now_ = rtc_->now();
+    DateTime new_date(year, month, day, now_.hour(), now_.minute());
     if (!new_date.isValid()) return Serial_err_argument;
-    _rtc->adjust(new_date);
+    rtc_->adjust(new_date);
     return 0;
 }
 
 
-SerialCLIClass::error_t SerialCLIClass::_select_alarm(byte index_)
+SerialCLI::error_t SerialCLI::select_alarm_(byte index_)
 {
-    if (index_ >= alarms_count && index_ != _sel_alarm_index_none)
+    if (index_ >= alarms_count && index_ != sel_alarm_index_none_)
         return Serial_err_argument;
 
-    _sel_alarm_index = index_;
-    if (_sel_alarm_index == _sel_alarm_index_none) strcpy(_prompt, _prompt_default);
-    else sprintf(_prompt, "A%u%s", _sel_alarm_index, _prompt_default);
+    sel_alarm_index_ = index_;
+    if (sel_alarm_index_ == sel_alarm_index_none_) strcpy(prompt_, prompt_default_);
+    else sprintf(prompt_, "A%u%s", sel_alarm_index_, prompt_default_);
 
     return 0;
 }
 
 
-SerialCLIClass::error_t SerialCLIClass::_set_enabled(AlarmEnabled status)
+SerialCLI::error_t SerialCLI::set_enabled_(AlarmEnabled status)
 {
-    if (_sel_alarm_index == _sel_alarm_index_none) return Serial_err_select;
+    if (sel_alarm_index_ == sel_alarm_index_none_) return Serial_err_select;
 
-    (_alarms + _sel_alarm_index)->set_enabled(status);
+    (alarms_ + sel_alarm_index_)->set_enabled(status);
 
-    _change = true;
+    change_ = true;
     return 0;
 }
 
 
-SerialCLIClass::error_t SerialCLIClass::_save()
+SerialCLI::error_t SerialCLI::save_()
 {
-    if (_change)
+    if (change_)
     {
-        _change = false;
-        _writeEEPROM();
+        change_ = false;
+        writeEEPROM_();
         return 0;
     }
     else return Serial_err_useless_save;

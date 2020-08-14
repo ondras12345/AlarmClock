@@ -8,9 +8,9 @@
     @brief  Initialises the PWMDimmer object
     @param pin a pin that supports PWM
 */
-PWMDimmerClass::PWMDimmerClass(byte pin)
+PWMDimmer::PWMDimmer(byte pin)
 {
-    _pin = pin;
+    pin_ = pin;
 }
 
 
@@ -18,12 +18,12 @@ PWMDimmerClass::PWMDimmerClass(byte pin)
     @brief  Sets the values required for operation.
             WARNING: This does not start the process.
 */
-void PWMDimmerClass::set(byte start, byte stop, int step, unsigned long interval)
+void PWMDimmer::set(byte start, byte stop, int step, unsigned long interval)
 {
-    _start = start;
-    _stop = stop;
-    _step = step;
-    _interval = interval;
+    start_ = start;
+    stop_ = stop;
+    step_ = step;
+    interval_ = interval;
 }
 
 
@@ -31,24 +31,24 @@ void PWMDimmerClass::set(byte start, byte stop, int step, unsigned long interval
     @brief  Automatically calculates `step` and `interval` and calls `set`
     @see `set`
 */
-void PWMDimmerClass::set_from_duration(byte start, byte stop, unsigned long duration)
+void PWMDimmer::set_from_duration(byte start, byte stop, unsigned long duration)
 {
     int step_sign = (start > stop) ? -1 : 1;
     byte diff = abs(stop - start);
-    int _step = 0;
-    unsigned long _interval;
-    unsigned long _duration = duration;
+    int step_ = 0;
+    unsigned long interval_;
+    unsigned long duration_ = duration;
 
-    if (_duration < 500) _duration = 500;
+    if (duration_ < 500) duration_ = 500;
 
     // Choose interval
     // interval >= 50 ms
-    _interval = _duration / diff;
-    if(_interval < 50) _interval = 50;
+    interval_ = duration_ / diff;
+    if(interval_ < 50) interval_ = 50;
 
 
-    _step = step_sign * ((_interval * diff) / _duration);
-    if (_step == 0) _step = step_sign; // step must not be 0
+    step_ = step_sign * ((interval_ * diff) / duration_);
+    if (step_ == 0) step_ = step_sign; // step must not be 0
 
 #if defined(DEBUG) && defined(DEBUG_dimmer)
     DEBUG_print(F("dimmer - start: "));
@@ -61,45 +61,45 @@ void PWMDimmerClass::set_from_duration(byte start, byte stop, unsigned long dura
     DEBUG_println(diff);
 
     DEBUG_print(F("dimmer - duration: "));
-    DEBUG_println(_duration);
+    DEBUG_println(duration_);
 
     DEBUG_print(F("dimmer - interval: "));
-    DEBUG_println(_interval);
+    DEBUG_println(interval_);
 
     DEBUG_print(F("dimmer - step: "));
-    DEBUG_println(_step);
+    DEBUG_println(step_);
 #endif
 
 
-    set(start, stop, _step, _interval);
+    set(start, stop, step_, interval_);
 }
 
 
-void PWMDimmerClass::start()
+void PWMDimmer::start()
 {
-    _active = true;
-    _value = _start;
+    active_ = true;
+    value_ = start_;
 }
 
 
-void PWMDimmerClass::stop()
+void PWMDimmer::stop()
 {
-    _active = false;
-    _stop = 0;  // get_remaining needs it to work correctly
-    _value = 0;
-    digitalWrite(_pin, LOW);
+    active_ = false;
+    stop_ = 0;  // get_remaining needs it to work correctly
+    value_ = 0;
+    digitalWrite(pin_, LOW);
 }
 
 
 //! Call this function in the loop() of your sketch.
-void PWMDimmerClass::loop()
+void PWMDimmer::loop()
 {
-    if (_active && ((unsigned long)(millis() - _prev_change_millis) >= _interval))
+    if (active_ && ((unsigned long)(millis() - prev_change_millis_) >= interval_))
     {
-        if ((_step > 0 && _value >= _stop) || (_step < 0 && _value <= _stop))
+        if ((step_ > 0 && value_ >= stop_) || (step_ < 0 && value_ <= stop_))
         {
-            _value = _stop;
-            analogWrite(_pin, _value);
+            value_ = stop_;
+            analogWrite(pin_, value_);
 
             // <10 and >250 is necessary for the GUI, because it only displays
             // the value divided by 10:
@@ -108,19 +108,19 @@ void PWMDimmerClass::loop()
             // 10 - 19 ..... 1
             // ...
             // 250 - 255 ... 25
-            if (_value < 10) digitalWrite(_pin, LOW);
-            else if (_value >= 250) digitalWrite(_pin, HIGH);
-            _active = false;
+            if (value_ < 10) digitalWrite(pin_, LOW);
+            else if (value_ >= 250) digitalWrite(pin_, HIGH);
+            active_ = false;
         }
         else
         {
-            _value += _step;
-            if (_value > 255) _value = 255;
-            else if (_value < 0) _value = 0;
+            value_ += step_;
+            if (value_ > 255) value_ = 255;
+            else if (value_ < 0) value_ = 0;
 
-            analogWrite(_pin, _value);
+            analogWrite(pin_, value_);
         }
 
-        _prev_change_millis = millis();
+        prev_change_millis_ = millis();
     }
 }

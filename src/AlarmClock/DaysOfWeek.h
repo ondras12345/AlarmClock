@@ -14,11 +14,12 @@
 
 /*!
     @brief  A class that is used by alarms to determine which day of the week
-            to activate on.
+            to activate on. Stores a one-bit boolean value for each day of the
+            week.
 
     Saved in EEPROM as 1B.
 */
-class DaysOfWeekClass
+class DaysOfWeek
 {
 protected:
 

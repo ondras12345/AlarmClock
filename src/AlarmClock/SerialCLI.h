@@ -1,4 +1,6 @@
-// SerialCLI.h
+/*!
+    @file
+*/
 
 #ifndef SERIALCLI_H
 #define SERIALCLI_H
@@ -15,7 +17,11 @@
 #include "PWMDimmer.h"
 #include "HALbool.h"
 
-class SerialCLIClass
+/*!
+    @brief  A command line interface provided on a Stream object used to
+            configure the alarm clock.
+*/
+class SerialCLI
 {
 protected:
     typedef byte error_t;  // error codes are defined in Constants.h
@@ -23,79 +29,78 @@ protected:
     struct command_t
     {
         const char* text;
-        error_t (SerialCLIClass::*handler)(char* cmdptr);
+        error_t (SerialCLI::*handler)(char* cmdptr);
     };
 
+    static const command_t commands_[];
 
-    static const command_t commands[];
+    Stream& ser_;
 
-    Stream& ser;
+    Alarm *alarms_;
+    DateTime now_;
+    RTC_DS3231 *rtc_;
+    void(*writeEEPROM_)();
+    PWMDimmer * ambientDimmer_;
+    HALbool * lamp_;
+    void(*set_inhibit_)(bool);
+    bool(*get_inhibit_)();
 
-    AlarmClass *_alarms;
-    DateTime _now;
-    RTC_DS3231 *_rtc;
-    void(*_writeEEPROM)();
-    PWMDimmerClass * _ambientDimmer;
-    HALbool * _lamp;
-    void(*_set_inhibit)(bool);
-    bool(*_get_inhibit)();
+    const char prompt_default_[2 + 1] = "> ";
+    char Serial_buffer_[Serial_buffer_length + 1]; // +1 for termination
+    byte Serial_buffer_index_;
+    char prompt_[Serial_prompt_length + 1];
+    bool change_ = false; // for save
+    unsigned long prev_command_millis_ = 0; // for autosave
 
-    const char _prompt_default[2 + 1] = "> ";
-    char _Serial_buffer[Serial_buffer_length + 1]; // +1 for termination
-    byte _Serial_buffer_index;
-    char _prompt[Serial_prompt_length + 1];
-    bool _change = false; // for save
-    unsigned long _prev_command_millis = 0; // for autosave
-
-    const byte _sel_alarm_index_none = 255;
-    byte _sel_alarm_index = _sel_alarm_index_none;
+    const byte sel_alarm_index_none_ = 255;
+    byte sel_alarm_index_ = sel_alarm_index_none_;
 
 
     // utils
-    void _print_help();
-    byte _strbyte(char *str);
-    char * _find_digit(char *str);
-    char * _find_next_digit(char *str);
-    void _indent(byte level);
-    void _print_error(error_t error_code);
+    void print_help_();
+    byte strbyte_(char *str);
+    char * find_digit_(char *str);
+    char * find_next_digit_(char *str);
+    void indent_(byte level);
+    void print_error_(error_t error_code);
 
 
     // commands
-    error_t _cmd_sel(char *index);
-    error_t _cmd_amb(char *duty);
-    error_t _cmd_lamp(char *status);
-    error_t _cmd_inh(char *status);
-    error_t _cmd_en(char *type);
-    error_t _cmd_time(char *time);
-    error_t _cmd_dow(char *dow);
-    error_t _cmd_snz(char *snooze);
-    error_t _cmd_sig(char *sig);
-    error_t _cmd_st(char *time);
-    error_t _cmd_sd(char *date);
-    error_t _cmd_sav(char *ignored);
-    error_t _cmd_rtc(char *ignored);
-    error_t _cmd_ls(char *ignored);
+    error_t cmd_sel_(char *index);
+    error_t cmd_amb_(char *duty);
+    error_t cmd_lamp_(char *status);
+    error_t cmd_inh_(char *status);
+    error_t cmd_en_(char *type);
+    error_t cmd_time_(char *time);
+    error_t cmd_dow_(char *dow);
+    error_t cmd_snz_(char *snooze);
+    error_t cmd_sig_(char *sig);
+    error_t cmd_st_(char *time);
+    error_t cmd_sd_(char *date);
+    error_t cmd_sav_(char *ignored);
+    error_t cmd_rtc_(char *ignored);
+    error_t cmd_ls_(char *ignored);
 
-    error_t _select_alarm(byte index);
-    error_t _set_enabled(AlarmEnabled status);
-    error_t _save(); // check if something changed, save if true
+    error_t select_alarm_(byte index);
+    error_t set_enabled_(AlarmEnabled status);
+    error_t save_(); //!< check if something changed, save if true
 
 public:
     void loop(DateTime time);
-    SerialCLIClass(Stream& ser_,
-                   AlarmClass *alarms, void(*writeEEPROM)(), RTC_DS3231 *rtc,
-                   PWMDimmerClass *ambientDimmer, HALbool *lamp,
-                   void(*set_inhibit)(bool), bool(*get_inhibit)()) : ser(ser_)
+    SerialCLI(Stream& ser,
+              Alarm *alarms, void(*writeEEPROM)(), RTC_DS3231 *rtc,
+              PWMDimmer *ambientDimmer, HALbool *lamp,
+              void(*set_inhibit)(bool), bool(*get_inhibit)()) : ser_(ser)
 {
-    _alarms = alarms;
-    _writeEEPROM = writeEEPROM;
-    _rtc = rtc;
-    _ambientDimmer = ambientDimmer;
-    _lamp = lamp;
-    _set_inhibit = set_inhibit;
-    _get_inhibit = get_inhibit;
+    alarms_ = alarms;
+    writeEEPROM_ = writeEEPROM;
+    rtc_ = rtc;
+    ambientDimmer_ = ambientDimmer;
+    lamp_ = lamp;
+    set_inhibit_ = set_inhibit;
+    get_inhibit_ = get_inhibit;
 
-    strcpy(_prompt, _prompt_default);
+    strcpy(prompt_, prompt_default_);
 }
 
 };

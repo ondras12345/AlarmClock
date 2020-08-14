@@ -38,7 +38,7 @@ void loop()
 test(Alarm_trigger)
 {
     pinMode(pin_ambient, OUTPUT);
-    PWMDimmerClass ambientDimmer(pin_ambient);
+    PWMDimmer ambientDimmer(pin_ambient);
 
     enum test {
         inhibit = 0,
@@ -52,11 +52,11 @@ test(Alarm_trigger)
     while (myTest != last)
     {
         TestAlarm alarm;  // needs to be here to reset prev_activation_millis
-        alarm.set_hardware(&lamp, &ambientDimmer, &buzzer,
-                           writeEEPROM, activation_callback, stop_callback);
+        alarm.SetHardware(&lamp, &ambientDimmer, &buzzer,
+                          writeEEPROM, activation_callback, stop_callback);
         assertTrue(alarm.set_time(12, 13));
         assertTrue(alarm.set_enabled(Single));
-        DaysOfWeekClass dow;
+        DaysOfWeek dow;
         dow.DaysOfWeek = 0xFE;
         assertTrue(alarm.set_days_of_week(dow));
         assertTrue(alarm.set_snooze(1, 2));
@@ -116,7 +116,7 @@ test(Alarm_trigger)
                     }
 
                     reset_alarm_mockups();
-                    alarm.button_stop();
+                    alarm.ButtonStop();
                     time = time + TimeSpan(30);
                 }
                 // In case the test code was wrong
@@ -149,7 +149,7 @@ test(Alarm_trigger)
                     }
 
                     reset_alarm_mockups();
-                    alarm.button_stop();
+                    alarm.ButtonStop();
                     time = time + TimeSpan(30);
                 }
                 // In case the test code was wrong
@@ -169,13 +169,13 @@ test(Alarm_snooze)
     TestAlarm alarm;
 
     pinMode(pin_ambient, OUTPUT);
-    PWMDimmerClass ambientDimmer(pin_ambient);
-    alarm.set_hardware(&lamp, &ambientDimmer, &buzzer,
-                       writeEEPROM, activation_callback, stop_callback);
+    PWMDimmer ambientDimmer(pin_ambient);
+    alarm.SetHardware(&lamp, &ambientDimmer, &buzzer,
+                      writeEEPROM, activation_callback, stop_callback);
 
     assertTrue(alarm.set_time(12, 13));
     assertTrue(alarm.set_enabled(Single));
-    DaysOfWeekClass dow;
+    DaysOfWeek dow;
     dow.DaysOfWeek = 0xFE;
     assertTrue(alarm.set_days_of_week(dow));
     assertTrue(alarm.set_snooze(0, 2));
@@ -194,7 +194,7 @@ test(Alarm_snooze)
         assertTrue(lamp_status);
         assertTrue(buzzer.get_status());
 
-        alarm.button_snooze();
+        alarm.ButtonSnooze();
         if (snooze_remaining != 0) assertFalse(lamp_status);
         else assertTrue(lamp_status);
     }
@@ -216,13 +216,13 @@ test(Alarm_ambient)
 
     while (myTest != last)
     {
-        PWMDimmerClass ambientDimmer(pin_ambient);
+        PWMDimmer ambientDimmer(pin_ambient);
         TestAlarm alarm;  // needs to be here to reset prev_activation_millis
-        alarm.set_hardware(&lamp, &ambientDimmer, &buzzer,
-                           writeEEPROM, activation_callback, stop_callback);
+        alarm.SetHardware(&lamp, &ambientDimmer, &buzzer,
+                          writeEEPROM, activation_callback, stop_callback);
         assertTrue(alarm.set_time(12, 13));
         assertTrue(alarm.set_enabled(Repeat));
-        DaysOfWeekClass dow;
+        DaysOfWeek dow;
         dow.DaysOfWeek = 0xFE;
         assertTrue(alarm.set_days_of_week(dow));
         assertTrue(alarm.set_snooze(1, 2));
@@ -306,7 +306,7 @@ test(Alarm_ambient)
                     }
 
                     reset_alarm_mockups();
-                    alarm.button_stop();
+                    alarm.ButtonStop();
                     time = time + TimeSpan(30);
                 }
                 // In case the test code was wrong
@@ -324,52 +324,52 @@ test(Alarm_EEPROM_read)
 {
     TestAlarm alarm;
     pinMode(pin_ambient, OUTPUT);
-    PWMDimmerClass ambientDimmer(pin_ambient);
-    alarm.set_hardware(&lamp, &ambientDimmer, &buzzer,
-                       writeEEPROM, activation_callback, stop_callback);
+    PWMDimmer ambientDimmer(pin_ambient);
+    alarm.SetHardware(&lamp, &ambientDimmer, &buzzer,
+                      writeEEPROM, activation_callback, stop_callback);
 
     // Bad id
-    byte data1[EEPROM_AlarmClass_length] = {
+    byte data1[EEPROM_Alarm_length] = {
         EEPROM_alarms_id + 1, 23, 59, 3, 0x08, 99, 9, 80, 1, 0
     };
-    assertFalse(alarm.readEEPROM(data1));
+    assertFalse(alarm.ReadEEPROM(data1));
 
 
     // Bad hours
-    byte data2[EEPROM_AlarmClass_length] = {
+    byte data2[EEPROM_Alarm_length] = {
         EEPROM_alarms_id, 24, 59, 3, 0x08, 99, 9, 80, 1, 0
     };
-    assertFalse(alarm.readEEPROM(data2));
+    assertFalse(alarm.ReadEEPROM(data2));
 
     // Bad minutes
-    byte data3[EEPROM_AlarmClass_length] = {
+    byte data3[EEPROM_Alarm_length] = {
         EEPROM_alarms_id, 23, 60, 3, 0x08, 99, 9, 80, 1, 0
     };
-    assertFalse(alarm.readEEPROM(data3));
+    assertFalse(alarm.ReadEEPROM(data3));
 
     // Bad enabled
-    byte data4[EEPROM_AlarmClass_length] = {
+    byte data4[EEPROM_Alarm_length] = {
         EEPROM_alarms_id, 23, 59, 4, 0x08, 99, 9, 80, 1, 0
     };
-    assertFalse(alarm.readEEPROM(data4));
+    assertFalse(alarm.ReadEEPROM(data4));
 
     // Bad snooze time
-    byte data5[EEPROM_AlarmClass_length] = {
+    byte data5[EEPROM_Alarm_length] = {
         EEPROM_alarms_id, 23, 59, 3, 0x08, 100, 9, 80, 1, 0
     };
-    assertFalse(alarm.readEEPROM(data5));
+    assertFalse(alarm.ReadEEPROM(data5));
 
     // Bad snooze count
-    byte data6[EEPROM_AlarmClass_length] = {
+    byte data6[EEPROM_Alarm_length] = {
         EEPROM_alarms_id, 23, 59, 3, 0x08, 99, 10, 80, 1, 0
     };
-    assertFalse(alarm.readEEPROM(data6));
+    assertFalse(alarm.ReadEEPROM(data6));
 
     // Valid alarm
-    byte data7[EEPROM_AlarmClass_length] = {
+    byte data7[EEPROM_Alarm_length] = {
         EEPROM_alarms_id, 23, 59, 3, 0x08, 99, 9, 80, 1, 0
     };
-    assertTrue(alarm.readEEPROM(data7));
+    assertTrue(alarm.ReadEEPROM(data7));
     assertEqual(alarm.get_time().hours, 23);
     assertEqual(alarm.get_time().minutes, 59);
     assertEqual(alarm.get_enabled(), Skip);
@@ -385,26 +385,26 @@ test(Alarm_EEPROM_write)
 {
     TestAlarm alarm;
     pinMode(pin_ambient, OUTPUT);
-    PWMDimmerClass ambientDimmer(pin_ambient);
-    alarm.set_hardware(&lamp, &ambientDimmer, &buzzer,
-                       writeEEPROM, activation_callback, stop_callback);
+    PWMDimmer ambientDimmer(pin_ambient);
+    alarm.SetHardware(&lamp, &ambientDimmer, &buzzer,
+                      writeEEPROM, activation_callback, stop_callback);
 
     assertTrue(alarm.set_time(23, 59));
     assertTrue(alarm.set_enabled(Repeat));
-    DaysOfWeekClass dow;
+    DaysOfWeek dow;
     dow.DaysOfWeek = 0x08;
     assertTrue(alarm.set_days_of_week(dow));
     assertTrue(alarm.set_snooze(99, 9));
     assertTrue(alarm.set_signalization(80, true, false));
     assertTrue(alarm.set_inhibit(false));
 
-    byte * data = alarm.writeEEPROM();
+    byte * data = alarm.WriteEPROM();
 
-    byte correct_data[EEPROM_AlarmClass_length] = {
+    byte correct_data[EEPROM_Alarm_length] = {
         EEPROM_alarms_id, 23, 59, 2, 0x08, 99, 9, 80, 1, 0
     };
 
-    for (byte i = 0; i < EEPROM_AlarmClass_length; i++)
+    for (byte i = 0; i < EEPROM_Alarm_length; i++)
     {
         assertEqual(data[i], correct_data[i]);
     }

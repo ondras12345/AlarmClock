@@ -19,24 +19,24 @@
     @brief  A general purpose class that implements PWM duty cycle ramp-up and
             ramp-down
 */
-class PWMDimmerClass
+class PWMDimmer
 {
  protected:
-     unsigned long _prev_change_millis = 0;
-     byte _pin;
-     int _value; // int because of overflows
+     unsigned long prev_change_millis_ = 0;
+     byte pin_;
+     int value_; // int because of overflows
 
      // I need to initialize these variables with values because start() can be
      // executed before set()
-     byte _start = 0;
-     byte _stop = 0;
-     unsigned long _interval = 100;
-     int _step = 10; // can be negative
-     bool _active = false;
+     byte start_ = 0;
+     byte stop_ = 0;
+     unsigned long interval_ = 100;
+     int step_ = 10; // can be negative
+     bool active_ = false;
 
 
  public:
-     PWMDimmerClass(byte pin);
+     PWMDimmer(byte pin);
 
      void set(byte start, byte stop, int step, unsigned long interval);
 
@@ -50,12 +50,12 @@ class PWMDimmerClass
 
      void loop();
 
-     byte get_value() const { return byte(_value); }
+     byte get_value() const { return byte(value_); }
 
      //! Get the target value
-     byte get_stop() const { return byte(_stop); }
+     byte get_stop() const { return byte(stop_); }
 
-     bool get_active() const { return _active; }
+     bool get_active() const { return active_; }
 
      /*!
         @brief  Get time remaining before the target value is reached.
@@ -63,9 +63,9 @@ class PWMDimmerClass
      */
      unsigned long get_remaining() const
      {
-         if (!_active) return 0;
-         byte diff_remaining = abs(_stop - _value);
-         return (unsigned long)(diff_remaining * _interval) / _step;
+         if (!active_) return 0;
+         byte diff_remaining = abs(stop_ - value_);
+         return (unsigned long)(diff_remaining * interval_) / step_;
      }
 };
 
