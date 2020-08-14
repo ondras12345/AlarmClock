@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ambient starts `Alarm_ambient_dimming_duration` before the alarm triggers,
   so that it already has full brightness when the alarm triggers.
 
+### Changed
+- `dis` command in CLI changed to `en-off` for consistency
+  WARNING: breaking API change
+- CLI command recognition optimized
+
 
 ## [0.3.1] - 2020-07-18
 ### Fixed

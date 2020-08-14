@@ -77,7 +77,7 @@ HALbool lamp(lamp_set);
 HALbool permanent_backlight(set_backlight_permanent);
 BuzzerManager buzzer(pin_buzzer);
 DateTime now;
-SerialCLIClass CLI(alarms, writeEEPROM, &rtc, &ambientDimmer, &lamp,
+SerialCLIClass CLI(Serial, alarms, writeEEPROM, &rtc, &ambientDimmer, &lamp,
                    set_inhibit, get_inhibit);
 GUIClass GUI(alarms, writeEEPROM, &rtc, &encoder,
              &buttons[button_index_encoder], &lcd, set_inhibit, get_inhibit,

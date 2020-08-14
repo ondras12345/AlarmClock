@@ -20,6 +20,17 @@ class SerialCLIClass
 protected:
     typedef byte error_t;  // error codes are defined in Constants.h
 
+    struct command_t
+    {
+        const char* text;
+        error_t (SerialCLIClass::*handler)(char* cmdptr);
+    };
+
+
+    static const command_t commands[];
+
+    Stream& ser;
+
     AlarmClass *_alarms;
     DateTime _now;
     RTC_DS3231 *_rtc;
@@ -50,26 +61,43 @@ protected:
 
 
     // commands
-    error_t _set_ambient(char *duty);
-    error_t _set_lamp(char *status);
-    error_t _set_inh(char *status);
+    error_t _cmd_sel(char *index);
+    error_t _cmd_amb(char *duty);
+    error_t _cmd_lamp(char *status);
+    error_t _cmd_inh(char *status);
+    error_t _cmd_en(char *type);
+    error_t _cmd_time(char *time);
+    error_t _cmd_dow(char *dow);
+    error_t _cmd_snz(char *snooze);
+    error_t _cmd_sig(char *sig);
+    error_t _cmd_st(char *time);
+    error_t _cmd_sd(char *date);
+    error_t _cmd_sav(char *ignored);
+    error_t _cmd_rtc(char *ignored);
+    error_t _cmd_ls(char *ignored);
+
     error_t _select_alarm(byte index);
-    error_t _list_selected_alarm();
     error_t _set_enabled(AlarmEnabled status);
-    error_t _set_time(char *time);
-    error_t _set_day_of_week(char *dow);
-    error_t _set_snooze(char *snooze);
-    error_t _set_signalization(char *sig);
     error_t _save(); // check if something changed, save if true
-    error_t _rtc_time(char *time);
-    error_t _rtc_date(char *date);
-    error_t _rtc_get();
 
 public:
     void loop(DateTime time);
-    SerialCLIClass(AlarmClass *alarms, void(*writeEEPROM)(), RTC_DS3231 *rtc,
+    SerialCLIClass(Stream& ser_,
+                   AlarmClass *alarms, void(*writeEEPROM)(), RTC_DS3231 *rtc,
                    PWMDimmerClass *ambientDimmer, HALbool *lamp,
-                   void(*set_inhibit)(bool), bool(*get_inhibit)());
+                   void(*set_inhibit)(bool), bool(*get_inhibit)()) : ser(ser_)
+{
+    _alarms = alarms;
+    _writeEEPROM = writeEEPROM;
+    _rtc = rtc;
+    _ambientDimmer = ambientDimmer;
+    _lamp = lamp;
+    _set_inhibit = set_inhibit;
+    _get_inhibit = get_inhibit;
+
+    strcpy(_prompt, _prompt_default);
+}
+
 };
 
 #endif
