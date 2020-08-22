@@ -41,7 +41,7 @@ protected:
     */
     byte true_count = 0;
     //! true_count == 255 --> manually true (GUI, CLI)
-#define true_count_manu 255
+    static constexpr byte true_count_manu = 255;
 
 };
 

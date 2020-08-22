@@ -24,7 +24,20 @@
 class SerialCLI
 {
 protected:
-    typedef byte error_t;  // error codes are defined in Constants.h
+    typedef byte error_t;
+
+    /*!
+        @brief  Errors that can be returned by commands.
+        The commands return a one-byte error_t value, individual bits indicate
+        individual errors defined here.
+    */
+    enum CommandError
+    {
+        kOk = 0,
+        kArgument = 1,
+        kNothingSelected = 2,
+        kUselessSave = 4,
+    };
 
     struct command_t
     {
@@ -45,14 +58,17 @@ protected:
     void(*set_inhibit_)(bool);
     bool(*get_inhibit_)();
 
-    const char prompt_default_[2 + 1] = "> ";
-    char Serial_buffer_[Serial_buffer_length + 1]; // +1 for termination
+    static constexpr byte kSerial_buffer_length_ = 12;
+    char Serial_buffer_[kSerial_buffer_length_ + 1]; // +1 for termination
     byte Serial_buffer_index_;
-    char prompt_[Serial_prompt_length + 1];
-    bool change_ = false; // for save
-    unsigned long prev_command_millis_ = 0; // for autosave
 
-    const byte sel_alarm_index_none_ = 255;
+    static constexpr byte kSerial_prompt_length_ = 5;
+    char prompt_[kSerial_prompt_length_ + 1];
+    const char prompt_default_[2 + 1] = "> ";
+
+    bool change_ = false; //! for save
+    unsigned long prev_command_millis_ = 0; //! for autosave
+    static constexpr byte sel_alarm_index_none_ = 255;
     byte sel_alarm_index_ = sel_alarm_index_none_;
 
 

@@ -114,8 +114,10 @@ void Alarm::loop(DateTime time)
 }
 
 
-// returns true if the alarm should trigger
-// This function does NOT contain the !get_active() condition.
+/*!
+    @brief  returns true if the alarm should trigger
+    This function does NOT contain the !get_active() condition.
+*/
 bool Alarm::ShouldTrigger(DateTime time)
 {
     // check for prev_activation_millis_ - in case the alarm gets stopped in the
@@ -279,12 +281,12 @@ Alarm::Alarm()
             If it returns false, the alarm may be set to incomplete (and
             probably random) data.
 */
-bool Alarm::ReadEEPROM(byte data[EEPROM_Alarm_length])
+bool Alarm::ReadEEPROM(byte data[Alarm::EEPROM_length])
 {
 #if defined(DEBUG) && defined(DEBUG_EEPROM_alarms)
     Serial.println();
     Serial.println(F("EEPROM alarm read:"));
-    for (byte i = 0; i < EEPROM_Alarm_length; i++)
+    for (byte i = 0; i < EEPROM_length; i++)
     {
         Serial.print(data[i], HEX);
         Serial.print(' ');
@@ -346,7 +348,7 @@ byte * Alarm::WriteEPROM()
 
 #if defined(DEBUG) && defined(DEBUG_EEPROM_alarms)
     Serial.println(F("EEPROM alarm write:"));
-    for (byte i = 0; i < EEPROM_Alarm_length; i++)
+    for (byte i = 0; i < EEPROM_length; i++)
     {
         Serial.print(EEPROM_data_[i], HEX);
         Serial.print(' ');

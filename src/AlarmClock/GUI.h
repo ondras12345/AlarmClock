@@ -117,13 +117,13 @@ class GUI
      char line_buffer_[LCD_width + 1];  // +1 for null termination
 
      const byte selectables_count_[Screens_count] = { 5, 17, 8 };
-    #define Selectables_count_max 17
+     static constexpr byte selectables_count_max = 17;
 
      byte cursor_position_ = 0;
      // current_screen_, cursor_position_
      // This array translates current_screen_ and cursor_position_ to
      // the display's coordinates
-     const cursor_position_t cursor_positions_[Screens_count][Selectables_count_max] = {
+     const cursor_position_t cursor_positions_[Screens_count][selectables_count_max] = {
         { {0,1}, {3,1}, {7,1}, {12,1}, {14,1} },
 
         { {0,0}, {1,0}, {5,0}, {6,0}, {7,0}, {8,0}, {9,0}, {10,0}, {11,0}, {13,0},

@@ -20,8 +20,6 @@
 #include <RTClib.h> // for datetime
 
 
-//#define AlarmClass_EEPROM_length identifier(1B) + sizeof(TimeStampClass - jen  2 byte) + sizeof(AlarmsEnabled - 1 byte) + sizeof(DaysOfWeekClass - jen 1 byte (eeprom)) + sizeof(Snooze) + sizeOf(Signalization)
-
 #define AlarmEnabled_max 3  // for input validation
 enum AlarmEnabled
 {
@@ -30,17 +28,21 @@ enum AlarmEnabled
     Repeat = 2,
     Skip = 3
 };
+
+
 struct Snooze
 {
     byte time_minutes; //!< max 99
     byte count; //!< max 9
 };
 
+
 struct HoursMinutes
 {
     byte hours;
     byte minutes;
 };
+
 
 /*!
     @brief  Stores information about the means that should be used to wake the
@@ -60,71 +62,27 @@ struct Signalization
 */
 class Alarm
 {
-protected:
-    // This variable needs to exist all the time because a function is
-    // returning a pointer to it
-    byte EEPROM_data_[EEPROM_Alarm_length];
-
-    /*
-    not saved in EEPROM:
-    */
-    // Needed in case the alarm gets canceled during the same minute it started
-    // Also used for Alarm_timeout
-    // Needs to be initialised to prev_activation_millis_init_ to prevent
-    // alarms starting in the first minute of runtime being ignored.
-    // This also makes unit tests work.
-    unsigned long prev_activation_millis_;
-    // 0xFFFF0000 would also work...
-#define prev_activation_millis_init_ 0xDEADBEEF
-
-#define current_snooze_count_inactive_ 255
-    byte current_snooze_count_;  // max 9; 255 has special meaning defined above
-    // Used to time snooze and as prev_activation_millis_ for ambient.
-    // Also needs to be initialised to prev_activation_millis_init_ to prevent
-    // alarms starting in the first minute of runtime being ignored.
-    unsigned long prev_millis_ = prev_activation_millis_init_;
-    bool inhibit_;
-    bool snooze_status_;  // currently in snooze
-    bool ambient_status_;  // ambient is active
-
-    HALbool *lamp_;
-    PWMDimmer *ambient_dimmer_;
-    BuzzerManager *buzzer_;
-    void(*write_EEPROM_all_)();  // write all alarms to EEPROM
-    void(*activation_callback_)();
-    void(*stop_callback_)();
-
-    /*
-    saved in the EEPROM:
-    */
-    HoursMinutes when_;
-    AlarmEnabled enabled_;
-    DaysOfWeek days_of_week_;
-    Snooze snooze_;
-    Signalization signalization_;
-
-    // true --> alarm is on (ringing or snooze)
-    bool get_active() const
-    {
-        return current_snooze_count_ < current_snooze_count_inactive_;
-    };
-
-
-    bool ShouldTrigger(DateTime time);
-    bool ShouldTriggerAmbient(DateTime time);
-
-
 public:
-    bool ReadEEPROM(byte data[EEPROM_Alarm_length]);
+    /*!
+        @brief  EEPROM record length in bytes.
+        EEPROM_alarms_id                1
+        HoursMinutes when_              2
+        AlarmEnabled enabled_           1
+        DaysOfWeek days_of_week_        1
+        Snooze snooze_                  2
+        Signalization signalization_    3
+    */
+    static constexpr byte EEPROM_length = 1 + 2 + 1 + 1 + 2 + 3;
+    bool ReadEEPROM(byte data[EEPROM_length]);
     byte * WriteEPROM();
 
     void loop(DateTime time);
     void SetHardware(HALbool *lamp,
-                      PWMDimmer *ambient_dimmer,
-                      BuzzerManager *buzzer,
-                      void(*writeEEPROM)(),
-                      void(*activation_callback)(),
-                      void(*stop_callback)());
+                     PWMDimmer *ambient_dimmer,
+                     BuzzerManager *buzzer,
+                     void(*writeEEPROM)(),
+                     void(*activation_callback)(),
+                     void(*stop_callback)());
     void ButtonSnooze();
     void ButtonStop();
     Alarm();
@@ -149,6 +107,65 @@ public:
 
     bool get_inhibit() const { return inhibit_; };
     bool set_inhibit(bool inhibit);
+
+
+protected:
+    //! This variable needs to exist all the time because a function is
+    //! returning a pointer to it.
+    byte EEPROM_data_[EEPROM_length];
+
+    /*
+    not saved in EEPROM:
+    */
+    /*!
+        Needed in case the alarm gets canceled during the same minute it started.
+        Also used for Alarm_timeout.
+        Needs to be initialised to prev_activation_millis_init_ to prevent
+        alarms starting in the first minute of runtime being ignored.
+        This also makes unit tests work.
+    */
+    unsigned long prev_activation_millis_;
+    //! 0xFFFF0000 would also work...
+    static constexpr unsigned long prev_activation_millis_init_ = 0xDEADBEEF;
+
+    static constexpr byte current_snooze_count_inactive_ = 255;
+    byte current_snooze_count_;  //!< max 9; 255 has special meaning defined above
+
+    /*!
+        Used to time snooze and as prev_activation_millis_ for ambient.
+        Also needs to be initialised to prev_activation_millis_init_ to prevent
+        alarms starting in the first minute of runtime being ignored.
+    */
+    unsigned long prev_millis_ = prev_activation_millis_init_;
+    bool inhibit_;
+    bool snooze_status_;  //!< currently in snooze
+    bool ambient_status_;  //!< ambient is active
+
+    HALbool *lamp_;
+    PWMDimmer *ambient_dimmer_;
+    BuzzerManager *buzzer_;
+    void(*write_EEPROM_all_)();  //!< write all alarms to EEPROM
+    void(*activation_callback_)();
+    void(*stop_callback_)();
+
+    /*
+    saved in the EEPROM:
+    */
+    HoursMinutes when_;
+    AlarmEnabled enabled_;
+    DaysOfWeek days_of_week_;
+    Snooze snooze_;
+    Signalization signalization_;
+
+    //! true --> alarm is on (ringing or snooze)
+    bool get_active() const
+    {
+        return current_snooze_count_ < current_snooze_count_inactive_;
+    };
+
+
+    bool ShouldTrigger(DateTime time);
+    bool ShouldTriggerAmbient(DateTime time);
 };
 
 

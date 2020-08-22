@@ -329,44 +329,44 @@ test(Alarm_EEPROM_read)
                       writeEEPROM, activation_callback, stop_callback);
 
     // Bad id
-    byte data1[EEPROM_Alarm_length] = {
+    byte data1[Alarm::EEPROM_length] = {
         EEPROM_alarms_id + 1, 23, 59, 3, 0x08, 99, 9, 80, 1, 0
     };
     assertFalse(alarm.ReadEEPROM(data1));
 
 
     // Bad hours
-    byte data2[EEPROM_Alarm_length] = {
+    byte data2[Alarm::EEPROM_length] = {
         EEPROM_alarms_id, 24, 59, 3, 0x08, 99, 9, 80, 1, 0
     };
     assertFalse(alarm.ReadEEPROM(data2));
 
     // Bad minutes
-    byte data3[EEPROM_Alarm_length] = {
+    byte data3[Alarm::EEPROM_length] = {
         EEPROM_alarms_id, 23, 60, 3, 0x08, 99, 9, 80, 1, 0
     };
     assertFalse(alarm.ReadEEPROM(data3));
 
     // Bad enabled
-    byte data4[EEPROM_Alarm_length] = {
+    byte data4[Alarm::EEPROM_length] = {
         EEPROM_alarms_id, 23, 59, 4, 0x08, 99, 9, 80, 1, 0
     };
     assertFalse(alarm.ReadEEPROM(data4));
 
     // Bad snooze time
-    byte data5[EEPROM_Alarm_length] = {
+    byte data5[Alarm::EEPROM_length] = {
         EEPROM_alarms_id, 23, 59, 3, 0x08, 100, 9, 80, 1, 0
     };
     assertFalse(alarm.ReadEEPROM(data5));
 
     // Bad snooze count
-    byte data6[EEPROM_Alarm_length] = {
+    byte data6[Alarm::EEPROM_length] = {
         EEPROM_alarms_id, 23, 59, 3, 0x08, 99, 10, 80, 1, 0
     };
     assertFalse(alarm.ReadEEPROM(data6));
 
     // Valid alarm
-    byte data7[EEPROM_Alarm_length] = {
+    byte data7[Alarm::EEPROM_length] = {
         EEPROM_alarms_id, 23, 59, 3, 0x08, 99, 9, 80, 1, 0
     };
     assertTrue(alarm.ReadEEPROM(data7));
@@ -400,11 +400,11 @@ test(Alarm_EEPROM_write)
 
     byte * data = alarm.WriteEPROM();
 
-    byte correct_data[EEPROM_Alarm_length] = {
+    byte correct_data[Alarm::EEPROM_length] = {
         EEPROM_alarms_id, 23, 59, 2, 0x08, 99, 9, 80, 1, 0
     };
 
-    for (byte i = 0; i < EEPROM_Alarm_length; i++)
+    for (byte i = 0; i < Alarm::EEPROM_length; i++)
     {
         assertEqual(data[i], correct_data[i]);
     }

@@ -1,7 +1,7 @@
 /*!
     @file
     @brief  Constants that are not meant to be changed by the user.
-    User changable settings are in Settings.h
+    User changeable settings are in Settings.h
 */
 
 #ifndef CONSTANTS_H
@@ -42,7 +42,7 @@ WDT
 /*
 String constants
 */
-// 1 = Monday, 7 = Sunday
+//! 1 = Monday, 7 = Sunday
 extern const char* days_of_the_week_names_short[8];
 
 
@@ -59,20 +59,8 @@ POST error codes
 EEPROM
 */
 #define EEPROM_alarms_offset 10
-#define EEPROM_Alarm_length (1 + 2 + 1 + 1 + 2 + 3)
 #define EEPROM_alarms_id 0xFE
 #define EEPROM_DEBUG_dump_length 100
-
-
-/*
-Serial CLI
-*/
-#define Serial_buffer_length 12
-#define Serial_prompt_length 5
-
-#define Serial_err_argument 1
-#define Serial_err_select 2  // nothing selected
-#define Serial_err_useless_save 4  // nothing to save
 
 
 /*
@@ -82,6 +70,7 @@ Button debounce
 #define button_index_snooze 0
 #define button_index_stop 1
 #define button_index_encoder 2
+
 
 /*
 LCD

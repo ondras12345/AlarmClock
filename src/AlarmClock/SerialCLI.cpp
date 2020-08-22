@@ -73,7 +73,7 @@ void SerialCLI::loop(DateTime time)
             // not happen when the character is CR/LF
             ser_.print(Serial_buffer_[Serial_buffer_index_]);
 
-            if (Serial_buffer_index_ < Serial_buffer_length - 1)
+            if (Serial_buffer_index_ < kSerial_buffer_length_ - 1)
             {
                 Serial_buffer_index_++;
             }
@@ -229,13 +229,13 @@ void SerialCLI::print_error_(error_t error_code)
     if (!error_code)
         ser_.println(F("OK"));
 
-    if (error_code & Serial_err_argument)
+    if (error_code & kArgument)
         ser_.println(F("Invalid args"));
 
-    if (error_code & Serial_err_select)
+    if (error_code & kNothingSelected)
         ser_.println(F("Sel first"));
 
-    if (error_code & Serial_err_useless_save)
+    if (error_code & kUselessSave)
         ser_.println(F("Nothing to save"));
 }
 
@@ -313,20 +313,20 @@ SerialCLI::error_t SerialCLI::cmd_en_(char *type)
     if (!strcmp(type, "en-skp"))
         return set_enabled_(Skip);
 
-    return Serial_err_argument;
+    return kArgument;
 }
 
 
 SerialCLI::error_t SerialCLI::cmd_time_(char *time)
 {
-    if (sel_alarm_index_ == sel_alarm_index_none_) return Serial_err_select;
+    if (sel_alarm_index_ == sel_alarm_index_none_) return kNothingSelected;
 
     byte hours, minutes;
     time = find_next_digit_(time);
-    if (*time == '\0') return Serial_err_argument;
+    if (*time == '\0') return kArgument;
     hours = strbyte_(time);
     time = find_next_digit_(time);
-    if (*time == '\0') return Serial_err_argument;
+    if (*time == '\0') return kArgument;
     minutes = strbyte_(time);
 
     if ((alarms_ + sel_alarm_index_)->set_time(hours, minutes))
@@ -334,21 +334,21 @@ SerialCLI::error_t SerialCLI::cmd_time_(char *time)
         change_ = true;
         return 0;
     }
-    else return Serial_err_argument;
+    else return kArgument;
 }
 
 
 SerialCLI::error_t SerialCLI::cmd_dow_(char *dow)
 {
-    if (sel_alarm_index_ == sel_alarm_index_none_) return Serial_err_select;
+    if (sel_alarm_index_ == sel_alarm_index_none_) return kNothingSelected;
 
     byte day;
     bool status;
     dow = find_next_digit_(dow);
-    if (*dow == '\0') return Serial_err_argument;
+    if (*dow == '\0') return kArgument;
     day = strbyte_(dow);
     dow = find_next_digit_(dow);
-    if (*dow == '\0') return Serial_err_argument;
+    if (*dow == '\0') return kArgument;
     status = strbyte_(dow);
 
     if ((alarms_ + sel_alarm_index_)->set_day_of_week(day, status))
@@ -356,21 +356,21 @@ SerialCLI::error_t SerialCLI::cmd_dow_(char *dow)
         change_ = true;
         return 0;
     }
-    else return Serial_err_argument;
+    else return kArgument;
 }
 
 
 SerialCLI::error_t SerialCLI::cmd_snz_(char *snooze)
 {
-    if (sel_alarm_index_ == sel_alarm_index_none_) return Serial_err_select;
+    if (sel_alarm_index_ == sel_alarm_index_none_) return kNothingSelected;
 
     byte time, count;
 
     snooze = find_next_digit_(snooze);
-    if (*snooze == '\0') return Serial_err_argument;
+    if (*snooze == '\0') return kArgument;
     time = strbyte_(snooze);
     snooze = find_next_digit_(snooze);
-    if (*snooze == '\0') return Serial_err_argument;
+    if (*snooze == '\0') return kArgument;
     count = strbyte_(snooze);
 
     if ((alarms_ + sel_alarm_index_)->set_snooze(time, count))
@@ -378,25 +378,25 @@ SerialCLI::error_t SerialCLI::cmd_snz_(char *snooze)
         change_ = true;
         return 0;
     }
-    else return Serial_err_argument;
+    else return kArgument;
 }
 
 
 SerialCLI::error_t SerialCLI::cmd_sig_(char *sig)
 {
-    if (sel_alarm_index_ == sel_alarm_index_none_) return Serial_err_select;
+    if (sel_alarm_index_ == sel_alarm_index_none_) return kNothingSelected;
 
     byte ambient;
     bool lamp, buzzer;
 
     sig = find_next_digit_(sig);
-    if (*sig == '\0') return Serial_err_argument;
+    if (*sig == '\0') return kArgument;
     ambient = strbyte_(sig);
     sig = find_next_digit_(sig);
-    if (*sig == '\0') return Serial_err_argument;
+    if (*sig == '\0') return kArgument;
     lamp = strbyte_(sig);
     sig = find_next_digit_(sig);
-    if (*sig == '\0') return Serial_err_argument;
+    if (*sig == '\0') return kArgument;
     buzzer = strbyte_(sig);
 
     if ((alarms_ + sel_alarm_index_)->set_signalization(ambient, lamp, buzzer))
@@ -404,7 +404,7 @@ SerialCLI::error_t SerialCLI::cmd_sig_(char *sig)
         change_ = true;
         return 0;
     }
-    else return Serial_err_argument;
+    else return kArgument;
 }
 
 
@@ -412,13 +412,13 @@ SerialCLI::error_t SerialCLI::cmd_st_(char *time)
 {
     byte hour, minute;
     time = find_next_digit_(time);
-    if (*time == '\0') return Serial_err_argument;
+    if (*time == '\0') return kArgument;
     hour = strbyte_(time);
     time = find_next_digit_(time);
-    if (*time == '\0') return Serial_err_argument;
+    if (*time == '\0') return kArgument;
     minute = strbyte_(time);
 
-    if (hour > 23 || minute > 59) return Serial_err_argument;
+    if (hour > 23 || minute > 59) return kArgument;
 
 
     now_ = rtc_->now();
@@ -463,7 +463,7 @@ SerialCLI::error_t SerialCLI::cmd_ls_(char *ignored)
     (void)ignored;
 
     if (sel_alarm_index_ == sel_alarm_index_none_)
-        return Serial_err_select;
+        return kNothingSelected;
 
     ser_.print(F("Num: "));
     ser_.println(sel_alarm_index_);
@@ -540,20 +540,20 @@ SerialCLI::error_t SerialCLI::cmd_sd_(char *date)
     byte month, day;
 
     date = find_next_digit_(date);
-    if (*date == '\0') return Serial_err_argument;
+    if (*date == '\0') return kArgument;
     day = strbyte_(date);
     date = find_next_digit_(date);
-    if (*date == '\0') return Serial_err_argument;
+    if (*date == '\0') return kArgument;
     month = strbyte_(date);
     date = find_next_digit_(date);
-    if (*date == '\0') return Serial_err_argument;
+    if (*date == '\0') return kArgument;
     year = strbyte_(date);
 
-    if (month > 12 || day > 31) return Serial_err_argument;
+    if (month > 12 || day > 31) return kArgument;
 
     now_ = rtc_->now();
     DateTime new_date(year, month, day, now_.hour(), now_.minute());
-    if (!new_date.isValid()) return Serial_err_argument;
+    if (!new_date.isValid()) return kArgument;
     rtc_->adjust(new_date);
     return 0;
 }
@@ -562,7 +562,7 @@ SerialCLI::error_t SerialCLI::cmd_sd_(char *date)
 SerialCLI::error_t SerialCLI::select_alarm_(byte index_)
 {
     if (index_ >= alarms_count && index_ != sel_alarm_index_none_)
-        return Serial_err_argument;
+        return kArgument;
 
     sel_alarm_index_ = index_;
     if (sel_alarm_index_ == sel_alarm_index_none_) strcpy(prompt_, prompt_default_);
@@ -574,7 +574,7 @@ SerialCLI::error_t SerialCLI::select_alarm_(byte index_)
 
 SerialCLI::error_t SerialCLI::set_enabled_(AlarmEnabled status)
 {
-    if (sel_alarm_index_ == sel_alarm_index_none_) return Serial_err_select;
+    if (sel_alarm_index_ == sel_alarm_index_none_) return kNothingSelected;
 
     (alarms_ + sel_alarm_index_)->set_enabled(status);
 
@@ -591,5 +591,5 @@ SerialCLI::error_t SerialCLI::save_()
         writeEEPROM_();
         return 0;
     }
-    else return Serial_err_useless_save;
+    else return kUselessSave;
 }
