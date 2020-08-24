@@ -188,9 +188,9 @@ void AlarmClockCLI::cmd_not_found()
     indent_(2);
     ser_->println(F("rtc - get RTC time"));
     indent_(2);
-    ser_->println(F("sd{dd}.{mm}.{yy} - set RTC date"));
+    ser_->println(F("sd{YYYY-MM-DD} - set RTC date"));
     indent_(2);
-    ser_->println(F("st{h}:{m} - set RTC time"));
+    ser_->println(F("st{hh:mm[:ss]} - set RTC time"));
 }
 
 
@@ -402,19 +402,23 @@ SerialCLI::error_t AlarmClockCLI::cmd_sig_(char *sig)
 
 SerialCLI::error_t AlarmClockCLI::cmd_st_(char *time)
 {
-    byte hour, minute;
+    byte hour, minute, second = 0;
     time = find_next_digit_(time);
     if (*time == '\0') return kArgument;
     hour = strbyte_(time);
     time = find_next_digit_(time);
     if (*time == '\0') return kArgument;
     minute = strbyte_(time);
+    time = find_next_digit_(time);
+    // Second is optional.
+    if (*time != '\0')
+        second = strbyte_(time);
 
-    if (hour > 23 || minute > 59) return kArgument;
+    if (hour > 23 || minute > 59 || second > 59) return kArgument;
 
 
     now_ = rtc_->now();
-    rtc_->adjust(DateTime(now_.year(), now_.month(), now_.day(), hour, minute));
+    rtc_->adjust(DateTime(now_.year(), now_.month(), now_.day(), hour, minute, second));
     return 0;
 }
 
@@ -430,22 +434,11 @@ SerialCLI::error_t AlarmClockCLI::cmd_rtc_(char *ignored)
 {
     (void)ignored;
 
-    ser_->print(F("Time: "));
     if (now_.dayOfTheWeek() == 0) ser_->print(days_of_the_week_names_short[7]);
     else ser_->print(days_of_the_week_names_short[now_.dayOfTheWeek()]);
+    char buff[] = "YYYY-MM-DD hh:mm:ss";
     ser_->print(' ');
-    ser_->print(now_.day());
-    ser_->print(". ");
-    ser_->print(now_.month());
-    ser_->print(". ");
-    ser_->print(now_.year());
-    ser_->print("  ");
-    ser_->print(now_.hour());
-    ser_->print(':');
-    ser_->print(now_.minute());
-    ser_->print(':');
-    ser_->println(now_.second());
-
+    ser_->println(now_.toString(buff));
     return 0;
 }
 
@@ -528,18 +521,17 @@ SerialCLI::error_t AlarmClockCLI::cmd_ls_(char *ignored)
 
 SerialCLI::error_t AlarmClockCLI::cmd_sd_(char *date)
 {
-    int year;
-    byte month, day;
+    byte year, month, day;
 
-    date = find_next_digit_(date);
+    date = find_next_digit_(date) + 1; // +1 to avoid byte overflow
     if (*date == '\0') return kArgument;
-    day = strbyte_(date);
+    year = strbyte_(date);
     date = find_next_digit_(date);
     if (*date == '\0') return kArgument;
     month = strbyte_(date);
     date = find_next_digit_(date);
     if (*date == '\0') return kArgument;
-    year = strbyte_(date);
+    day = strbyte_(date);
 
     if (month > 12 || day > 31) return kArgument;
 

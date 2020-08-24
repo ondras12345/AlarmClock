@@ -3,7 +3,10 @@ Lowercase characters usually indicate disabled functions.
 
 ## Home
 ```
-Date: 11. 6. 2019
+Date: 2019-06-13
+Note: ISO8601 forbids omitting the year, but the date would otherwise not fit
+on the display and I would still be using the old, non-standard date format,
+so I think it is better this way.
 Time: 23:14:11
 Day of the week: 2 - Tuesday
 Ambient LED: 25x (range 0-255 --> 0-25 on this screen). This indicates the
@@ -19,7 +22,7 @@ Buttons:
 
 |     |0|1|2|3|4|5|6|7|8|9|A|B|C|D|E|F|
 |-----|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
-|__0__|1|1|.|0|6| |2| |2|3|:|1|4|:|1|1|
+|__0__|0|6|-|1|3| |2| |2|3|:|1|4|:|1|1|
 |__1__|b|t| |R|T|C| |i| | | | |2|5|L| |
 
 
@@ -45,7 +48,7 @@ Buttons:
 
 ## RTC
 ```
-Date: 11. 6. 2019
+Date: 2019-06-13
 Time: 23:14:11
 Day of the week: 2 - Tuesday
 Buttons:
@@ -55,5 +58,5 @@ Buttons:
 |     |0|1|2|3|4|5|6|7|8|9|A|B|C|D|E|F|
 |-----|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
 |__0__|c|a|R|T|C| |2| |2|3|:|1|4|:|1|1|
-|__1__|1|1|.|0|6|.|2|0|1|9| | | | | | |
+|__1__|2|0|1|9|-|0|6|-|1|3| | | | | | |
 

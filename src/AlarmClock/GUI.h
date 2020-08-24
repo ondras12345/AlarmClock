@@ -76,9 +76,9 @@ enum cursor_position_RTC
     cpr_time_h = 2,
     cpr_time_m = 3,
     cpr_time_s = 4,
-    cpr_date_d = 5,
+    cpr_date_y = 5,
     cpr_date_m = 6,
-    cpr_date_y = 7
+    cpr_date_d = 7
 };
 
 enum backlight_t
@@ -130,7 +130,7 @@ class GUI
           {0,1}, {3,1}, {6,1}, {9,1}, {12,1}, {14,1}, {15,1} },
 
         { {0,0}, {1,0}, {8,0}, {11,0}, {14,0},
-          {0,1}, {3,1}, {6,1} }
+          {0,1}, {5,1}, {8,1} }
      };
      bool cursor_clicked_ = false;
      bool change_ = false;  // for EEPROM write

@@ -4,7 +4,9 @@ on [Github][Github repo].
 
 
 # Date and time format
-All the dates and times are in the `dd.mm.yyyy hh:mm:ss` format.
+All dates and times follow the ISO8601 (`YYYY-MM-DD hh:mm:ss`) standard.
+However, due to limited screen space of the LCD, the main screen of the GUI
+needs to use the forbidden format with the year omitted (`MM-DD`).
 
 
 # Features

@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Alarm indexes in GUI now start from 0 instead of 1 (to be consistent with
   CLI).
 - Up to 16 alarms
+- Date and time format changed to ISO8601. WARNING: CLI commands changed.
 
 
 ## [0.3.1] - 2020-07-18

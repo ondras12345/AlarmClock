@@ -432,8 +432,8 @@ void GUI::update_()
     switch (current_screen_)
     {
     case screen_home:
-        sprintf(line_buffer_, "%02d.%02d %d %02d:%02d:%02d",
-                now_.day(), now_.month(),
+        sprintf(line_buffer_, "%02d-%02d %d %02d:%02d:%02d",
+                now_.month(), now_.day(),
                 now_.dayOfTheWeek() == 0 ? 7 : now_.dayOfTheWeek(),
                 now_.hour(), now_.minute(), now_.second());
         lcd_->print(line_buffer_);
@@ -504,8 +504,8 @@ void GUI::update_()
         lcd_->print(line_buffer_);
 
         lcd_->setCursor(0, 1);
-        sprintf(line_buffer_, "%02d.%02d.%04d      ",
-                RTC_set_.day(), RTC_set_.month(), RTC_set_.year());
+        sprintf(line_buffer_, "%04d-%02d-%02d      ",
+                RTC_set_.year(), RTC_set_.month(), RTC_set_.day());
         lcd_->print(line_buffer_);
     break;
 
