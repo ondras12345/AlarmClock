@@ -54,7 +54,7 @@ void SerialCLI::loop()
             // not happen when the character is CR/LF
             ser_.print(Serial_buffer_[Serial_buffer_index_]);
 
-            if (Serial_buffer_index_ < kSerial_buffer_length_ - 1)
+            if (Serial_buffer_index_ < kSerial_buffer_length_)
             {
                 Serial_buffer_index_++;
             }
