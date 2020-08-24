@@ -47,7 +47,7 @@ enum SelfTest_level
 #include "Alarm.h"
 //#include "CountdownTimer.h"  // # TODO implement CountdownTimer
 #include "PWMDimmer.h"
-#include "SerialCLI.h"
+#include "AlarmClockCLI.h"
 #include "GUI.h"
 #include "LCDchars.h"
 #include "HALbool.h"
@@ -79,8 +79,8 @@ HALbool lamp(lamp_set);
 HALbool permanent_backlight(set_backlight_permanent);
 BuzzerManager buzzer(pin_buzzer);
 DateTime now;
-SerialCLI CLI(Serial, alarms, writeEEPROM, &rtc, &ambientDimmer, &lamp,
-              set_inhibit, get_inhibit);
+AlarmClockCLI myCLI(Serial, alarms, &rtc, writeEEPROM, &ambientDimmer, &lamp,
+                    set_inhibit, get_inhibit);
 GUI myGUI(alarms, writeEEPROM, &rtc, &encoder,
           &buttons[button_index_encoder], &lcd, set_inhibit, get_inhibit,
           &ambientDimmer, &lamp);
@@ -157,7 +157,7 @@ void loop()
     }
 #endif
 
-    CLI.loop(now);
+    myCLI.loop(now);
     myGUI.loop(now);
     for (byte i = 0; i < alarms_count; i++) alarms[i].loop(now);
     //countdownTimer.loop();  // # TODO implement CountdownTimer

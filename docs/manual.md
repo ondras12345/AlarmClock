@@ -134,14 +134,15 @@ Individual commands (messages) must be terminated with CR or LF or both.
 For info about available commands, type `help`.
 
 ## Error codes
-When a command is executed, it prints an error code. If everything is ok,
-'err 0: OK' should be printed. If something fails, 'err {n}: {explanation}'
-is printed. The explanation always matches the error code, but error codes
-should be easier to decode in scripts.
+When a command is executed, it prints a hexadecimal error code.
+If everything is ok, 'err 0: OK' should be printed.
+If something fails, 'err {n}: {explanation}' is printed.
+The explanation matches the error code, but error codes should be easier to
+decode in scripts.
 
-Error code meanings can be found in `src/AlarmClock/Constants.h` (do not
-modify!), the #defines represent individual bits in the error code. (An error
-code can contain multiple errors.)
+Error code meanings can be found in `src\AlarmClock\AlarmClockCLI.h`,
+the constants in the enum represent individual bits in the error code.
+(An error code can contain multiple errors.)
 
 ## Autosave
 There is an autosave feature that saves the changes after long inactivity
