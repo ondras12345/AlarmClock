@@ -10,6 +10,7 @@
 #include "src/AlarmClock/HALbool.h"
 #include "src/AlarmClock/BuzzerManager.h"
 #include "src/AlarmClock/Alarm.h"
+#include "src/AlarmClock/PWMdimmer.h"
 
 class MockupBuzzerManager : public BuzzerManager
 {
@@ -17,7 +18,6 @@ public:
     MockupBuzzerManager() : BuzzerManager(255) { };
     bool get_status() const { return status_; };
     BuzzerTone get_tone() const { return tone_; };
-
 };
 
 class TestAlarm : public Alarm
@@ -27,6 +27,14 @@ public:
     bool test_get_snooze_status() { return snooze_status_; };
     bool test_get_ambient_status() { return ambient_status_; };
 };
+
+
+class MockupPWMDimmer : public PWMDimmer
+{
+public:
+    MockupPWMDimmer() : PWMDimmer(255) { };
+};
+
 
 extern HALbool lamp;
 extern MockupBuzzerManager buzzer;

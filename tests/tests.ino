@@ -3,8 +3,6 @@
 // Unit tests
 // https://github.com/bxparks/AUnit
 
-// WARNING: This uses pin_ambient as OUTPUT.
-// TODO fix
 
 #include <AUnit.h>
 
@@ -13,7 +11,6 @@
 #include "src/AlarmClock/Constants.h"
 #include "src/AlarmClock/Alarm.h"
 #include "src/AlarmClock/DaysOfWeek.h"
-#include "src/AlarmClock/PWMDimmer.h"
 
 #include "Alarm_mockups.h"
 #include <RTClib.h>
@@ -37,8 +34,7 @@ void loop()
 
 test(Alarm_trigger)
 {
-    pinMode(pin_ambient, OUTPUT);
-    PWMDimmer ambientDimmer(pin_ambient);
+    MockupPWMDimmer ambientDimmer;
 
     enum test {
         inhibit = 0,
@@ -168,8 +164,7 @@ test(Alarm_snooze)
 {
     TestAlarm alarm;
 
-    pinMode(pin_ambient, OUTPUT);
-    PWMDimmer ambientDimmer(pin_ambient);
+    MockupPWMDimmer ambientDimmer;
     alarm.SetHardware(&lamp, &ambientDimmer, &buzzer,
                       writeEEPROM, activation_callback, stop_callback);
 
@@ -203,8 +198,6 @@ test(Alarm_snooze)
 
 test(Alarm_ambient)
 {
-    pinMode(pin_ambient, OUTPUT);
-
     enum ambientTest {
         inhibit = 0,
         activate = 1,
@@ -216,7 +209,7 @@ test(Alarm_ambient)
 
     while (myTest != last)
     {
-        PWMDimmer ambientDimmer(pin_ambient);
+        MockupPWMDimmer ambientDimmer;
         TestAlarm alarm;  // needs to be here to reset prev_activation_millis
         alarm.SetHardware(&lamp, &ambientDimmer, &buzzer,
                           writeEEPROM, activation_callback, stop_callback);
@@ -323,8 +316,7 @@ test(Alarm_ambient)
 test(Alarm_EEPROM_read)
 {
     TestAlarm alarm;
-    pinMode(pin_ambient, OUTPUT);
-    PWMDimmer ambientDimmer(pin_ambient);
+    MockupPWMDimmer ambientDimmer;
     alarm.SetHardware(&lamp, &ambientDimmer, &buzzer,
                       writeEEPROM, activation_callback, stop_callback);
 
@@ -384,8 +376,7 @@ test(Alarm_EEPROM_read)
 test(Alarm_EEPROM_write)
 {
     TestAlarm alarm;
-    pinMode(pin_ambient, OUTPUT);
-    PWMDimmer ambientDimmer(pin_ambient);
+    MockupPWMDimmer ambientDimmer;
     alarm.SetHardware(&lamp, &ambientDimmer, &buzzer,
                       writeEEPROM, activation_callback, stop_callback);
 

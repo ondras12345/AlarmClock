@@ -6,7 +6,11 @@
 
 /*!
     @brief  Initialises the PWMDimmer object
-    @param pin a pin that supports PWM
+    @param pin  a pin that supports PWM.
+                This pin must be configured as OUTPUT before loop() is first
+                called.
+                If pin is set to 255, it is ignored and no hardware is
+                accessed. This is used for tests.
 */
 PWMDimmer::PWMDimmer(byte pin)
 {
@@ -87,6 +91,8 @@ void PWMDimmer::stop()
     active_ = false;
     stop_ = 0;  // get_remaining needs it to work correctly
     value_ = 0;
+
+    if (pin_ == 255) return; // tests
     digitalWrite(pin_, LOW);
 }
 
@@ -96,9 +102,15 @@ void PWMDimmer::loop()
 {
     if (active_ && ((unsigned long)(millis() - prev_change_millis_) >= interval_))
     {
+        prev_change_millis_ = millis();
+
         if ((step_ > 0 && value_ >= stop_) || (step_ < 0 && value_ <= stop_))
         {
             value_ = stop_;
+            active_ = false;
+
+
+            if (pin_ == 255) return; // tests
             analogWrite(pin_, value_);
 
             // <10 and >250 is necessary for the GUI, because it only displays
@@ -110,7 +122,6 @@ void PWMDimmer::loop()
             // 250 - 255 ... 25
             if (value_ < 10) digitalWrite(pin_, LOW);
             else if (value_ >= 250) digitalWrite(pin_, HIGH);
-            active_ = false;
         }
         else
         {
@@ -118,9 +129,8 @@ void PWMDimmer::loop()
             if (value_ > 255) value_ = 255;
             else if (value_ < 0) value_ = 0;
 
+            if (pin_ == 255) return; // tests
             analogWrite(pin_, value_);
         }
-
-        prev_change_millis_ = millis();
     }
 }
