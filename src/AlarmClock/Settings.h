@@ -40,7 +40,8 @@ DEBUG
 /*
 Alarms
 */
-// Number of configurable alarms. Must be <255
+// Number of configurable alarms. Must be <255 (byte).
+// Must be <=16 because of the GUI.
 // default: 6
 #define alarms_count 6
 

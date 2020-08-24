@@ -5,7 +5,6 @@
 
 Days of week in GUI and EEPROM: 1=Monday
 
-# TODO implement watchdog - external or internal (bootloader problems - flash optiboot)
 
 Code directives:
  - try to follow https://google.github.io/styleguide/cppguide.html

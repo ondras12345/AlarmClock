@@ -5,7 +5,7 @@ Arduino alarm clock using a DS3231 RTC and a LCD
 
 
 # Features
-- configurable number (default 5, max 9) of
+- configurable number (default 6, max 16) of
   [configurable](./docs/manual.md#Alarms) alarms
 - snooze feature with configurable time and count
 - a different [ringing](./docs/manual.md#Ringing) tone when snooze cannot be

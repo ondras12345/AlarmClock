@@ -477,8 +477,8 @@ void GUI::update_()
             break;
         }
 
-        sprintf(line_buffer_, "%c%d/%d %s %s",
-                char(LCD_char_home_index), sel_alarm_index_ + 1, alarms_count,
+        sprintf(line_buffer_, "%c%X/%X %s %s",
+                char(LCD_char_home_index), sel_alarm_index_, alarms_count - 1,
                 days_of_week, enabled );
         lcd_->print(line_buffer_);
 

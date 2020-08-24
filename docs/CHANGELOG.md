@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `dis` command in CLI changed to `en-off` for consistency
   WARNING: breaking API change
 - CLI command recognition optimized
+- Alarm indexes in GUI now start from 0 instead of 1 (to be consistent with
+  CLI).
+- Up to 16 alarms
 
 
 ## [0.3.1] - 2020-07-18
