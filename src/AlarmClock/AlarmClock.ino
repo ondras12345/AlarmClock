@@ -166,16 +166,16 @@ void loop()
     for (byte i = 0; i < button_count; i++) buttons[i].update();
     if (buttons[button_index_snooze].fell())
     {
-        if(myGUI.get_backlight() != off)
+        if(myGUI.get_backlight() != GUI::off)
         {
             for (byte i = 0; i < alarms_count; i++) alarms[i].ButtonSnooze();
             DEBUG_println(F("snooze pressed"));
         }
-        else myGUI.set_backlight(on);
+        else myGUI.set_backlight(GUI::on);
     }
     if (buttons[button_index_stop].fell())
     {
-        if(myGUI.get_backlight() == off) myGUI.set_backlight(on);
+        if(myGUI.get_backlight() == GUI::off) myGUI.set_backlight(GUI::on);
         for (byte i = 0; i < alarms_count; i++) alarms[i].ButtonStop();
         countdown_timer.ButtonStop();
         DEBUG_println(F("stop pressed"));
@@ -389,6 +389,6 @@ bool get_inhibit() { return inhibit; }
 
 void set_backlight_permanent(bool s)
 {
-    if (s) myGUI.set_backlight(permanent);
-    else myGUI.set_backlight(on);  // disable permanent backlight
+    if (s) myGUI.set_backlight(GUI::permanent);
+    else myGUI.set_backlight(GUI::on);  // disable permanent backlight
 }
