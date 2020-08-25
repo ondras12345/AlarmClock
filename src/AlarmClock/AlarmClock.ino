@@ -79,7 +79,7 @@ BuzzerManager buzzer(pin_buzzer);
 DateTime now;
 CountdownTimer countdown_timer(ambientDimmer, lamp, buzzer);
 AlarmClockCLI myCLI(Serial, alarms, &rtc, writeEEPROM, &ambientDimmer, &lamp,
-                    set_inhibit, get_inhibit);
+                    &countdown_timer, set_inhibit, get_inhibit);
 GUI myGUI(alarms, writeEEPROM, rtc, encoder,
           buttons[button_index_encoder], lcd, set_inhibit, get_inhibit,
           ambientDimmer, lamp, countdown_timer);

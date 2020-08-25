@@ -2,6 +2,7 @@
     @file
 */
 #include "AlarmClockCLI.h"
+#include <RTClib.h>
 
 // Assigned in the constructor:
 Stream* AlarmClockCLI::ser_;
@@ -11,6 +12,7 @@ RTC_DS3231* AlarmClockCLI::rtc_;
 void(*AlarmClockCLI::writeEEPROM_)();
 PWMDimmer* AlarmClockCLI::ambientDimmer_;
 HALbool* AlarmClockCLI::lamp_;
+CountdownTimer* AlarmClockCLI::timer_;
 void(*AlarmClockCLI::set_inhibit_)(bool);
 bool(*AlarmClockCLI::get_inhibit_)();
 
@@ -32,6 +34,9 @@ const SerialCLI::command_t AlarmClockCLI::commands[] = {
     {"dow",     &AlarmClockCLI::cmd_dow_},
     {"snz",     &AlarmClockCLI::cmd_snz_},
     {"sig",     &AlarmClockCLI::cmd_sig_},
+    // tmr needs to be above st because of tmr-start
+    {"tmr",     &AlarmClockCLI::cmd_tmr_},
+    {"tme",     &AlarmClockCLI::cmd_tme_},
     {"st",      &AlarmClockCLI::cmd_st_},
     {"sd",      &AlarmClockCLI::cmd_sd_},
     {"sav",     &AlarmClockCLI::cmd_sav_},
@@ -191,6 +196,18 @@ void AlarmClockCLI::cmd_not_found()
     ser_->println(F("sd{YYYY-MM-DD} - set RTC date"));
     indent_(2);
     ser_->println(F("st{hh:mm[:ss]} - set RTC time"));
+    indent_(1);
+    ser_->println(F("Timer:"));
+    indent_(2);
+    ser_->println(F("tmr - get timer time"));
+    indent_(2);
+    ser_->println(F("tmr{hh:mm:ss} - set timer time"));
+    indent_(2);
+    ser_->println(F("tme - get timer events"));
+    indent_(2);
+    ser_->println(F("tme{a};{l};{b} - set timer events"));
+    indent_(2);
+    ser_->println(F("tmr-start/tmr-stop"));
 }
 
 
@@ -419,6 +436,87 @@ SerialCLI::error_t AlarmClockCLI::cmd_st_(char *time)
 
     now_ = rtc_->now();
     rtc_->adjust(DateTime(now_.year(), now_.month(), now_.day(), hour, minute, second));
+    return 0;
+}
+
+
+SerialCLI::error_t AlarmClockCLI::cmd_tmr_(char *time)
+{
+    if (!strcmp(time, "tmr-start"))
+    {
+        timer_->start();
+        return 0;
+    }
+
+    if (!strcmp(time, "tmr-stop"))
+    {
+        timer_->stop();
+        return 0;
+    }
+
+    time = find_next_digit_(time);
+    if (*time == '\0')
+    {
+        TimeSpan time_left(timer_->time_left);
+        char buff[8 + 1];
+        sprintf(buff, "%02d:%02d:%02d",
+                time_left.hours(), time_left.minutes(), time_left.seconds());
+        ser_->println(buff);
+        return 0;
+    }
+
+    byte hours, minutes, seconds;
+    hours = strbyte_(time);
+    time = find_next_digit_(time);
+    if (*time == '\0') return kArgument;
+    minutes = strbyte_(time);
+    time = find_next_digit_(time);
+    if (*time == '\0') return kArgument;
+    seconds = strbyte_(time);
+
+    // unsigned int timer_->time_left overflows:
+    // 18:12:15 + 1 = 00:00:00
+    if (hours > 18 || minutes > 59 || seconds > 59) return kArgument;
+
+    if (hours > 1)
+    {
+        // check for overflows:
+        unsigned int tmp = (hours - 1) * 3600U + minutes * 60U + seconds;
+        if (65535U - tmp < 3600U) return kArgument;
+        timer_->time_left = tmp + 3600;
+    }
+    else timer_->time_left = hours * 3600U + minutes * 60U + seconds;
+
+    return 0;
+}
+
+
+SerialCLI::error_t AlarmClockCLI::cmd_tme_(char *events)
+{
+
+    byte ambient;
+    bool lamp, buzzer;
+
+    events = find_next_digit_(events);
+    if (*events == '\0')
+    {
+        ser_->print(timer_->events.ambient);
+        ser_->print(';');
+        ser_->print(timer_->events.lamp ? 1 : 0);
+        ser_->print(';');
+        ser_->println(timer_->events.buzzer ? 1 : 0);
+        return 0;
+    }
+
+    ambient = strbyte_(events);
+    events = find_next_digit_(events);
+    if (*events == '\0') return kArgument;
+    lamp = strbyte_(events);
+    events = find_next_digit_(events);
+    if (*events == '\0') return kArgument;
+    buzzer = strbyte_(events);
+
+    timer_->events = {ambient, lamp, buzzer};
     return 0;
 }
 

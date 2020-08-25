@@ -17,6 +17,7 @@
 #include "Alarm.h"
 #include "PWMDimmer.h"
 #include "HALbool.h"
+#include "CountdownTimer.h"
 
 
 /*!
@@ -40,6 +41,7 @@ public:
                             the EEPROM.
         @param ambientDimmer    Pointer to the ambientDimmer object.
         @param lamp     Pointer to the lamp object.
+        @param timer    Pointer to the timer object.
         @param set_inhibit  Pointer to a function that sets the status of the
                             inhibit function.
         @param get_inhibit  Pointer to a function that gets the status of the
@@ -48,6 +50,7 @@ public:
     AlarmClockCLI(Stream& ser,
                   Alarm* alarms, RTC_DS3231* rtc, void(*writeEEPROM)(),
                   PWMDimmer* ambientDimmer, HALbool* lamp,
+                  CountdownTimer* timer,
                   void(*set_inhibit)(bool), bool(*get_inhibit)()
                  ) : CLI_(ser, commands, command_count, print_error,
                           cmd_not_found, prompt_)
@@ -58,6 +61,7 @@ public:
         writeEEPROM_ = writeEEPROM;
         ambientDimmer_ = ambientDimmer;
         lamp_ = lamp;
+        timer_ = timer;
         set_inhibit_ = set_inhibit;
         get_inhibit_ = get_inhibit;
 
@@ -97,6 +101,7 @@ protected:
     static void(*writeEEPROM_)();
     static PWMDimmer* ambientDimmer_;
     static HALbool* lamp_;
+    static CountdownTimer* timer_;
     static void(*set_inhibit_)(bool);
     static bool(*get_inhibit_)();
 
@@ -131,6 +136,8 @@ protected:
     static SerialCLI::error_t cmd_sig_(char *sig);
     static SerialCLI::error_t cmd_st_(char *time);
     static SerialCLI::error_t cmd_sd_(char *date);
+    static SerialCLI::error_t cmd_tmr_(char *time);
+    static SerialCLI::error_t cmd_tme_(char *events);
     static SerialCLI::error_t cmd_sav_(char *ignored);
     static SerialCLI::error_t cmd_rtc_(char *ignored);
     static SerialCLI::error_t cmd_ls_(char *ignored);

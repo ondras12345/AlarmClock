@@ -82,6 +82,8 @@ current time have changed since the last update), so it may seem imprecise,
 but this only causes a few hundred milliseconds of error at most, which should
 be negligible compared to the timed timespan.
 
+The maximum time the timer can be set to is 18:12:15.
+
 
 # Configuration
 ## Compile-time
