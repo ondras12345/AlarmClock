@@ -82,7 +82,7 @@ AlarmClockCLI myCLI(Serial, alarms, &rtc, writeEEPROM, &ambientDimmer, &lamp,
                     set_inhibit, get_inhibit);
 GUI myGUI(alarms, writeEEPROM, rtc, encoder,
           buttons[button_index_encoder], lcd, set_inhibit, get_inhibit,
-          ambientDimmer, lamp);
+          ambientDimmer, lamp, countdown_timer);
 
 
 unsigned long loop_rtc_prev_millis = 0;

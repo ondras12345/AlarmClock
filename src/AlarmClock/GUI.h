@@ -16,9 +16,11 @@
 #include "Alarm.h"
 #include "PWMDimmer.h"
 #include "HALbool.h"
+#include "CountdownTimer.h"
 #include <Encoder.h>
 #include <Bounce2.h>
 #include <LiquidCrystal_I2C.h>
+#include <RTClib.h>
 
 
 /*!
@@ -43,8 +45,8 @@ public:
         Encoder& encoder, Bounce& encoder_button,
         LiquidCrystal_I2C& lcd,
         void(&set_inhibit)(bool), bool(&get_inhibit)(),
-        PWMDimmer& ambientDimmer, HALbool& lamp
-        ):                     alarms_(alarms),
+        PWMDimmer& ambientDimmer, HALbool& lamp,
+        CountdownTimer& timer): alarms_(alarms),
                                writeEEPROM_(writeEEPROM),
                                rtc_(rtc),
                                encoder_(encoder),
@@ -53,7 +55,8 @@ public:
                                set_inhibit_(set_inhibit),
                                get_inhibit_(get_inhibit),
                                ambientDimmer_(ambientDimmer),
-                               lamp_(lamp)
+                               lamp_(lamp),
+                               timer_(timer)
    {
        // First alarm.
        // I can't initialize it in the definition because the compiler doesn't
@@ -69,10 +72,11 @@ protected:
     {
         screen_home = 0,
         screen_alarms = 1,
-        screen_RTC = 2
+        screen_timer = 2,
+        screen_RTC = 3
         //screen_LAST  // Must be the last item in the enum. Not needed yet.
     };
-#define Screens_count 3
+#define Screens_count 4
 
     struct cursor_position_t
     {
@@ -83,10 +87,11 @@ protected:
     enum cursor_position_home
     {
         cph_alarms_button = 0,
-        cph_RTC_button = 1,
-        cph_inhibit_button = 2,
-        cph_ambient = 3,
-        cph_lamp = 4
+        cph_timer_button = 1,
+        cph_RTC_button = 2,
+        cph_inhibit_button = 3,
+        cph_ambient = 4,
+        cph_lamp = 5
     };
 
     enum cursor_position_alarms
@@ -112,6 +117,18 @@ protected:
         cpa_alarm_sig_b = 16
     };
 
+    enum cursor_position_timer
+    {
+        cpt_home_button = 0,
+        cpt_start_stop_button = 1,
+        cpt_hh = 2,
+        cpt_mm= 3,
+        cpt_ss= 4,
+        cpt_sig_a = 5,
+        cpt_sig_l = 6,
+        cpt_sig_b = 7
+    };
+
     enum cursor_position_RTC
     {
         cpr_cancel_button = 0,
@@ -135,6 +152,7 @@ protected:
     bool(&get_inhibit_)();
     PWMDimmer& ambientDimmer_;
     HALbool& lamp_;
+    CountdownTimer& timer_;
 
     DateTime now_;
 
@@ -150,7 +168,7 @@ protected:
     //! lines instead of multiple pieces.
     char line_buffer_[LCD_width + 1];  // +1 for null termination
 
-    const byte selectables_count_[Screens_count] = { 5, 17, 8 };
+    const byte selectables_count_[Screens_count] = { 6, 17, 8, 8 };
     static constexpr byte selectables_count_max = 17;
 
     byte cursor_position_ = 0;
@@ -158,10 +176,13 @@ protected:
     //! This array translates current_screen_ and cursor_position_ to
     //! the display's coordinates
     const cursor_position_t cursor_positions_[Screens_count][selectables_count_max] = {
-       { {0,1}, {3,1}, {7,1}, {12,1}, {14,1} },
+       { {0,1}, {1,1}, {3,1}, {7,1}, {12,1}, {14,1} },
 
        { {0,0}, {1,0}, {5,0}, {6,0}, {7,0}, {8,0}, {9,0}, {10,0}, {11,0}, {13,0},
          {0,1}, {3,1}, {6,1}, {9,1}, {12,1}, {14,1}, {15,1} },
+
+       {
+         {0,1}, {1,1}, {3,1}, {6,1}, {9,1}, {12,1}, {14,1}, {15,1} },
 
        { {0,0}, {1,0}, {8,0}, {11,0}, {14,0},
          {0,1}, {5,1}, {8,1} }

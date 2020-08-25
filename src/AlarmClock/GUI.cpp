@@ -70,6 +70,10 @@ void GUI::loop(DateTime time)
                             switch_screen_(screen_alarms);
                             break;
 
+                        case cph_timer_button:
+                            switch_screen_(screen_timer);
+                            break;
+
                         case cph_RTC_button:
                             switch_screen_(screen_RTC);
                             RTC_set_ = now_;
@@ -146,6 +150,33 @@ void GUI::loop(DateTime time)
                             break;
                         }
                     }
+                        break;
+
+
+                    case screen_timer:
+                        switch (cursor_position_)
+                        {
+                        case cpt_home_button:
+                            switch_screen_(screen_home);
+                            break;
+
+                        case cpt_start_stop_button:
+                            if (timer_.get_running()) timer_.stop();
+                            else timer_.start();
+                            break;
+
+                        case cpt_sig_l:
+                            timer_.events.lamp = !timer_.events.lamp;
+                            break;
+
+                        case cpt_sig_b:
+                            timer_.events.buzzer = !timer_.events.buzzer;
+                            break;
+
+                        default:
+                            cursor_clicked_ = true;
+                            break;
+                        }
                         break;
 
 
@@ -289,6 +320,29 @@ void GUI::loop(DateTime time)
 
                         }
                         break;
+
+
+                    case screen_timer:
+                        switch (cursor_position_)
+                        {
+                        case cpt_hh:
+                            timer_.time_left += encoder_full_steps * 3600;
+                            break;
+
+                        case cpt_mm:
+                            timer_.time_left += encoder_full_steps * 60;
+                            break;
+
+                        case cpt_ss:
+                            timer_.time_left += encoder_full_steps;
+                            break;
+
+                        case cpt_sig_a:
+                            timer_.events.ambient = apply_limits_(timer_.events.ambient,
+                                encoder_full_steps * 10, 0, 255, encoder_loop_ambient);
+                            break;
+                        }
+                    break;
 
 
                     case screen_RTC:
@@ -438,8 +492,8 @@ void GUI::update_()
                 now_.hour(), now_.minute(), now_.second());
         lcd_.print(line_buffer_);
         lcd_.setCursor(0, 1);
-        sprintf(line_buffer_, "%c  RTC %c    %02d%c ",
-                LCD_char_bell_index,
+        sprintf(line_buffer_, "%c%c RTC %c    %02d%c ",
+                LCD_char_bell_index, LCD_char_timer_index,
                 get_inhibit_() ? 'I' : 'i',
                 ambientDimmer_.get_stop() / 10,
                 lamp_.get() ? 'L' : 'l');
@@ -496,6 +550,26 @@ void GUI::update_()
         lcd_.print(line_buffer_);
     }
         break;
+
+
+    case screen_timer:
+        strcpy(line_buffer_, "     Timer      ");
+        lcd_.print(line_buffer_);
+
+        lcd_.setCursor(0, 1);
+        {
+        TimeSpan time_left(timer_.time_left);
+        sprintf(line_buffer_, "%c%c %02d:%02d:%02d %02d%c%c",
+                LCD_char_home_index, LCD_char_timer_index,
+                time_left.hours(),
+                time_left.minutes(),
+                time_left.seconds(),
+                timer_.events.ambient / 10,
+                timer_.events.lamp ? 'L' : 'l',
+                timer_.events.buzzer ? 'B' : 'b' );
+        }
+        lcd_.print(line_buffer_);
+    break;
 
 
     case screen_RTC:

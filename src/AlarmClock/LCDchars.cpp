@@ -27,13 +27,13 @@ byte LCD_char_bell[] = {
 
 byte LCD_char_timer[] = {
     B11111,
-    B11111,
     B01110,
     B00100,
     B00100,
     B01110,
     B11111,
-    B11111 };
+    B00000,
+    B00000 };
 
 byte LCD_char_apply[] = {
     B00000,
