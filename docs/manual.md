@@ -66,6 +66,23 @@ An output pin that can be used to control a lamp. It can be controlled from
 the GUI (home screen), the CLI and by the alarms.
 
 
+## Countdown timer
+A timer that counts down and then does some events.
+It can be configured trough the CLI or from the GUI.
+
+It can operate in two modes:
+- If the timed events do not contain buzzer, it just does the events and
+  stops. The stop button does nothing, and the only way to revert the changes
+  is to use manual control - CLI or GUI.
+- If the timed events do contain buzzer, the stop button stops the ringing and
+  turns everything else off.
+
+Note: the remaining time updates each 700ms (only if the seconds in the
+current time have changed since the last update), so it may seem imprecise,
+but this only causes a few hundred milliseconds of error at most, which should
+be negligible compared to the timed timespan.
+
+
 # Configuration
 ## Compile-time
 Edit `src/AlarmClock/Settings.h`.  

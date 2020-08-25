@@ -44,7 +44,7 @@ enum SelfTest_level
 #include <Bounce2.h>
 #include <Encoder.h>
 #include "Alarm.h"
-//#include "CountdownTimer.h"  // # TODO implement CountdownTimer
+#include "CountdownTimer.h"
 #include "PWMDimmer.h"
 #include "AlarmClockCLI.h"
 #include "GUI.h"
@@ -72,12 +72,12 @@ RTC_DS3231 rtc; // DS3231
 Bounce buttons[button_count];
 Encoder encoder(pin_encoder_clk, pin_encoder_dt);
 Alarm alarms[alarms_count];
-//CountdownTimer countdownTimer;  // # TODO implement CountdownTimer
 PWMDimmer ambientDimmer(pin_ambient);
 HALbool lamp(lamp_set);
 HALbool permanent_backlight(set_backlight_permanent);
 BuzzerManager buzzer(pin_buzzer);
 DateTime now;
+CountdownTimer countdown_timer(ambientDimmer, lamp, buzzer);
 AlarmClockCLI myCLI(Serial, alarms, &rtc, writeEEPROM, &ambientDimmer, &lamp,
                     set_inhibit, get_inhibit);
 GUI myGUI(alarms, writeEEPROM, &rtc, &encoder,
@@ -159,7 +159,7 @@ void loop()
     myCLI.loop(now);
     myGUI.loop(now);
     for (byte i = 0; i < alarms_count; i++) alarms[i].loop(now);
-    //countdownTimer.loop();  // # TODO implement CountdownTimer
+    countdown_timer.loop(now);
     ambientDimmer.loop();
 
     // buttons
@@ -177,6 +177,7 @@ void loop()
     {
         if(myGUI.get_backlight() == off) myGUI.set_backlight(on);
         for (byte i = 0; i < alarms_count; i++) alarms[i].ButtonStop();
+        countdown_timer.ButtonStop();
         DEBUG_println(F("stop pressed"));
     }
     if (inhibit && (unsigned long)(millis() - inhibit_prev_millis) >= Alarm_inhibit_duration)
@@ -190,12 +191,6 @@ void init_hardware()
     for (byte i = 0; i < alarms_count; i++)
         alarms[i].SetHardware(&lamp, &ambientDimmer, &buzzer, writeEEPROM,
                                alarm_activation_callback, alarm_stop_callback);
-
-    // # TODO implement CountdownTimer
-    // WARNING: ambient implementation changed.
-    // WARNING: lamp implementation changed.
-    // WARNING: buzzer implementation changed.
-    //countdownTimer.set_hardware(lamp, ambient, buzzerTone, buzzerNoTone);
 }
 
 
@@ -290,7 +285,6 @@ void factory_reset()
 {
     Serial.println(F("Factory reset"));
     for (byte i = 0; i < alarms_count; i++) alarms[i] = Alarm();
-    //countdownTimer = CountdownTimer();  // # TODO implement CountdownTimer
 
     writeEEPROM();
 }

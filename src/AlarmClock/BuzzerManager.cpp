@@ -57,10 +57,18 @@ void BuzzerManager::set_ringing(BuzzerTone tone)
     }
 
     on_count_++;
-    period_ = (tone_ == ringing_regular) ?
-        Alarm_regular_ringing_period : Alarm_last_ringing_period;
-    freq_ = (tone_ == ringing_regular) ?
-        Alarm_regular_ringing_freq : Alarm_last_ringing_freq;
+    if (tone_ == ringing_timer)
+    {
+        period_ = Timer_ringing_period;
+        freq_ = Timer_ringing_freq;
+    }
+    else
+    {
+        period_ = (tone_ == ringing_regular) ?
+            Alarm_regular_ringing_period : Alarm_last_ringing_period;
+        freq_ = (tone_ == ringing_regular) ?
+            Alarm_regular_ringing_freq : Alarm_last_ringing_freq;
+    }
 
     set_buzzer(true);
 }

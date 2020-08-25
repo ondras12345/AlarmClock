@@ -1,57 +1,67 @@
+/*!
+    @file
+*/
+
 #include "CountdownTimer.h"
 
+//! Starts the timer.
 void CountdownTimer::start()
 {
-    prev_millis = millis();
-    running = true;
+    if (time_left == 0) return;
+    prev_seconds_ = 61; // time_left will decrement immediately.
+    running_ = true;
 }
 
+
+/*!
+    @brief  Used to stop the timer BEFORE it ends.
+*/
 void CountdownTimer::stop()
 {
-    running = false;
-    beeping = false;
-    buzzerNoTone();
+    running_ = false;
 }
 
-void CountdownTimer::loop()
+
+/*!
+    @brief  Stop a ringing timer - set everything to off.
+            This only works if the timer enabled the buzzer,
+            otherwise nothing happens.
+    @see    documentation of CountdownTimer.
+*/
+void CountdownTimer::ButtonStop()
 {
-    if ((unsigned long)(millis() - prev_millis) >= 1000 && time_left > 0)
+    if (!ringing_) return;
+
+    ringing_ = false;
+    ambient_.set_from_duration(ambient_.get_value(), 0,
+            Timer_ambient_fade_out_duration);
+    ambient_.start();
+    lamp_.set_manu(false);
+    buzzer_.set_ringing(ringing_off);
+}
+
+
+//! Call this function in your loop().
+void CountdownTimer::loop(const DateTime& now)
+{
+    if (!running_) return;
+    if (now.second() != prev_seconds_)
     {
+        prev_seconds_ = now.second();
         time_left--; // subtract 1 second
         if (time_left == 0)
         {
+            running_ = false;
             // Do events - can either switch on or off
-            if(events.ambient == 0) ambient(255, events.ambient, 60000); // turn off, 1 minute
-            else ambient(0, events.ambient, 600000); // turn on, 10 minutes
-            lamp(events.lamp);
-            beeping = false;
-        }
-        else prev_millis += 1000;
-    }
-
-    // buzzer
-    if (time_left == 0 && running && events.buzzer)
-    {
-        if ((unsigned long)(millis() - prev_millis) >= CountdownTimer_period)
-        {
-            if (beeping) buzzerNoTone();
-            else buzzerTone(CountdownTimer_freq, 0);
-            beeping = !beeping;
-            prev_millis = millis();
+            ambient_.set_from_duration(ambient_.get_value(),
+                    events.ambient, Timer_ambient_dimming_duration);
+            ambient_.start();
+            lamp_.set_manu(events.lamp);
+            if (events.buzzer)
+            {
+                ringing_ = true;
+                buzzer_.set_ringing(ringing_timer);
+            }
         }
     }
-}
-
-void CountdownTimer::set_hardware(void(*lamp_)(bool), void(*ambient_)(byte, byte, unsigned long), void(*buzzerTone_)(unsigned int, unsigned long), void(*buzzerNoTone_)())
-{
-    lamp = lamp_;
-    ambient = ambient_;
-    buzzerTone = buzzerTone_;
-    buzzerNoTone = buzzerNoTone_;
-}
-
-CountdownTimer::CountdownTimer()
-{
-    running = false;
-    beeping = false;
 }

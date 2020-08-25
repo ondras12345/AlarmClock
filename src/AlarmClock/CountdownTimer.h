@@ -1,5 +1,6 @@
-// This file is out-of-date and most likely doesn't work with the rest of the
-// code. TODO fix
+/*!
+    @file
+*/
 
 #ifndef COUNTDOWNTIMER_H
 #define COUNTDOWNTIMER_H
@@ -10,42 +11,68 @@
 #include "WProgram.h"
 #endif
 
-#define CountdownTimer_freq 3000 // in Hz
-#define CountdownTimer_period 1000 // in ms
+#include "Settings.h"
+#include "BuzzerManager.h"
+#include "HALbool.h"
+#include "PWMDimmer.h"
+#include <RTClib.h>
 
-struct TimedEvents
-{
-    // the status after the timer times out - timers can be used for both turning off and on
-    byte ambient;
-    bool lamp;
-    bool buzzer;
-};
 
+
+/*!
+    @brief  A timer that counts down and then does some events.
+
+    It can operate in two modes:
+    - If the timed events do not contain buzzer, it just does the events
+      and stops. buttons_stop does nothing, and the only way to revert the
+      changes is to use manual control outside of this class.
+
+    - If the timed events do contain buzzer, button_stop stops the ringing and
+      turns everything else off.
+*/
 class CountdownTimer
 {
-protected:
-    void(*lamp)(bool);
-    void(*ambient)(byte, byte, unsigned long);
-    void(*buzzerTone)(unsigned int, unsigned long); // freq, duration
-    void(*buzzerNoTone)();
-
 public:
-    unsigned long prev_millis;
-    unsigned int time_left; // in seconds - max >18 hours
-    bool running;
-    bool beeping;
+    /*!
+        @brief  The status after the timer times out.
+                Timers can be used for both turning stuff off and on.
+                For lamp, this works the same way as manual control.
+                Buzzer can only be turned on.
+    */
+    struct TimedEvents
+    {
+        byte ambient;
+        bool lamp;
+        bool buzzer;
+    };
 
-    TimedEvents events;
     void start();
     void stop();
-    void loop();
+    void ButtonStop();
+    bool get_running() const { return running_; };
+    void loop(const DateTime& now);
 
-    void set_hardware(void(*lamp_)(bool), void(*ambient_)(byte, byte, unsigned long), void(*buzzerTone_)(unsigned int, unsigned long), void(*buzzerNoTone_)());
+    /*!
+        @brief  The remaining time in seconds.
+    */
+    unsigned int time_left = 0;
 
-    CountdownTimer();
+    //! The actions the timer should execute when done.
+    TimedEvents events = { 0, 0, 0 };
 
+    CountdownTimer(PWMDimmer& ambient, HALbool& lamp, BuzzerManager& buzzer) :
+        ambient_(ambient), lamp_(lamp), buzzer_(buzzer) { };
+
+
+protected:
+    byte prev_seconds_;
+    bool running_ = false;
+    bool ringing_ = false;
+
+    PWMDimmer& ambient_;
+    HALbool& lamp_;
+    BuzzerManager& buzzer_;
 };
 
 
 #endif
-

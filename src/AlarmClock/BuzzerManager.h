@@ -23,8 +23,9 @@ enum BuzzerTone
 {
     ringing_off = 0,
     // Numbers between 0 and 100 are reserved for melodies.
-    ringing_regular = 100,
-    ringing_last = 101
+    ringing_timer = 100,
+    ringing_regular = 101,
+    ringing_last = 102
 };
 
 
