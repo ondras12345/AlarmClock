@@ -24,10 +24,8 @@ void GUI::set_backlight(backlight_t status)
 }
 
 
-void GUI::loop(DateTime time)
+void GUI::loop(const DateTime& now)
 {
-    now_ = time;
-
     /*
     LCD Backlight
     */
@@ -87,7 +85,7 @@ void GUI::loop(DateTime time)
 
                         case cph_RTC_button:
                             switch_screen_(screen_RTC);
-                            RTC_set_ = now_;
+                            RTC_set_ = now;
                             break;
 
                         case cph_inhibit_button:
@@ -218,7 +216,7 @@ void GUI::loop(DateTime time)
                 Serial.println(cursor_clicked_);
 #endif
 
-                update_();
+                update_(now);
             }
 
 
@@ -436,7 +434,7 @@ void GUI::loop(DateTime time)
                     //Serial.println(current_screen_);
 #endif
                 }
-                update_();
+                update_(now);
             }
         }
     }
@@ -450,10 +448,10 @@ void GUI::loop(DateTime time)
 
     if ((unsigned long)(millis() - update_prev_millis_) >=
         GUI_update_interval &&
-        now_.second() % 10 == 0)
+        now.second() % 10 == 0)
     {
         update_prev_millis_ = millis();
-        update_();
+        update_(now);
     }
 }
 
@@ -489,7 +487,7 @@ void GUI::switch_screen_(Screen screen)
     encoder_.write(0);
 }
 
-void GUI::update_()
+void GUI::update_(const DateTime& now)
 {
     lcd_.noCursor();
     lcd_.noBlink();
@@ -498,9 +496,9 @@ void GUI::update_()
     {
     case screen_home:
         sprintf_P(line_buffer_, PSTR("%02d-%02d %d %02d:%02d:%02d"),
-                  now_.month(), now_.day(),
-                  now_.dayOfTheWeek() == 0 ? 7 : now_.dayOfTheWeek(),
-                  now_.hour(), now_.minute(), now_.second());
+                  now.month(), now.day(),
+                  now.dayOfTheWeek() == 0 ? 7 : now.dayOfTheWeek(),
+                  now.hour(), now.minute(), now.second());
         lcd_.print(line_buffer_);
         lcd_.setCursor(0, 1);
         sprintf_P(line_buffer_, PSTR("%c%c RTC %c    %02d%c "),

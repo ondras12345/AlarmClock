@@ -40,7 +40,7 @@ public:
 
     void set_backlight(backlight_t status);
     backlight_t get_backlight() const { return backlight_; };
-    void loop(DateTime time);
+    void loop(const DateTime& time);
     GUI(Alarm* alarms, void(&writeEEPROM)(), RTC_DS3231& rtc,
         Encoder& encoder, Bounce& encoder_button,
         LiquidCrystal_I2C& lcd,
@@ -152,8 +152,6 @@ protected:
     HALbool& lamp_;
     CountdownTimer& timer_;
 
-    DateTime now_;
-
     byte sel_alarm_index_ = 0;
     Alarm* sel_alarm_;  //!< set when switching alarms
     Screen current_screen_ = screen_home;
@@ -221,7 +219,7 @@ protected:
     //! This does not handle setting variables such as RTC_set_time_
     void switch_screen_(Screen screen);
 
-    void update_();
+    void update_(const DateTime& now);
 };
 
 #endif

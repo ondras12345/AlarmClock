@@ -29,7 +29,7 @@ class AlarmClockCLI
 {
 public:
     //! call me in your loop()
-    void loop(DateTime now);
+    void loop(const DateTime& now);
 
 
     /*!

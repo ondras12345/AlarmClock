@@ -54,7 +54,7 @@ const char* AlarmClockCLI::error_strings[] = {
 };
 
 
-void AlarmClockCLI::loop(DateTime now)
+void AlarmClockCLI::loop(const DateTime& now)
 {
     now_ = now;
     CLI_.loop();
