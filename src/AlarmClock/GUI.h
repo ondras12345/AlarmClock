@@ -67,7 +67,6 @@ public:
 
 protected:
     //! Must be contiguous
-    //! Don't forget to update Screens_count when changing
     enum Screen
     {
         screen_home = 0,
@@ -76,7 +75,6 @@ protected:
         screen_RTC = 3
         //screen_LAST  // Must be the last item in the enum. Not needed yet.
     };
-#define Screens_count 4
 
     struct cursor_position_t
     {
@@ -168,25 +166,47 @@ protected:
     //! lines instead of multiple pieces.
     char line_buffer_[LCD_width + 1];  // +1 for null termination
 
-    const byte selectables_count_[Screens_count] = { 6, 17, 8, 8 };
-    static constexpr byte selectables_count_max = 17;
-
     byte cursor_position_ = 0;
+
+    static constexpr cursor_position_t curspos_home[] = {
+        // the first line is empty
+        {0,1}, {1,1}, {3,1}, {7,1}, {12,1}, {14,1}
+    };
+
+    static constexpr cursor_position_t curspos_alarms[] = {
+        {0,0}, {1,0}, {5,0}, {6,0}, {7,0}, {8,0}, {9,0}, {10,0}, {11,0}, {13,0},
+        {0,1}, {3,1}, {6,1}, {9,1}, {12,1}, {14,1}, {15,1}
+    };
+
+    static constexpr cursor_position_t curspos_timer[] = {
+        // the first line is empty
+        {0,1}, {1,1}, {3,1}, {6,1}, {9,1}, {12,1}, {14,1}, {15,1}
+    };
+
+    static constexpr cursor_position_t curspos_RTC[] = {
+        {0,0}, {1,0}, {8,0}, {11,0}, {14,0},
+        {0,1}, {5,1}, {8,1}
+    };
+
     //! current_screen_, cursor_position_
     //! This array translates current_screen_ and cursor_position_ to
     //! the display's coordinates
-    const cursor_position_t cursor_positions_[Screens_count][selectables_count_max] = {
-       { {0,1}, {1,1}, {3,1}, {7,1}, {12,1}, {14,1} },
-
-       { {0,0}, {1,0}, {5,0}, {6,0}, {7,0}, {8,0}, {9,0}, {10,0}, {11,0}, {13,0},
-         {0,1}, {3,1}, {6,1}, {9,1}, {12,1}, {14,1}, {15,1} },
-
-       {
-         {0,1}, {1,1}, {3,1}, {6,1}, {9,1}, {12,1}, {14,1}, {15,1} },
-
-       { {0,0}, {1,0}, {8,0}, {11,0}, {14,0},
-         {0,1}, {5,1}, {8,1} }
+    static constexpr const cursor_position_t * cursor_positions_[] = {
+        curspos_home,
+        curspos_alarms,
+        curspos_timer,
+        curspos_RTC
     };
+
+    //! Number of selectable items for each screen.
+    static constexpr byte selectables_count_[] = {
+        sizeof(curspos_home) / sizeof(curspos_home[0]),
+        sizeof(curspos_alarms) / sizeof(curspos_alarms[0]),
+        sizeof(curspos_timer) / sizeof(curspos_timer[0]),
+        sizeof(curspos_RTC) / sizeof(curspos_RTC[0]),
+    };
+
+
     bool cursor_clicked_ = false;
     bool change_ = false;  //!< for EEPROM write
 
