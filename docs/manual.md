@@ -77,7 +77,7 @@ It can operate in two modes:
 - If the timed events do contain buzzer, the stop button stops the ringing and
   turns everything else off.
 
-Note: the remaining time updates each 700ms (only if the seconds in the
+Note: the remaining time updates each 800ms (only if the seconds in the
 current time have changed since the last update), so it may seem imprecise,
 but this only causes a few hundred milliseconds of error at most, which should
 be negligible compared to the timed timespan.
