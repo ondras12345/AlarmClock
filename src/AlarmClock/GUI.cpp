@@ -7,8 +7,8 @@
 void GUI::set_backlight(backlight_t status)
 {
     backlight_ = status;
-    if (backlight_ == off) lcd_->noBacklight();
-    else lcd_->backlight();
+    if (backlight_ == off) lcd_.noBacklight();
+    else lcd_.backlight();
     backlight_prev_millis_ = millis();
 }
 
@@ -26,21 +26,21 @@ void GUI::loop(DateTime time)
         set_backlight(off);
     }
 
-    if (encoder_button_->fell() || abs(encoder_->read()) >= encoder_step)
+    if (encoder_button_.fell() || abs(encoder_.read()) >= encoder_step)
     {
         backlight_prev_millis_ = millis();
         if (backlight_ == off)
         {
             set_backlight(on);
-            encoder_->write(encoder_->read() % encoder_step);
+            encoder_.write(encoder_.read() % encoder_step);
         }
         else
         {
             /*
             Button
             */
-            //encoder_button_->update();  // Already done in loop() of AlarmClock.ino
-            if (encoder_button_->fell())
+            //encoder_button_.update();  // Already done in loop() of AlarmClock.ino
+            if (encoder_button_.fell())
             {
                 if (cursor_clicked_)
                 {
@@ -70,6 +70,10 @@ void GUI::loop(DateTime time)
                             switch_screen_(screen_alarms);
                             break;
 
+                        case cph_timer_button:
+                            switch_screen_(screen_timer);
+                            break;
+
                         case cph_RTC_button:
                             switch_screen_(screen_RTC);
                             RTC_set_ = now_;
@@ -80,7 +84,7 @@ void GUI::loop(DateTime time)
                             break;
 
                         case cph_lamp:
-                            lamp_->set_manu(!lamp_->get());
+                            lamp_.set_manu(!lamp_.get());
                             break;
 
                         default:
@@ -149,6 +153,33 @@ void GUI::loop(DateTime time)
                         break;
 
 
+                    case screen_timer:
+                        switch (cursor_position_)
+                        {
+                        case cpt_home_button:
+                            switch_screen_(screen_home);
+                            break;
+
+                        case cpt_start_stop_button:
+                            if (timer_.get_running()) timer_.stop();
+                            else timer_.start();
+                            break;
+
+                        case cpt_sig_l:
+                            timer_.events.lamp = !timer_.events.lamp;
+                            break;
+
+                        case cpt_sig_b:
+                            timer_.events.buzzer = !timer_.events.buzzer;
+                            break;
+
+                        default:
+                            cursor_clicked_ = true;
+                            break;
+                        }
+                        break;
+
+
                     case screen_RTC:
                         switch (cursor_position_)
                         {
@@ -159,7 +190,7 @@ void GUI::loop(DateTime time)
                         case cpr_apply_button:
                             if (RTC_set_.isValid())
                             {
-                                rtc_->adjust(RTC_set_);
+                                rtc_.adjust(RTC_set_);
                                 switch_screen_(screen_home);
                             }
                             break;
@@ -183,7 +214,7 @@ void GUI::loop(DateTime time)
             /*
             Encoder
             */
-            int encoder_position = encoder_->read();
+            int encoder_position = encoder_.read();
             if (abs(encoder_position) >= encoder_step)
             {
                 encoder_prev_millis_ = millis();
@@ -194,7 +225,7 @@ void GUI::loop(DateTime time)
                 Serial.print(F("enc_f_steps: "));
                 Serial.println(encoder_full_steps);
 #endif
-                encoder_->write(encoder_position - (encoder_full_steps * encoder_step));
+                encoder_.write(encoder_position - (encoder_full_steps * encoder_step));
 
                 if (cursor_clicked_)
                 {
@@ -205,13 +236,13 @@ void GUI::loop(DateTime time)
                         switch (cursor_position_)
                         {
                         case cph_ambient:
-                            ambientDimmer_->set_from_duration(
-                                    ambientDimmer_->get_value(),
-                                    apply_limits_(ambientDimmer_->get_stop(),
+                            ambientDimmer_.set_from_duration(
+                                    ambientDimmer_.get_value(),
+                                    apply_limits_(ambientDimmer_.get_stop(),
                                         encoder_full_steps * 10, 0, 255,
                                         encoder_loop_ambient),
                                     GUI_ambient_dimming_duration);
-                            ambientDimmer_->start();
+                            ambientDimmer_.start();
                             break;
 
                         }
@@ -289,6 +320,29 @@ void GUI::loop(DateTime time)
 
                         }
                         break;
+
+
+                    case screen_timer:
+                        switch (cursor_position_)
+                        {
+                        case cpt_hh:
+                            timer_.time_left += encoder_full_steps * 3600;
+                            break;
+
+                        case cpt_mm:
+                            timer_.time_left += encoder_full_steps * 60;
+                            break;
+
+                        case cpt_ss:
+                            timer_.time_left += encoder_full_steps;
+                            break;
+
+                        case cpt_sig_a:
+                            timer_.events.ambient = apply_limits_(timer_.events.ambient,
+                                encoder_full_steps * 10, 0, 255, encoder_loop_ambient);
+                            break;
+                        }
+                    break;
 
 
                     case screen_RTC:
@@ -379,7 +433,7 @@ void GUI::loop(DateTime time)
     else if ((unsigned long)(millis() - encoder_prev_millis_) >=
              encoder_reset_interval)
     {
-        encoder_->write(0);
+        encoder_.write(0);
         encoder_prev_millis_ = millis();
     }
 
@@ -421,14 +475,14 @@ void GUI::switch_screen_(Screen screen)
 {
     current_screen_ = screen;
     cursor_position_ = 0;
-    encoder_->write(0);
+    encoder_.write(0);
 }
 
 void GUI::update_()
 {
-    lcd_->noCursor();
-    lcd_->noBlink();
-    lcd_->setCursor(0, 0);
+    lcd_.noCursor();
+    lcd_.noBlink();
+    lcd_.setCursor(0, 0);
     switch (current_screen_)
     {
     case screen_home:
@@ -436,12 +490,14 @@ void GUI::update_()
                 now_.month(), now_.day(),
                 now_.dayOfTheWeek() == 0 ? 7 : now_.dayOfTheWeek(),
                 now_.hour(), now_.minute(), now_.second());
-        lcd_->print(line_buffer_);
-        lcd_->setCursor(0, 1);
-        sprintf(line_buffer_, "%c  RTC %c    %02d%c ",
-                char(LCD_char_bell_index), get_inhibit_() ? 'I' : 'i',
-                ambientDimmer_->get_stop() / 10, lamp_->get() ? 'L' : 'l');
-        lcd_->print(line_buffer_);
+        lcd_.print(line_buffer_);
+        lcd_.setCursor(0, 1);
+        sprintf(line_buffer_, "%c%c RTC %c    %02d%c ",
+                LCD_char_bell_index, LCD_char_timer_index,
+                get_inhibit_() ? 'I' : 'i',
+                ambientDimmer_.get_stop() / 10,
+                lamp_.get() ? 'L' : 'l');
+        lcd_.print(line_buffer_);
 
         break;
 
@@ -480,9 +536,9 @@ void GUI::update_()
         sprintf(line_buffer_, "%c%X/%X %s %s",
                 char(LCD_char_home_index), sel_alarm_index_, alarms_count - 1,
                 days_of_week, enabled );
-        lcd_->print(line_buffer_);
+        lcd_.print(line_buffer_);
 
-        lcd_->setCursor(0, 1);
+        lcd_.setCursor(0, 1);
         sprintf(line_buffer_, "%02d:%02d+%02d*%d  %02d%c%c",
                 sel_alarm_->get_time().hours,
                 sel_alarm_->get_time().minutes,
@@ -491,9 +547,29 @@ void GUI::update_()
                 sel_alarm_->get_signalization().ambient / 10,
                 sel_alarm_->get_signalization().lamp ? 'L' : 'l',
                 sel_alarm_->get_signalization().buzzer ? 'B' : 'b' );
-        lcd_->print(line_buffer_);
+        lcd_.print(line_buffer_);
     }
         break;
+
+
+    case screen_timer:
+        strcpy(line_buffer_, "     Timer      ");
+        lcd_.print(line_buffer_);
+
+        lcd_.setCursor(0, 1);
+        {
+        TimeSpan time_left(timer_.time_left);
+        sprintf(line_buffer_, "%c%c %02d:%02d:%02d %02d%c%c",
+                LCD_char_home_index, LCD_char_timer_index,
+                time_left.hours(),
+                time_left.minutes(),
+                time_left.seconds(),
+                timer_.events.ambient / 10,
+                timer_.events.lamp ? 'L' : 'l',
+                timer_.events.buzzer ? 'B' : 'b' );
+        }
+        lcd_.print(line_buffer_);
+    break;
 
 
     case screen_RTC:
@@ -501,41 +577,19 @@ void GUI::update_()
                 LCD_char_cancel_index, LCD_char_apply_index,
                 RTC_set_.dayOfTheWeek() == 0 ? 7 : RTC_set_.dayOfTheWeek(),
                 RTC_set_.hour(), RTC_set_.minute(), RTC_set_.second());
-        lcd_->print(line_buffer_);
+        lcd_.print(line_buffer_);
 
-        lcd_->setCursor(0, 1);
+        lcd_.setCursor(0, 1);
         sprintf(line_buffer_, "%04d-%02d-%02d      ",
                 RTC_set_.year(), RTC_set_.month(), RTC_set_.day());
-        lcd_->print(line_buffer_);
+        lcd_.print(line_buffer_);
     break;
 
 
     }
 
-    lcd_->setCursor(cursor_positions_[current_screen_][cursor_position_].column,
-                    cursor_positions_[current_screen_][cursor_position_].row);
-    lcd_->cursor();
-    if (cursor_clicked_) lcd_->blink();
-}
-
-GUI::GUI(Alarm *alarms, void(*writeEEPROM)(),
-         RTC_DS3231 * rtc, Encoder * encoder, Bounce * encoder_button,
-         LiquidCrystal_I2C *lcd,
-         void(*set_inhibit)(bool), bool(*get_inhibit)(),
-         PWMDimmer *ambientDimmer, HALbool *lamp)
-{
-    alarms_ = alarms;
-    writeEEPROM_ = writeEEPROM;
-    rtc_ = rtc;
-    encoder_ = encoder;
-    encoder_button_ = encoder_button;
-    lcd_ = lcd;
-    set_inhibit_ = set_inhibit;
-    get_inhibit_ = get_inhibit;
-    ambientDimmer_ = ambientDimmer;
-    lamp_ = lamp;
-
-    // First alarm. I can't initialize it in the header because the compiler
-    // doesn't know the address yet.
-    sel_alarm_ = alarms_;
+    lcd_.setCursor(cursor_positions_[current_screen_][cursor_position_].column,
+                  cursor_positions_[current_screen_][cursor_position_].row);
+    lcd_.cursor();
+    if (cursor_clicked_) lcd_.blink();
 }

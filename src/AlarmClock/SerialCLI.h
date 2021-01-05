@@ -42,6 +42,11 @@ public:
         @brief  Constructor.
         @param ser  Reference to the Stream object the CLI should be provided on.
         @param commands Pointer to the first element of an array of commands.
+                        The commands are processed from the start of the array
+                        to the end, the first command thus has highest
+                        priority.
+                        Once a command is found, no further commands are
+                        processed.
         @param command_count    Number of commands in the `commands` array.
                                 You should be able to use something like
                                 `(sizeof(commands) / sizeof(SerialCLI::command_t))`.

@@ -14,7 +14,7 @@ Ambient LED: 25x (range 0-255 --> 0-25 on this screen). This indicates the
     when setting.
 Buttons:
 - b - (bell symbol) alarms
-- t - (timer symbol) timer (not implemented yet)
+- t - (timer symbol) timer
 - RTC
 - i - inhibit (Off: i; On: I)
 - L - lamp (Off: l; On: L)
@@ -44,6 +44,23 @@ Buttons:
 |-----|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
 |__0__|h|0|/|F| |1|2|3|4|5|6|7| |S|G|L|
 |__1__|0|6|:|2|0|+|0|5|*|5| | |2|5|L|B|
+
+
+## Timer
+```
+Time remaining: 16:52:14
+Events: ambient: 25x (range 0-255 --> 0-25 on this screen);
+        lamp: 1; buzzer: 1
+Buttons:
+- h - (home symbol) - home screen
+- t - (timer symbol) - start/stop the timer
+```
+
+|     |0|1|2|3|4|5|6|7|8|9|A|B|C|D|E|F|
+|-----|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
+|__0__| | | | | |T|i|m|e|r| | | | | | |
+|__1__|h|t| |1|6|:|5|2|:|1|4| |2|5|L|B|
+
 
 
 ## RTC

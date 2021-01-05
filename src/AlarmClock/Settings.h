@@ -80,6 +80,30 @@ Alarms
 
 
 /*
+Timer
+*/
+
+// Buzzer tone frequency for timer
+// This setting has no effect if active_buzzer mode is enabled
+// default: 3000
+#define Timer_ringing_freq 3000  // Hz
+
+// Buzzer on (and off) time for timer
+// default: 1000
+#define Timer_ringing_period 1000  // ms
+
+// Time before ambient LED reaches the set value
+// default: 60UL * 1000UL
+#define Timer_ambient_dimming_duration 60UL * 1000UL  // ms
+
+// Ambient LED fade-out time
+// default: 2000UL
+#define Timer_ambient_fade_out_duration 2000UL  // ms
+
+
+
+
+/*
 Hardware
 */
 // Active buzzer mode. pin_buzzer is only switched on or off instead of

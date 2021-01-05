@@ -44,7 +44,7 @@ enum SelfTest_level
 #include <Bounce2.h>
 #include <Encoder.h>
 #include "Alarm.h"
-//#include "CountdownTimer.h"  // # TODO implement CountdownTimer
+#include "CountdownTimer.h"
 #include "PWMDimmer.h"
 #include "AlarmClockCLI.h"
 #include "GUI.h"
@@ -72,17 +72,17 @@ RTC_DS3231 rtc; // DS3231
 Bounce buttons[button_count];
 Encoder encoder(pin_encoder_clk, pin_encoder_dt);
 Alarm alarms[alarms_count];
-//CountdownTimer countdownTimer;  // # TODO implement CountdownTimer
 PWMDimmer ambientDimmer(pin_ambient);
 HALbool lamp(lamp_set);
 HALbool permanent_backlight(set_backlight_permanent);
 BuzzerManager buzzer(pin_buzzer);
 DateTime now;
+CountdownTimer countdown_timer(ambientDimmer, lamp, buzzer);
 AlarmClockCLI myCLI(Serial, alarms, &rtc, writeEEPROM, &ambientDimmer, &lamp,
-                    set_inhibit, get_inhibit);
-GUI myGUI(alarms, writeEEPROM, &rtc, &encoder,
-          &buttons[button_index_encoder], &lcd, set_inhibit, get_inhibit,
-          &ambientDimmer, &lamp);
+                    &countdown_timer, set_inhibit, get_inhibit);
+GUI myGUI(alarms, writeEEPROM, rtc, encoder,
+          buttons[button_index_encoder], lcd, set_inhibit, get_inhibit,
+          ambientDimmer, lamp, countdown_timer);
 
 
 unsigned long loop_rtc_prev_millis = 0;
@@ -159,24 +159,25 @@ void loop()
     myCLI.loop(now);
     myGUI.loop(now);
     for (byte i = 0; i < alarms_count; i++) alarms[i].loop(now);
-    //countdownTimer.loop();  // # TODO implement CountdownTimer
+    countdown_timer.loop(now);
     ambientDimmer.loop();
 
     // buttons
     for (byte i = 0; i < button_count; i++) buttons[i].update();
     if (buttons[button_index_snooze].fell())
     {
-        if(myGUI.get_backlight() != off)
+        if(myGUI.get_backlight() != GUI::off)
         {
             for (byte i = 0; i < alarms_count; i++) alarms[i].ButtonSnooze();
             DEBUG_println(F("snooze pressed"));
         }
-        else myGUI.set_backlight(on);
+        else myGUI.set_backlight(GUI::on);
     }
     if (buttons[button_index_stop].fell())
     {
-        if(myGUI.get_backlight() == off) myGUI.set_backlight(on);
+        if(myGUI.get_backlight() == GUI::off) myGUI.set_backlight(GUI::on);
         for (byte i = 0; i < alarms_count; i++) alarms[i].ButtonStop();
+        countdown_timer.ButtonStop();
         DEBUG_println(F("stop pressed"));
     }
     if (inhibit && (unsigned long)(millis() - inhibit_prev_millis) >= Alarm_inhibit_duration)
@@ -190,12 +191,6 @@ void init_hardware()
     for (byte i = 0; i < alarms_count; i++)
         alarms[i].SetHardware(&lamp, &ambientDimmer, &buzzer, writeEEPROM,
                                alarm_activation_callback, alarm_stop_callback);
-
-    // # TODO implement CountdownTimer
-    // WARNING: ambient implementation changed.
-    // WARNING: lamp implementation changed.
-    // WARNING: buzzer implementation changed.
-    //countdownTimer.set_hardware(lamp, ambient, buzzerTone, buzzerNoTone);
 }
 
 
@@ -290,7 +285,6 @@ void factory_reset()
 {
     Serial.println(F("Factory reset"));
     for (byte i = 0; i < alarms_count; i++) alarms[i] = Alarm();
-    //countdownTimer = CountdownTimer();  // # TODO implement CountdownTimer
 
     writeEEPROM();
 }
@@ -395,6 +389,6 @@ bool get_inhibit() { return inhibit; }
 
 void set_backlight_permanent(bool s)
 {
-    if (s) myGUI.set_backlight(permanent);
-    else myGUI.set_backlight(on);  // disable permanent backlight
+    if (s) myGUI.set_backlight(GUI::permanent);
+    else myGUI.set_backlight(GUI::on);  // disable permanent backlight
 }

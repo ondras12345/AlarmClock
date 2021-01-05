@@ -11,6 +11,7 @@
 #include "src/AlarmClock/Constants.h"
 #include "src/AlarmClock/Alarm.h"
 #include "src/AlarmClock/DaysOfWeek.h"
+#include "src/AlarmClock/CountdownTimer.h"
 
 #include "Alarm_mockups.h"
 #include <RTClib.h>
@@ -399,4 +400,54 @@ test(Alarm_EEPROM_write)
     {
         assertEqual(data[i], correct_data[i]);
     }
+}
+
+
+test(Timer)
+{
+    MockupPWMDimmer ambientDimmer;
+    CountdownTimer timer(ambientDimmer, lamp, buzzer);
+    timer.time_left = 30*60 + 33;
+    timer.events = { 120, true, true };
+    timer.start();
+
+    reset_alarm_mockups();
+
+    DateTime time(2020, 1, 1, 11, 01, 00);
+
+    bool activation_time = false;
+    while (time < DateTime(2020, 1, 1, 11, 32, 00))
+    {
+        timer.loop(time);
+
+        // 11:31:32 - timer.start() causes time_left to immediately decrement.
+        if (time.hour() == 11 && time.minute() == 31 && time.second() == 32)
+        {
+            assertTrue(lamp_status);
+            assertTrue(buzzer.get_status());
+            assertEqual(ambientDimmer.get_stop(), 120);
+
+            timer.ButtonStop();
+
+            assertEqual(ambientDimmer.get_stop(), 0);
+            assertFalse(lamp_status);
+            assertFalse(buzzer.get_status());
+
+            activation_time = true;
+        }
+        else
+        {
+            if (!activation_time) assertTrue(timer.get_running());
+            else assertFalse(timer.get_running());
+            assertFalse(lamp_status);
+            assertFalse(buzzer.get_status());
+            assertEqual(ambientDimmer.get_stop(), 0);
+        }
+
+        reset_alarm_mockups();
+        time = time + TimeSpan(1);
+    }
+    // In case the test code was wrong
+    assertTrue(activation_time);
+
 }
