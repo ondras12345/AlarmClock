@@ -1,8 +1,4 @@
 /*
- Name:		AlarmClock.ino
- Created:	6/12/2019 5:26:39 PM
- Author:	Ondra
-
 Days of week in GUI and EEPROM: 1=Monday
 
 
@@ -11,7 +7,7 @@ Code directives:
 
  - all comments in English
 
- - Todo comments must contain '# TODO' (for automated searching)
+ - Todo comments must contain 'TODO' (for automated searching)
 
  - constants should be #defined or const, never write the actual number to the code
 
@@ -114,18 +110,30 @@ void setup()
     lcd_init();
 
     unsigned int err = SelfTest(POST);
-    if ((err & err_critical_mask) == 0) err |= (readEEPROM() ? 0 : err_EEPROM);
+    if (!(err & err_critical_mask))
+        err |= (readEEPROM() ? 0 : err_EEPROM);
     err |= SelfTest(time); // rtc.begin() can be omitted (only calls Wire.begin())
+
+    if (err & err_I2C_ping_DS3231)
+    {
+        Serial.println(F("RTC not connected. Cannot continue."));
+        for(;;);
+        // TODO handle RTC ping failed
+    }
 
     if (err & err_time_lost)
     {
         Serial.println(F("RTC time lost"));
-        // # TODO
+        // TODO handle RTC time lost
     }
 
-    if ((err & err_critical_mask) != 0)
+    if (err & err_critical_mask)
     {
-        factory_reset(); // # TODO show the error first, write to log if it is not EEPROM error, the wait for the user
+        // TODO show the error first, write to log if it is not EEPROM error,
+        // the wait for the user
+
+        if (!(err & err_I2C_ping_DS3231))
+            factory_reset();
     }
 
     Serial.println(F("boot"));
@@ -136,6 +144,7 @@ void setup()
 #endif
 
 }
+
 
 void loop()
 {
@@ -186,6 +195,7 @@ void loop()
     }
 }
 
+
 void init_hardware()
 {
     for (byte i = 0; i < alarms_count; i++)
@@ -194,16 +204,19 @@ void init_hardware()
 }
 
 
+
 void alarm_activation_callback()
 {
     permanent_backlight.set(true);
 }
+
 
 // WARNING: stop_callback is also called when the alarm times out.
 void alarm_stop_callback()
 {
     permanent_backlight.set(false);
 }
+
 
 
 /*
@@ -249,6 +262,7 @@ bool readEEPROM()
     return !err;
 }
 
+
 void writeEEPROM()
 {
     DEBUG_println(F("EEPROM write"));
@@ -278,16 +292,19 @@ void writeEEPROM()
     }
 }
 
+
 /*
 Factory reset
 */
 void factory_reset()
 {
     Serial.println(F("Factory reset"));
-    for (byte i = 0; i < alarms_count; i++) alarms[i] = Alarm();
+    for (byte i = 0; i < alarms_count; i++)
+        alarms[i] = Alarm();
 
     writeEEPROM();
 }
+
 
 
 /*
@@ -312,6 +329,7 @@ bool lcd_init()
 }
 
 
+
 /*
 Self test
 */
@@ -321,15 +339,16 @@ unsigned int SelfTest(SelfTest_level level)
 
     if (level == POST || level == time)
     {
-        if (!I2C_ping(I2C_DS3231_address)) err |= err_I2C_ping_DS3231;
-
+        if (!I2C_ping(I2C_DS3231_address))
+            err |= err_I2C_ping_DS3231;
     }
 
     if (level == time)
     {
-        if ((err & err_I2C_ping_DS3231) == 0)
+        if (!(err & err_I2C_ping_DS3231))
         {
-            // DS3231 is responding ((POST || time) code block was executed earlier)
+            // DS3231 is responding ((POST || time) code block was executed
+            // earlier)
             if (rtc.lostPower()) err |= err_time_lost;
             if (rtc.now().year() == 2000) err |= err_time_lost;
         }
@@ -355,11 +374,13 @@ unsigned int SelfTest(SelfTest_level level)
     return err;
 }
 
+
 bool I2C_ping(byte addr)
 {
     Wire.beginTransmission(addr);
     return (Wire.endTransmission() == 0);
 }
+
 
 
 /*
@@ -370,6 +391,7 @@ void lamp_set(bool status)
 {
     digitalWrite(pin_lamp, status);
 }
+
 
 
 /*
@@ -385,7 +407,10 @@ void set_inhibit(bool status)
     if (status) { DEBUG_println(F("inhibit enabled")); }
     else { DEBUG_println(F("inhibit disabled")); }
 }
+
+
 bool get_inhibit() { return inhibit; }
+
 
 void set_backlight_permanent(bool s)
 {
