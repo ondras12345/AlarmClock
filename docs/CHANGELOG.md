@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+
+
+## [0.4.0] - 2021-03-09
 ### Added
 - Watchdog timer (WDT)
 - Ambient starts `Alarm_ambient_dimming_duration` before the alarm triggers,
