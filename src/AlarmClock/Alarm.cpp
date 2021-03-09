@@ -148,6 +148,9 @@ bool Alarm::ShouldTriggerAmbient(DateTime time)
     if (signalization_.ambient == 0)
         return false;
 
+    if (enabled_ == Skip)
+        return false;
+
     if (!ShouldTrigger(time + TimeSpan(long(Alarm_ambient_dimming_duration / 1000UL))))
         return false;
 

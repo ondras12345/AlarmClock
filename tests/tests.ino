@@ -62,7 +62,7 @@ test(Alarm_trigger)
 
         reset_alarm_mockups();
 
-        DateTime time(2020, 1, 1, 11, 10, 00);
+        DateTime time(2020, 1, 1, 11, 10, 0);
 
         switch (myTest)
         {
@@ -70,7 +70,7 @@ test(Alarm_trigger)
                 {
                 bool activation_time = false;
                 alarm.set_inhibit(true);
-                while (time < DateTime(2020, 1, 1, 13, 15, 00))
+                while (time < DateTime(2020, 1, 1, 13, 15, 0))
                 {
                     alarm.loop(time);
 
@@ -93,7 +93,7 @@ test(Alarm_trigger)
             case activate:
                 {
                 bool activation_time = false;
-                while (time < DateTime(2020, 1, 1, 13, 15, 00))
+                while (time < DateTime(2020, 1, 1, 13, 15, 0))
                 {
                     alarm.loop(time);
 
@@ -126,7 +126,7 @@ test(Alarm_trigger)
                 assertTrue(alarm.set_enabled(Skip));
 
                 bool activation_time = false;
-                while (time < DateTime(2020, 1, 1, 13, 15, 00))
+                while (time < DateTime(2020, 1, 1, 13, 15, 0))
                 {
                     alarm.loop(time);
 
@@ -179,7 +179,7 @@ test(Alarm_snooze)
 
     reset_alarm_mockups();
 
-    DateTime time(2020, 1, 1, 12, 13, 00);  // activate immediately
+    DateTime time(2020, 1, 1, 12, 13, 0);  // activate immediately
     for (byte snooze_remaining = 2; snooze_remaining != 255; snooze_remaining--)
     {
         // cannot do this because activated is not set when waking from snooze
@@ -202,8 +202,9 @@ test(Alarm_ambient)
     enum ambientTest {
         inhibit = 0,
         activate = 1,
+        skip = 2,
         // cannot check the next activation because of millis
-        last = 2
+        last = 3
     };
 
     ambientTest myTest = inhibit;
@@ -225,7 +226,7 @@ test(Alarm_ambient)
 
         reset_alarm_mockups();
 
-        DateTime time(2020, 1, 1, 11, 10, 00);
+        DateTime time(2020, 1, 1, 11, 10, 0);
 
         switch (myTest)
         {
@@ -234,7 +235,7 @@ test(Alarm_ambient)
                 bool activation_time = false;
                 bool ambient_activation_time = false;
                 alarm.set_inhibit(true);
-                while (time < DateTime(2020, 1, 1, 13, 15, 00))
+                while (time < DateTime(2020, 1, 1, 13, 15, 0))
                 {
                     alarm.loop(time);
 
@@ -267,7 +268,7 @@ test(Alarm_ambient)
                 {
                 bool activation_time = false;
                 bool ambient_activation_time = false;
-                while (time < DateTime(2020, 1, 1, 13, 15, 00))
+                while (time < DateTime(2020, 1, 1, 13, 15, 0))
                 {
                     alarm.loop(time);
 
@@ -308,6 +309,41 @@ test(Alarm_ambient)
                 assertTrue(ambient_activation_time);
                 }
                 break;
+
+            case skip:
+                {
+                bool activation_time = false;
+                bool ambient_activation_time = false;
+                assertTrue(alarm.set_enabled(Skip));
+                while (time < DateTime(2020, 1, 1, 13, 15, 0))
+                {
+                    alarm.loop(time);
+
+                    assertFalse(activated);
+                    assertFalse(lamp_status);
+                    assertFalse(alarm.test_get_ambient_status());
+                    assertEqual(ambientDimmer.get_stop(), 0);
+
+                    if (time.hour() == 12 && time.minute() == 13 && time.second() < 30)
+                    {
+                        activation_time = true;
+                    }
+
+                    DateTime temptime = time + TimeSpan(long(Alarm_ambient_dimming_duration / 1000UL));
+                    if (temptime.hour() == 12 && temptime.minute() == 13 && temptime.second() < 30)
+                    {
+                        ambient_activation_time = true;
+                    }
+
+                    reset_alarm_mockups();
+                    time = time + TimeSpan(30);
+                }
+                // In case the test code was wrong
+                assertTrue(activation_time);
+                assertTrue(ambient_activation_time);
+                }
+                break;
+
         }
         myTest = (ambientTest)(myTest + 1);
     }
@@ -413,10 +449,10 @@ test(Timer)
 
     reset_alarm_mockups();
 
-    DateTime time(2020, 1, 1, 11, 01, 00);
+    DateTime time(2020, 1, 1, 11, 1, 0);
 
     bool activation_time = false;
-    while (time < DateTime(2020, 1, 1, 11, 32, 00))
+    while (time < DateTime(2020, 1, 1, 11, 32, 0))
     {
         timer.loop(time);
 
