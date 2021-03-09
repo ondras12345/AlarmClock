@@ -131,7 +131,7 @@ void setup()
     Serial.println(F("boot"));
 
 #ifdef internal_WDT
-    wdt_enable(WDTO_2S);
+    wdt_enable(WDTO_4S);
     DEBUG_println(F("WDT enabled"));
 #endif
 
