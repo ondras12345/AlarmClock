@@ -22,7 +22,6 @@ Arduino alarm clock using a DS3231 RTC and a LCD
 ## TODO
 - buzzer loudness ramp-up
 - melodies for the buzzer
-- up to 15 alarms - HEX in GUI
 
 
 # Requirements

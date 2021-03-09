@@ -3,6 +3,7 @@
 */
 #include "AlarmClockCLI.h"
 #include <RTClib.h>
+#include <avr/pgmspace.h>
 
 // Assigned in the constructor:
 Stream* AlarmClockCLI::ser_;
@@ -54,7 +55,7 @@ const char* AlarmClockCLI::error_strings[] = {
 };
 
 
-void AlarmClockCLI::loop(DateTime now)
+void AlarmClockCLI::loop(const DateTime& now)
 {
     now_ = now;
     CLI_.loop();
@@ -132,7 +133,7 @@ void AlarmClockCLI::print_error(SerialCLI::error_t code)
     ser_->println();
     ser_->print(F("err "));
     ser_->print(code, HEX);
-    ser_->print(": ");
+    ser_->print(F(": "));
 
     if (code == kOk)
     {
@@ -219,7 +220,7 @@ SerialCLI::error_t AlarmClockCLI::select_alarm_(byte index_)
 
     sel_alarm_index_ = index_;
     if (sel_alarm_index_ == sel_alarm_index_none_) strcpy(prompt_, prompt_default_);
-    else sprintf(prompt_, "A%u%s", sel_alarm_index_, prompt_default_);
+    else sprintf_P(prompt_, PSTR("A%u%s"), sel_alarm_index_, prompt_default_);
 
     return 0;
 }
@@ -310,16 +311,16 @@ SerialCLI::error_t AlarmClockCLI::cmd_inh_(char *status)
 SerialCLI::error_t AlarmClockCLI::cmd_en_(char *type)
 {
     // ! - strcmp returns 0 if matches
-    if (!strcmp(type, "en-off"))
+    if (!strcmp_P(type, PSTR("en-off")))
         return set_enabled_(Off);
 
-    if (!strcmp(type, "en-sgl"))
+    if (!strcmp_P(type, PSTR("en-sgl")))
         return set_enabled_(Single);
 
-    if (!strcmp(type, "en-rpt"))
+    if (!strcmp_P(type, PSTR("en-rpt")))
         return set_enabled_(Repeat);
 
-    if (!strcmp(type, "en-skp"))
+    if (!strcmp_P(type, PSTR("en-skp")))
         return set_enabled_(Skip);
 
     return kArgument;
@@ -442,13 +443,13 @@ SerialCLI::error_t AlarmClockCLI::cmd_st_(char *time)
 
 SerialCLI::error_t AlarmClockCLI::cmd_tmr_(char *time)
 {
-    if (!strcmp(time, "tmr-start"))
+    if (!strcmp_P(time, PSTR("tmr-start")))
     {
         timer_->start();
         return 0;
     }
 
-    if (!strcmp(time, "tmr-stop"))
+    if (!strcmp_P(time, PSTR("tmr-stop")))
     {
         timer_->stop();
         return 0;
@@ -459,8 +460,8 @@ SerialCLI::error_t AlarmClockCLI::cmd_tmr_(char *time)
     {
         TimeSpan time_left(timer_->time_left);
         char buff[8 + 1];
-        sprintf(buff, "%02d:%02d:%02d",
-                time_left.hours(), time_left.minutes(), time_left.seconds());
+        sprintf_P(buff, PSTR("%02d:%02d:%02d"),
+                  time_left.hours(), time_left.minutes(), time_left.seconds());
         ser_->println(buff);
         return 0;
     }
@@ -581,14 +582,14 @@ SerialCLI::error_t AlarmClockCLI::cmd_ls_(char *ignored)
             ser_->print(days_of_the_week_names_short[i]);
             ser_->print(' ');
         }
-        else ser_->print("   ");
+        else ser_->print(F("   "));
     }
     ser_->println();
 
     indent_(1);
     ser_->print(F("Time: "));
     ser_->print(alarms_[sel_alarm_index_].get_time().hours);
-    ser_->print(":");
+    ser_->print(':');
     ser_->println(alarms_[sel_alarm_index_].get_time().minutes);
 
     indent_(1);

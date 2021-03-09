@@ -3,6 +3,17 @@
 */
 
 #include "GUI.h"
+#include <avr/pgmspace.h>
+
+
+constexpr GUI::cursor_position_t GUI::curspos_home[];
+constexpr GUI::cursor_position_t GUI::curspos_alarms[];
+constexpr GUI::cursor_position_t GUI::curspos_timer[];
+constexpr GUI::cursor_position_t GUI::curspos_RTC[];
+constexpr const GUI::cursor_position_t * GUI::cursor_positions_[];
+constexpr byte GUI::selectables_count_[];
+
+
 
 void GUI::set_backlight(backlight_t status)
 {
@@ -13,10 +24,8 @@ void GUI::set_backlight(backlight_t status)
 }
 
 
-void GUI::loop(DateTime time)
+void GUI::loop(const DateTime& now)
 {
-    now_ = time;
-
     /*
     LCD Backlight
     */
@@ -76,7 +85,7 @@ void GUI::loop(DateTime time)
 
                         case cph_RTC_button:
                             switch_screen_(screen_RTC);
-                            RTC_set_ = now_;
+                            RTC_set_ = now;
                             break;
 
                         case cph_inhibit_button:
@@ -207,7 +216,7 @@ void GUI::loop(DateTime time)
                 Serial.println(cursor_clicked_);
 #endif
 
-                update_();
+                update_(now);
             }
 
 
@@ -425,7 +434,7 @@ void GUI::loop(DateTime time)
                     //Serial.println(current_screen_);
 #endif
                 }
-                update_();
+                update_(now);
             }
         }
     }
@@ -439,10 +448,10 @@ void GUI::loop(DateTime time)
 
     if ((unsigned long)(millis() - update_prev_millis_) >=
         GUI_update_interval &&
-        now_.second() % 10 == 0)
+        now.second() % 10 == 0)
     {
         update_prev_millis_ = millis();
-        update_();
+        update_(now);
     }
 }
 
@@ -478,7 +487,7 @@ void GUI::switch_screen_(Screen screen)
     encoder_.write(0);
 }
 
-void GUI::update_()
+void GUI::update_(const DateTime& now)
 {
     lcd_.noCursor();
     lcd_.noBlink();
@@ -486,17 +495,17 @@ void GUI::update_()
     switch (current_screen_)
     {
     case screen_home:
-        sprintf(line_buffer_, "%02d-%02d %d %02d:%02d:%02d",
-                now_.month(), now_.day(),
-                now_.dayOfTheWeek() == 0 ? 7 : now_.dayOfTheWeek(),
-                now_.hour(), now_.minute(), now_.second());
+        sprintf_P(line_buffer_, PSTR("%02d-%02d %d %02d:%02d:%02d"),
+                  now.month(), now.day(),
+                  now.dayOfTheWeek() == 0 ? 7 : now.dayOfTheWeek(),
+                  now.hour(), now.minute(), now.second());
         lcd_.print(line_buffer_);
         lcd_.setCursor(0, 1);
-        sprintf(line_buffer_, "%c%c RTC %c    %02d%c ",
-                LCD_char_bell_index, LCD_char_timer_index,
-                get_inhibit_() ? 'I' : 'i',
-                ambientDimmer_.get_stop() / 10,
-                lamp_.get() ? 'L' : 'l');
+        sprintf_P(line_buffer_, PSTR("%c%c RTC %c    %02d%c "),
+                  LCD_char_bell_index, LCD_char_timer_index,
+                  get_inhibit_() ? 'I' : 'i',
+                  ambientDimmer_.get_stop() / 10,
+                  lamp_.get() ? 'L' : 'l');
         lcd_.print(line_buffer_);
 
         break;
@@ -517,71 +526,71 @@ void GUI::update_()
         switch (sel_alarm_->get_enabled())
         {
         case Off:
-            strcpy(enabled, "Off");
+            strcpy_P(enabled, PSTR("Off"));
             break;
 
         case Single:
-            strcpy(enabled, "SGL");
+            strcpy_P(enabled, PSTR("SGL"));
             break;
 
         case Repeat:
-            strcpy(enabled, "RPT");
+            strcpy_P(enabled, PSTR("RPT"));
             break;
 
         case Skip:
-            strcpy(enabled, "SKP");
+            strcpy_P(enabled, PSTR("SKP"));
             break;
         }
 
-        sprintf(line_buffer_, "%c%X/%X %s %s",
-                char(LCD_char_home_index), sel_alarm_index_, alarms_count - 1,
-                days_of_week, enabled );
+        sprintf_P(line_buffer_, PSTR("%c%X/%X %s %s"),
+                  char(LCD_char_home_index), sel_alarm_index_, alarms_count - 1,
+                  days_of_week, enabled );
         lcd_.print(line_buffer_);
 
         lcd_.setCursor(0, 1);
-        sprintf(line_buffer_, "%02d:%02d+%02d*%d  %02d%c%c",
-                sel_alarm_->get_time().hours,
-                sel_alarm_->get_time().minutes,
-                sel_alarm_->get_snooze().time_minutes,
-                sel_alarm_->get_snooze().count,
-                sel_alarm_->get_signalization().ambient / 10,
-                sel_alarm_->get_signalization().lamp ? 'L' : 'l',
-                sel_alarm_->get_signalization().buzzer ? 'B' : 'b' );
+        sprintf_P(line_buffer_, PSTR("%02d:%02d+%02d*%d  %02d%c%c"),
+                  sel_alarm_->get_time().hours,
+                  sel_alarm_->get_time().minutes,
+                  sel_alarm_->get_snooze().time_minutes,
+                  sel_alarm_->get_snooze().count,
+                  sel_alarm_->get_signalization().ambient / 10,
+                  sel_alarm_->get_signalization().lamp ? 'L' : 'l',
+                  sel_alarm_->get_signalization().buzzer ? 'B' : 'b' );
         lcd_.print(line_buffer_);
     }
         break;
 
 
     case screen_timer:
-        strcpy(line_buffer_, "     Timer      ");
+        strcpy_P(line_buffer_, PSTR("     Timer      "));
         lcd_.print(line_buffer_);
 
         lcd_.setCursor(0, 1);
         {
         TimeSpan time_left(timer_.time_left);
-        sprintf(line_buffer_, "%c%c %02d:%02d:%02d %02d%c%c",
-                LCD_char_home_index, LCD_char_timer_index,
-                time_left.hours(),
-                time_left.minutes(),
-                time_left.seconds(),
-                timer_.events.ambient / 10,
-                timer_.events.lamp ? 'L' : 'l',
-                timer_.events.buzzer ? 'B' : 'b' );
+        sprintf_P(line_buffer_, PSTR("%c%c %02d:%02d:%02d %02d%c%c"),
+                  LCD_char_home_index, LCD_char_timer_index,
+                  time_left.hours(),
+                  time_left.minutes(),
+                  time_left.seconds(),
+                  timer_.events.ambient / 10,
+                  timer_.events.lamp ? 'L' : 'l',
+                  timer_.events.buzzer ? 'B' : 'b' );
         }
         lcd_.print(line_buffer_);
     break;
 
 
     case screen_RTC:
-        sprintf(line_buffer_, "%c%cRTC %d %02d:%02d:%02d",
-                LCD_char_cancel_index, LCD_char_apply_index,
-                RTC_set_.dayOfTheWeek() == 0 ? 7 : RTC_set_.dayOfTheWeek(),
-                RTC_set_.hour(), RTC_set_.minute(), RTC_set_.second());
+        sprintf_P(line_buffer_, PSTR("%c%cRTC %d %02d:%02d:%02d"),
+                  LCD_char_cancel_index, LCD_char_apply_index,
+                  RTC_set_.dayOfTheWeek() == 0 ? 7 : RTC_set_.dayOfTheWeek(),
+                  RTC_set_.hour(), RTC_set_.minute(), RTC_set_.second());
         lcd_.print(line_buffer_);
 
         lcd_.setCursor(0, 1);
-        sprintf(line_buffer_, "%04d-%02d-%02d      ",
-                RTC_set_.year(), RTC_set_.month(), RTC_set_.day());
+        sprintf_P(line_buffer_, PSTR("%04d-%02d-%02d      "),
+                  RTC_set_.year(), RTC_set_.month(), RTC_set_.day());
         lcd_.print(line_buffer_);
     break;
 
