@@ -67,8 +67,8 @@ Alarms
 
 
 // Alarm timeout
-// default: 30 * 60UL * 1000UL
-#define Alarm_timeout 30 * 60UL * 1000UL  // ms
+// default: 15 * 60UL * 1000UL
+#define Alarm_timeout 15 * 60UL * 1000UL  // ms
 
 
 
@@ -92,6 +92,10 @@ Timer
 // Ambient LED fade-out time
 // default: 2000UL
 #define Timer_ambient_fade_out_duration 2000UL  // ms
+
+// Timer timeout
+// default: 15 * 60UL * 1000UL
+#define Timer_timeout 15 * 60UL * 1000UL  // ms
 
 
 

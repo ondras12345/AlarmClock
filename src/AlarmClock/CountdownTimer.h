@@ -54,7 +54,7 @@ public:
     unsigned int time_left = 0;
 
     //! The actions the timer should execute when done.
-    TimedEvents events = { 0, 0, 0 };
+    TimedEvents events = { 0, false, false };
 
     CountdownTimer(PWMDimmer& ambient, HALbool& lamp, BuzzerManager& buzzer) :
         ambient_(ambient), lamp_(lamp), buzzer_(buzzer) { };
@@ -64,6 +64,7 @@ protected:
     byte prev_seconds_;
     bool running_ = false;
     bool ringing_ = false;
+    unsigned long timeout_millis_ = 0;
 
     PWMDimmer& ambient_;
     HALbool& lamp_;

@@ -44,7 +44,19 @@ void CountdownTimer::ButtonStop()
 //! Call this function in your loop().
 void CountdownTimer::loop(const DateTime& now)
 {
-    if (!running_) return;
+    if (!running_)
+    {
+        // Timeout only disables the buzzer, everything else is left in
+        // previous state
+        if (ringing_ &&
+            (unsigned long)(millis() - timeout_millis_) >= Timer_timeout)
+        {
+            ringing_ = false;
+            buzzer_.set_ringing(ringing_off);
+        }
+        return;
+    }
+
     if (now.second() != prev_seconds_)
     {
         prev_seconds_ = now.second();
@@ -60,6 +72,7 @@ void CountdownTimer::loop(const DateTime& now)
             if (events.buzzer)
             {
                 ringing_ = true;
+                timeout_millis_ = millis();
                 buzzer_.set_ringing(ringing_timer);
             }
         }

@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   CLI).
 - Up to 16 alarms
 - Date and time format changed to ISO8601. WARNING: CLI commands changed.
+- Default `Alarm_timeout` changed from 30 minutes to 15 minutes
 
 
 ## [0.3.1] - 2020-07-18
