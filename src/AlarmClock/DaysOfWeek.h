@@ -6,11 +6,8 @@
 #ifndef DAYSOFWEEK_H
 #define DAYSOFWEEK_H
 
-#if defined(ARDUINO) && ARDUINO >= 100
-#include "arduino.h"
-#else
-#include "WProgram.h"
-#endif
+#include "Arduino.h"
+
 
 /*!
     @brief  A class that is used by alarms to determine which day of the week

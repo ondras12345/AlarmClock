@@ -14,13 +14,6 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#if defined(ARDUINO) && ARDUINO >= 100
-#include "arduino.h"
-#else
-#include "WProgram.h"
-#endif
-
-
 
 /*
 DEBUG

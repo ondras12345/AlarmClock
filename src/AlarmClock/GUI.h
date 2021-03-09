@@ -5,11 +5,7 @@
 #ifndef GUI_H
 #define GUI_H
 
-#if defined(ARDUINO) && ARDUINO >= 100
-    #include "arduino.h"
-#else
-    #include "WProgram.h"
-#endif
+#include "Arduino.h"
 
 #include "Settings.h"
 #include "Constants.h"

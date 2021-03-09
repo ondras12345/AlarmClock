@@ -5,11 +5,7 @@
 #ifndef HALBOOL_H
 #define HALBOOL_H
 
-#if defined(ARDUINO) && ARDUINO >= 100
-#include "arduino.h"
-#else
-#include "WProgram.h"
-#endif
+#include "Arduino.h"
 
 /*!
     @brief  A boolean hardware resource that needs to be true unless all

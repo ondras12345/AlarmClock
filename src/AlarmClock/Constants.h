@@ -7,12 +7,6 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-#if defined(ARDUINO) && ARDUINO >= 100
-#include "arduino.h"
-#else
-#include "WProgram.h"
-#endif
-
 #include "Settings.h"
 
 /*

@@ -1,16 +1,12 @@
 #ifndef _ALARM_MOCKUPS_H
 #define _ALARM_MOCKUPS_H
 
-#if defined(ARDUINO) && ARDUINO >= 100
-#include "arduino.h"
-#else
-#include "WProgram.h"
-#endif
+#include "Arduino.h"
 
 #include "src/AlarmClock/HALbool.h"
 #include "src/AlarmClock/BuzzerManager.h"
 #include "src/AlarmClock/Alarm.h"
-#include "src/AlarmClock/PWMdimmer.h"
+#include "src/AlarmClock/PWMDimmer.h"
 
 class MockupBuzzerManager : public BuzzerManager
 {

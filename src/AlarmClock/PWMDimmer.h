@@ -2,18 +2,14 @@
     @file
 */
 
-
 #ifndef PWMDIMMER_H
 #define PWMDIMMER_H
 
-#if defined(ARDUINO) && ARDUINO >= 100
-    #include "arduino.h"
-#else
-    #include "WProgram.h"
-#endif
+#include "Arduino.h"
 
 #include "Settings.h"
 #include "Constants.h"
+
 
 /*!
     @brief  A general purpose class that implements PWM duty cycle ramp-up and

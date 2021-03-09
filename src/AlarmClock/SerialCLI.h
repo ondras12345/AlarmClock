@@ -5,11 +5,7 @@
 #ifndef SERIALCLI_H
 #define SERIALCLI_H
 
-#if defined(ARDUINO) && ARDUINO >= 100
-#include "arduino.h"
-#else
-#include "WProgram.h"
-#endif
+#include "Arduino.h"
 
 // For DEBUG:
 #include "Settings.h"
