@@ -1,8 +1,8 @@
 - [ ] Try to compile
 - [ ] Go trough docs/test-checklist.md
-- [ ] Update docs/CHANGELOG.md
+- [ ] Update CHANGELOG.md
 - [ ] Update README.md (??)
 - [ ] Update docs/manual.md
 - [ ] `git tag`
 - [ ] `git push --tags`
-- [ ] Github release - text from docs/CHANGELOG.md
+- [ ] Github release - text from CHANGELOG.md
