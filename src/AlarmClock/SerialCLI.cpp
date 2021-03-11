@@ -20,14 +20,16 @@ void SerialCLI::loop()
 
         Serial_buffer_[Serial_buffer_index_] = tolower(ser_.read());
 
-        if (Serial_buffer_[Serial_buffer_index_] == '\n' || Serial_buffer_[Serial_buffer_index_] == '\r')
+        if (Serial_buffer_[Serial_buffer_index_] == '\n' ||
+                Serial_buffer_[Serial_buffer_index_] == '\r')
         {
             //  CR/LF
             if (Serial_buffer_index_ != 0)
             {
-                // ignore if it is the first character (to avoid problems with CR+LF/LF)
+                // ignore if it is the first character (to avoid problems with
+                // CR+LF/LF)
 
-                Serial_buffer_[Serial_buffer_index_] = '\0';  // rewrite CR/LF
+                Serial_buffer_[Serial_buffer_index_] = '\0';  // overwrite it
                 complete_message = true;
                 Serial_buffer_index_ = 0;
                 ser_.println();
@@ -50,12 +52,23 @@ void SerialCLI::loop()
         }
         else
         {
-            // Character playback - this needs to be before index++ and should
-            // not happen when the character is CR/LF
-            ser_.print(Serial_buffer_[Serial_buffer_index_]);
-
-            if (Serial_buffer_index_ < kSerial_buffer_length_)
+            if (Serial_buffer_[Serial_buffer_index_] == 0x7F ||
+                    Serial_buffer_[Serial_buffer_index_] == 0x08)
             {
+                // backspace
+                if (Serial_buffer_index_ > 0)
+                {
+                    // Character playback - this needs to be done before index++ and
+                    // should not happen when the character is CR/LF
+                    ser_.print(Serial_buffer_[Serial_buffer_index_]);
+                    Serial_buffer_index_--;
+                }
+            }
+            else if (Serial_buffer_index_ < kSerial_buffer_length_)
+            {
+                // Character playback - this needs to be done before index++ and
+                // should not happen when the character is CR/LF
+                ser_.print(Serial_buffer_[Serial_buffer_index_]);
                 Serial_buffer_index_++;
             }
             else
