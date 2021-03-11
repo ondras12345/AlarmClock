@@ -71,6 +71,7 @@ void Alarm::loop(DateTime time)
         // I am borrowing snooze's variable here, but it shouldn't cause any
         // conflicts.
         prev_millis_ = millis();
+        first_ambient_ = false;
         DEBUG_println(F("Alarm enabled ambient"));
     }
 
@@ -78,6 +79,7 @@ void Alarm::loop(DateTime time)
     if (ShouldTrigger(time))
     {
         prev_activation_millis_ = millis();
+        first_activation_ = false;
 
         // Single must disable even if alarm is inhibited
         if (enabled_ == Single)
@@ -123,7 +125,8 @@ bool Alarm::ShouldTrigger(DateTime time)
     // check for prev_activation_millis_ - in case the alarm gets stopped in the
     // same minute it started
     // 62 seconds - time is fetched each 800 ms in AlarmClock.ino
-    if ((unsigned long)(millis() - prev_activation_millis_) < 62*1000UL)
+    if (!first_activation_ &&
+            (unsigned long)(millis() - prev_activation_millis_) < 62*1000UL)
         return false;
 
     // time is not matching
@@ -159,7 +162,8 @@ bool Alarm::ShouldTriggerAmbient(DateTime time)
     // I am borrowing snooze's variable here, but it shouldn't cause any
     // conflicts.
     // 62 seconds - time is fetched each 800 ms in AlarmClock.ino
-    if ((unsigned long)(millis() - prev_millis_) < 62*1000UL)
+    if (!first_ambient_ &&
+            (unsigned long)(millis() - prev_millis_) < 62*1000UL)
         return false;
 
     return true;
@@ -269,7 +273,6 @@ Alarm::Alarm()
     days_of_week_.DaysOfWeek = 0;
     snooze_ = { 0, 0 };
     signalization_ = { 0, false, false };
-    prev_activation_millis_ = prev_activation_millis_init_;
     current_snooze_count_ = current_snooze_count_inactive_;
     snooze_status_ = false;
     ambient_status_ = false;
@@ -320,7 +323,6 @@ bool Alarm::ReadEEPROM(byte data[Alarm::EEPROM_length])
     signalization_.buzzer = data[9];
 
     // not saved in the EEPROM:
-    prev_activation_millis_ = prev_activation_millis_init_;
     current_snooze_count_ = current_snooze_count_inactive_;
     snooze_status_ = false;
     ambient_status_ = false;

@@ -116,13 +116,16 @@ protected:
     /*!
         Needed in case the alarm gets canceled during the same minute it started.
         Also used for Alarm_timeout.
-        Needs to be initialised to prev_activation_millis_init_ to prevent
-        alarms starting in the first minute of runtime being ignored.
-        This also makes unit tests work.
     */
-    unsigned long prev_activation_millis_;
-    //! 0xFFFF0000 would also work...
-    static constexpr unsigned long prev_activation_millis_init_ = 0xDEADBEEF;
+    unsigned long prev_activation_millis_ = 0;
+
+    /*!
+        This prevents alarms starting during the first minute of runtime from
+        being ignored
+    */
+    bool first_activation_ = true;
+    //! Does the same thing as `first_activation_` for ambient (`prev_millis_`)
+    bool first_ambient_ = true;
 
     static constexpr byte current_snooze_count_inactive_ = 255;
     byte current_snooze_count_;  //!< max 9; 255 has special meaning defined above
@@ -132,7 +135,7 @@ protected:
         Also needs to be initialised to prev_activation_millis_init_ to prevent
         alarms starting in the first minute of runtime being ignored.
     */
-    unsigned long prev_millis_ = prev_activation_millis_init_;
+    unsigned long prev_millis_ = 0;
     bool inhibit_;
     bool snooze_status_;  //!< currently in snooze
     bool ambient_status_;  //!< ambient is active
