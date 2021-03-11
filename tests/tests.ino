@@ -24,6 +24,12 @@ void setup()
     while(!Serial);
     Serial.println();
     Serial.println();
+    Serial.println("Arduino-Alarm-Clock tests");
+    Serial.print("Compiled on ");
+    Serial.print(__DATE__);
+    Serial.print(" at ");
+    Serial.println(__TIME__);
+    Serial.println();
 }
 
 
