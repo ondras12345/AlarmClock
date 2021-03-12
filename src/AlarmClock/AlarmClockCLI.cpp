@@ -143,13 +143,29 @@ void AlarmClockCLI::yaml_time_(byte hours, byte minutes)
 }
 
 
+void AlarmClockCLI::yaml_time_(byte hours, byte minutes, byte seconds)
+{
+    ser_->print('\'');
+    ser_->print(hours);
+    ser_->print(':');
+    if (minutes < 10) ser_->print('0');
+    ser_->print(minutes);
+    ser_->print(':');
+    if (seconds < 10) ser_->print('0');
+    ser_->print(seconds);
+    ser_->println('\'');
+}
+
+
 void AlarmClockCLI::yaml_time_(HoursMinutes time)
 {
     yaml_time_(time.hours, time.minutes);
 }
 
 
-//! Print an alarm in YAML. A valid index must be passed to this function
+//! Print an alarm in YAML.
+//! A valid index must be passed to this function.
+//! This function does not print YAML_begin nor YAML_end
 void AlarmClockCLI::yaml_alarm_(byte index, bool comments)
 {
     ser_->print(F("alarm"));
@@ -220,6 +236,30 @@ void AlarmClockCLI::yaml_alarm_(byte index, bool comments)
     indent_(2);
     ser_->print(F("buzzer: "));
     ser_->println(alarms_[index].get_signalization().buzzer);
+}
+
+
+//! Print the CountdownTimer in YAML.
+//! This function does not print YAML_begin nor YAML_end
+void AlarmClockCLI::yaml_timer_()
+{
+    ser_->println(F("timer:"));
+    indent_(1);
+    ser_->print(F("running: "));
+    ser_->println(timer_->get_running() ? F("true") : F("false"));
+    indent_(1);
+    ser_->print(F("time left: "));
+    TimeSpan time_left(timer_->time_left);
+    yaml_time_(time_left.hours(), time_left.minutes(), time_left.seconds());
+    indent_(1);
+    ser_->print(F("ambient: "));
+    ser_->println(timer_->events.ambient);
+    indent_(1);
+    ser_->print(F("lamp: "));
+    ser_->println(timer_->events.lamp ? 1 : 0);
+    indent_(1);
+    ser_->print(F("buzzer: "));
+    ser_->println(timer_->events.buzzer ? 1 : 0);
 }
 
 
@@ -365,8 +405,10 @@ SerialCLI::error_t AlarmClockCLI::cmd_amb_(char * duty)
     duty = find_next_digit_(duty);
     if (*duty == '\0')
     {
-        ser_->print(F("amb: "));
+        ser_->println(YAML_begin);
+        ser_->print(F("ambient: "));
         ser_->println(ambientDimmer_->get_value());
+        ser_->println(YAML_end);
         return 0;
     }
     ambient = strbyte_(duty);
@@ -382,8 +424,10 @@ SerialCLI::error_t AlarmClockCLI::cmd_lamp_(char *status)
     status = find_next_digit_(status);
     if (*status == '\0')
     {
+        ser_->println(YAML_begin);
         ser_->print(F("lamp: "));
         ser_->println(lamp_->get());
+        ser_->println(YAML_end);
         return 0;
     }
     lamp_->set_manu(strbyte_(status));
@@ -396,8 +440,10 @@ SerialCLI::error_t AlarmClockCLI::cmd_inh_(char *status)
     status = find_next_digit_(status);
     if (*status == '\0')
     {
+        ser_->println(YAML_begin);
         ser_->print(F("inhibit: "));
         ser_->println(get_inhibit_());
+        ser_->println(YAML_end);
         return 0;
     }
     set_inhibit_(strbyte_(status));
@@ -555,11 +601,9 @@ SerialCLI::error_t AlarmClockCLI::cmd_tmr_(char *time)
     time = find_next_digit_(time);
     if (*time == '\0')
     {
-        TimeSpan time_left(timer_->time_left);
-        char buff[8 + 1];
-        sprintf_P(buff, PSTR("%02d:%02d:%02d"),
-                  time_left.hours(), time_left.minutes(), time_left.seconds());
-        ser_->println(buff);
+        ser_->println(YAML_begin);
+        yaml_timer_();
+        ser_->println(YAML_end);
         return 0;
     }
 
@@ -598,11 +642,9 @@ SerialCLI::error_t AlarmClockCLI::cmd_tme_(char *events)
     events = find_next_digit_(events);
     if (*events == '\0')
     {
-        ser_->print(timer_->events.ambient);
-        ser_->print(';');
-        ser_->print(timer_->events.lamp ? 1 : 0);
-        ser_->print(';');
-        ser_->println(timer_->events.buzzer ? 1 : 0);
+        ser_->println(YAML_begin);
+        yaml_timer_();
+        ser_->println(YAML_end);
         return 0;
     }
 
@@ -630,11 +672,20 @@ SerialCLI::error_t AlarmClockCLI::cmd_rtc_(char *ignored)
 {
     (void)ignored;
 
-    if (now_.dayOfTheWeek() == 0) ser_->print(days_of_the_week_names_short[7]);
-    else ser_->print(days_of_the_week_names_short[now_.dayOfTheWeek()]);
+    ser_->println(YAML_begin);
+    ser_->println(F("rtc:"));
+    indent_(1);
+    ser_->print(F("time: "));
     char buff[] = "YYYY-MM-DD hh:mm:ss";
-    ser_->print(' ');
     ser_->println(now_.toString(buff));
+
+    indent_(1);
+    ser_->print(F("dow: "));
+    ser_->println(days_of_the_week_names_short[
+            (now_.dayOfTheWeek() == 0) ? 7 : now_.dayOfTheWeek()
+            ]);
+
+    ser_->println(YAML_end);
     return 0;
 }
 
