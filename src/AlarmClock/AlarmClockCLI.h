@@ -118,6 +118,9 @@ protected:
     static char * find_digit_(char* str);
     static char * find_next_digit_(char* str);
     static void indent_(byte level);
+    static void yaml_time_(byte hours, byte minutes);
+    static void yaml_time_(HoursMinutes time);
+    static void yaml_alarm_(byte index, bool comments);
 
 
     // commands
@@ -137,6 +140,7 @@ protected:
     static SerialCLI::error_t cmd_sav_(char *ignored);
     static SerialCLI::error_t cmd_rtc_(char *ignored);
     static SerialCLI::error_t cmd_ls_(char *ignored);
+    static SerialCLI::error_t cmd_la_(char *ignored);
 
     static SerialCLI::error_t select_alarm_(byte index);
     static SerialCLI::error_t set_enabled_(AlarmEnabled status);

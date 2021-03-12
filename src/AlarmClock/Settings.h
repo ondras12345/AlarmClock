@@ -159,8 +159,11 @@ I2C addresses
 /*
 Serial CLI
 */
-// Width of indentation (e.g. in help)
+// Width of indentation (e.g. in help and YAML)
 #define Serial_indentation_width 2  // characters
+
+#define YAML_begin F("---")
+#define YAML_end F("...")
 
 // Time elapsed since last command after which the CLI writes the changed data
 // to the EEPROM

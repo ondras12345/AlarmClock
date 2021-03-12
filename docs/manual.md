@@ -108,14 +108,14 @@ If the entered date is invalid, nothing happens.
 
 | Option                          | Values               | Type  | Meaning                                       |
 | ------------------------------- | -------------------- | ----- | --------------------------------------------- |
-| Enabled                         | (Off\|SGL\|RPT\|SKP) | enum  | Off, Single: only rings once, Repeat, Skip    |
-| Days of week                    | (1-7):(1\|0)         | bools | Days of the week the alarm is enabled for     |
-| Time                            | (0-23):(0-59)        | time  |                                               |
-| Snooze: time                    | (1-99)               | min   | How long is the alarm in snooze               |
-| Snooze: count                   | (0-9)                | count | How many times can the snooze feature be used |
-| Signalization: Ambient          | (0-255)              |       | Ambient LED strips intensity (0 = disabled)   |
-| Signalization: Lamp             | (0\|1)               | bool  | Is the 'lamp' output activated                |
-| Signalization: Buzzer           | (0\|1)               | bool  | Is the buzzer activated                       |
+| enabled                         | (OFF\|SGL\|RPT\|SKP) | enum  | OFF, Single: only rings once, Repeat, Skip    |
+| days                            | (1-7):(1\|0)         | bools | Days of the week the alarm is enabled for     |
+| time                            | (0-23):(0-59)        | time  |                                               |
+| snooze: time                    | (1-99)               | min   | How long is the alarm in snooze               |
+| snooze: count                   | (0-9)                | count | How many times can the snooze feature be used |
+| signalization: ambient          | (0-255)              |       | Ambient LED strips intensity (0 = disabled)   |
+| signalization: lamp             | (0\|1)               | bool  | Is the 'lamp' output activated                |
+| signalization: buzzer           | (0\|1)               | bool  | Is the buzzer activated                       |
 
 
 **Notes:**  

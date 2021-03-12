@@ -526,7 +526,7 @@ void GUI::update_(const DateTime& now)
         switch (sel_alarm_->get_enabled())
         {
         case Off:
-            strcpy_P(enabled, PSTR("Off"));
+            strcpy_P(enabled, PSTR("OFF"));
             break;
 
         case Single:

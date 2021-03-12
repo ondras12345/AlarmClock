@@ -36,7 +36,6 @@ WDT
 /*
 String constants
 */
-//! 1 = Monday, 7 = Sunday
 extern const char* days_of_the_week_names_short[8];
 
 
