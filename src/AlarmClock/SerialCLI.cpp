@@ -96,14 +96,13 @@ void SerialCLI::loop()
         DEBUG_println();
         DEBUG_println(F("Processing"));
 
-        char *cmd_ptr = nullptr;
         bool cmd_found = false;
 
         for (byte i = 0; i < command_count_; i++)
         {
-            if ((cmd_ptr = strstr(Serial_buffer_, commands_[i].text)) != nullptr)
+            if (strstr(Serial_buffer_, commands_[i].text) == Serial_buffer_)
             {
-                print_error_((commands_[i].handler)(cmd_ptr));
+                print_error_((commands_[i].handler)(Serial_buffer_));
                 cmd_found = true;
                 break;  // do not process any further commands
             }
