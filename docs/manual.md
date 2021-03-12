@@ -154,6 +154,9 @@ Individual commands (messages) must be terminated with CR or LF or both.
 
 For info about available commands, type `help`.
 
+For information on how to interact with the CLI programmatically, see
+documentation of `AlarmClockCLI` class.
+
 ## Error codes
 When a command is executed, it prints a hexadecimal error code.
 If everything is ok, 'err 0x0: OK' should be printed.
