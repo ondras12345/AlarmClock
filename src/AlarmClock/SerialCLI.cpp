@@ -114,9 +114,13 @@ void SerialCLI::loop()
         }
 
         prev_command_millis_ = millis();
+        print_prompt_ = true;
+    }
 
-        // Prompt will be missing after reboot, but this can't be easily fixed.
+    if (print_prompt_)
+    {
         ser_.println();
         ser_.print(prompt_);
+        print_prompt_ = false;
     }
 }
