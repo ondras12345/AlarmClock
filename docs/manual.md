@@ -156,8 +156,8 @@ For info about available commands, type `help`.
 
 ## Error codes
 When a command is executed, it prints a hexadecimal error code.
-If everything is ok, 'err 0: OK' should be printed.
-If something fails, 'err {n}: {explanation}' is printed.
+If everything is ok, 'err 0x0: OK' should be printed.
+If something fails, 'err 0x{n}: {explanation}' is printed.
 The explanation matches the error code, but error codes should be easier to
 decode in scripts.
 

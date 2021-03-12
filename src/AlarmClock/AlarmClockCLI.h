@@ -79,7 +79,8 @@ protected:
         kArgument = 1,
         kNothingSelected = 2,
         kUselessSave = 4,
-        kLast = 8, //!< last; all errors are lower than this
+        kNotFound = 8,
+        kLast = 16, //!< last; all errors are lower than this
     };
 
     //! Error strings corresponding to errors in CommandError

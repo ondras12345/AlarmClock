@@ -48,11 +48,13 @@ const SerialCLI::command_t AlarmClockCLI::commands[] = {
 const byte AlarmClockCLI::command_count =
     (sizeof(AlarmClockCLI::commands) / sizeof(SerialCLI::command_t));
 
+// TODO make this PROGMEM
 const char* AlarmClockCLI::error_strings[] = {
     "OK",
     "Invalid args",
     "Sel first",
     "Nothing to save",
+    "? SYNTAX ERROR",
 };
 
 
@@ -224,7 +226,7 @@ void AlarmClockCLI::yaml_alarm_(byte index, bool comments)
 void AlarmClockCLI::print_error(SerialCLI::error_t code)
 {
     ser_->println();
-    ser_->print(F("err "));
+    ser_->print(F("err 0x"));
     ser_->print(code, HEX);
     ser_->print(F(": "));
 
@@ -248,8 +250,6 @@ void AlarmClockCLI::print_error(SerialCLI::error_t code)
 
 void AlarmClockCLI::cmd_not_found()
 {
-    ser_->println(F("? SYNTAX ERROR"));
-
     ser_->println();
     ser_->println(F("Help:"));
     indent_(1);
@@ -304,6 +304,8 @@ void AlarmClockCLI::cmd_not_found()
     ser_->println(F("tme{a};{l};{b} - set timer events"));
     indent_(2);
     ser_->println(F("tmr-start/tmr-stop"));
+
+    print_error(kNotFound);
 }
 
 
