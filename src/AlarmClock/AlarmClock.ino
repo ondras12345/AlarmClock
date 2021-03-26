@@ -117,6 +117,11 @@ void setup()
     if (err & err_I2C_ping_DS3231)
     {
         Serial.println(F("RTC not connected. Cannot continue."));
+#ifdef active_buzzer
+        digitalWrite(pin_buzzer, HIGH);
+#else
+        tone(pin_buzzer, 1000);
+#endif
         for(;;);
         // TODO handle RTC ping failed
     }
