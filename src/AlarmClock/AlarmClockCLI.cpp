@@ -26,6 +26,7 @@ constexpr char AlarmClockCLI::prompt_default_[];
 
 
 const SerialCLI::command_t AlarmClockCLI::commands[] = {
+    {"sync",    &AlarmClockCLI::cmd_sync_},
     {"sel",     &AlarmClockCLI::cmd_sel_},
     {"amb",     &AlarmClockCLI::cmd_amb_},
     {"lamp",    &AlarmClockCLI::cmd_lamp_},
@@ -385,6 +386,21 @@ SerialCLI::error_t AlarmClockCLI::save_()
     else return kUselessSave;
 }
 
+
+
+/*!
+    @brief  Does nothing.
+    This is useful when a program communicating with this device needs to get
+    a prompt as quickly as possible.
+
+    This command is not documented in CLI `help`, because it is useless for a
+    human user.
+*/
+SerialCLI::error_t AlarmClockCLI::cmd_sync_(char *ignored)
+{
+    (void)ignored;
+    return 0;
+}
 
 
 SerialCLI::error_t AlarmClockCLI::cmd_sel_(char *index)

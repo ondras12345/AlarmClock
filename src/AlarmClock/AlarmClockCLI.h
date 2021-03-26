@@ -145,6 +145,7 @@ protected:
 
 
     // commands
+    static SerialCLI::error_t cmd_sync_(char *ignored);
     static SerialCLI::error_t cmd_sel_(char *index);
     static SerialCLI::error_t cmd_amb_(char *duty);
     static SerialCLI::error_t cmd_lamp_(char *status);
