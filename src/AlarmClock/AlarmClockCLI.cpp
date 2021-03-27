@@ -44,7 +44,8 @@ const SerialCLI::command_t AlarmClockCLI::commands[] = {
     {"sav",     &AlarmClockCLI::cmd_sav_},
     {"rtc",     &AlarmClockCLI::cmd_rtc_},
     {"ls",      &AlarmClockCLI::cmd_ls_},
-    {"la",      &AlarmClockCLI::cmd_la_}
+    {"la",      &AlarmClockCLI::cmd_la_},
+    {"ver",     &AlarmClockCLI::cmd_ver_}
 };
 const byte AlarmClockCLI::command_count =
     (sizeof(AlarmClockCLI::commands) / sizeof(SerialCLI::command_t));
@@ -293,6 +294,8 @@ void AlarmClockCLI::cmd_not_found()
 {
     ser_->println();
     ser_->println(F("Help:"));
+    indent_(1);
+    ser_->println(F("ver - static info"));
     indent_(1);
     ser_->println(F("amb - get ambient 0-255"));
     indent_(1);
@@ -758,5 +761,25 @@ SerialCLI::error_t AlarmClockCLI::cmd_sd_(char *date)
     DateTime new_date(year, month, day, now_.hour(), now_.minute());
     if (!new_date.isValid()) return kArgument;
     rtc_->adjust(new_date);
+    return 0;
+}
+
+
+
+SerialCLI::error_t AlarmClockCLI::cmd_ver_(char *ignored)
+{
+    (void)ignored;
+    ser_->println(YAML_begin);
+    ser_->println(F("ver:"));
+    indent_(1);
+    ser_->print(F("number of alarms: "));
+    ser_->println(alarms_count);
+    indent_(1);
+    ser_->print(F("build time: "));
+    ser_->print(F(__DATE__));
+    ser_->print(F(" "));
+    ser_->println(F(__TIME__));
+    ser_->println(YAML_end);
+
     return 0;
 }

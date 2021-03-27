@@ -163,6 +163,7 @@ protected:
     static SerialCLI::error_t cmd_rtc_(char *ignored);
     static SerialCLI::error_t cmd_ls_(char *ignored);
     static SerialCLI::error_t cmd_la_(char *ignored);
+    static SerialCLI::error_t cmd_ver_(char *ignored);
 
     static SerialCLI::error_t select_alarm_(byte index);
     static SerialCLI::error_t set_enabled_(AlarmEnabled status);
