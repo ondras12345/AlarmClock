@@ -758,7 +758,8 @@ SerialCLI::error_t AlarmClockCLI::cmd_sd_(char *date)
     if (month > 12 || day > 31) return kArgument;
 
     now_ = rtc_->now();
-    DateTime new_date(year, month, day, now_.hour(), now_.minute());
+    DateTime new_date(year, month, day,
+                      now_.hour(), now_.minute(), now_.second());
     if (!new_date.isValid()) return kArgument;
     rtc_->adjust(new_date);
     return 0;
