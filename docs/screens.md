@@ -31,7 +31,7 @@ Buttons:
 Alarm index: 0 (0x00)
 Last alarm index: 15 (0x0F)
 Enabled for all days of the week
-Only rings once, then disables itself (SGL). Other possible values: Off, RPT
+Only rings once, then disables itself (SGL). Other possible values: OFF, RPT, SKP
 Rings at 6:20
 Snooze: 5 * 5 minutes
 Signalization: ambient: 25x (range 0-255 --> 0-25 on this screen);

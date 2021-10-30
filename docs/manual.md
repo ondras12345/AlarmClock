@@ -51,7 +51,7 @@ This is not a full activation, and thus does not handle Single and Skip (will
 be handled once the alarm triggers at the set time).  If you notice the
 ambient is on, but the alarm hasn't triggered yet, you can use the stop button
 to stop the ambient. This will not inhibit the full activation, you need to
-use the inhibit feature for that.
+use the inhibit function for that.
 If the alarm only has "Signalization: Ambient" enabled, you can use the LCD
 backlight to determine whether the alarm is active or not. If the backlight is
 permanently on, the alarm is active.
