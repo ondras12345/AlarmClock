@@ -105,6 +105,7 @@ void setup()
     init_hardware();
 
     Wire.begin();
+    rtc.begin();
     Serial.begin(9600);
 
     lcd_init();
@@ -112,7 +113,7 @@ void setup()
     unsigned int err = SelfTest(POST);
     if (!(err & err_critical_mask))
         err |= (readEEPROM() ? 0 : err_EEPROM);
-    err |= SelfTest(time); // rtc.begin() can be omitted (only calls Wire.begin())
+    err |= SelfTest(time);
 
     if (err & err_I2C_ping_DS3231)
     {
