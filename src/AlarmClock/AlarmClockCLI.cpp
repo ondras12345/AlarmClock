@@ -425,8 +425,13 @@ SerialCLI::error_t AlarmClockCLI::cmd_amb_(char * duty)
     if (*duty == '\0')
     {
         ser_->println(YAML_begin);
-        ser_->print(F("ambient: "));
+        ser_->println(F("ambient:"));
+        indent_(1);
+        ser_->print(F("current: "));
         ser_->println(ambientDimmer_->get_value());
+        indent_(1);
+        ser_->print(F("target: "));
+        ser_->println(ambientDimmer_->get_stop());
         ser_->println(YAML_end);
         return 0;
     }

@@ -22,8 +22,8 @@ class PWMDimmer
      byte pin_;
      int value_; // int because of overflows
 
-     // I need to initialize these variables with values because start() can be
-     // executed before set()
+     // I need to initialize these variables with values because start() could
+     // be called before set().
      byte start_ = 0;
      byte stop_ = 0;
      unsigned long interval_ = 100;
@@ -36,20 +36,19 @@ class PWMDimmer
 
      void set(byte start, byte stop, int step, unsigned long interval);
 
-     // Automatically calculate step and interval from duration
      void set_from_duration(byte start, byte stop, unsigned long duration);
 
      void start();
 
-     // Set the output to LOW and deactivate
      void stop();
 
      void loop();
 
+     //! Get current value
      byte get_value() const { return byte(value_); }
 
-     //! Get the target value
-     byte get_stop() const { return byte(stop_); }
+     //! Get target value
+     byte get_stop() const { return stop_; }
 
      bool get_active() const { return active_; }
 
