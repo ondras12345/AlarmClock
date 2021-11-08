@@ -1,4 +1,4 @@
-# Arduino-alarm-clock
+# AlarmClock Manual
 This project's source code and electronic designs are available
 on [Github][Github repo].
 
@@ -189,7 +189,7 @@ Explanation:
 - `sav` saves the changes (optional - see [Autosave](#autosave))
 
 
-[Github repo]: https://github.com/ondras12345/Arduino-alarm-clock
+[Github repo]: https://github.com/ondras12345/AlarmClock
 [Wikipedia PWM]: https://en.wikipedia.org/wiki/Pulse-width_modulation
 [Wikipedia boolean]: https://en.wikipedia.org/wiki/Boolean_data_type
 [PuTTY]: https://www.putty.org/

@@ -1,5 +1,5 @@
-# Arduino-alarm-clock
-Arduino alarm clock using a DS3231 RTC and a LCD
+# AlarmClock
+An Arduino-compatible alarm clock with multiple configurable alarms
 
 **WARNING**: This project is still under development.
 
@@ -31,8 +31,10 @@ Arduino alarm clock using a DS3231 RTC and a LCD
 - https://github.com/PaulStoffregen/Encoder
 
 
-# Docs
+# Documentation
 See the [manual][manual].
+
+You can generate documentation for the source code using `doxygen`.
 
 
 [manual]: ./docs/manual.md
