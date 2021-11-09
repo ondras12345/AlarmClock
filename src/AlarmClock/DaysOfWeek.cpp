@@ -7,6 +7,7 @@
 /*!
     @brief  Check whether the alarm should activate on a given day of the week.
     @param num day of the week (1 = Monday, 7 = Sunday)
+    @see getDayOfWeek_Adafruit
 */
 bool DaysOfWeek::getDayOfWeek(byte num) const
 {
@@ -17,6 +18,7 @@ bool DaysOfWeek::getDayOfWeek(byte num) const
 /*!
     @brief  Check whether the alarm should activate on a given day of the week.
     @param num day of the week, Adafruit style (0 = Sunday, 6 = Saturday)
+    @see getDayOfWeek
 */
 bool DaysOfWeek::getDayOfWeek_Adafruit(byte num) const
 {
@@ -30,6 +32,7 @@ bool DaysOfWeek::getDayOfWeek_Adafruit(byte num) const
     @param num day of the week (1 = Monday, 7 = Sunday)
     @param status whether the alarm should activate or not
     @return true if the input data is valid; false if it fails
+    @see setDayOfWeek_Adafruit
 */
 bool DaysOfWeek::setDayOfWeek(byte num, bool status)
 {
@@ -44,6 +47,7 @@ bool DaysOfWeek::setDayOfWeek(byte num, bool status)
     @param num day of the week, Adafruit style (0 = Sunday, 6 = Saturday)
     @param status whether the alarm should activate or not
     @return true if the input data is valid; false if it fails
+    @see setDayOfWeek
 */
 bool DaysOfWeek::setDayOfWeek_Adafruit(byte num, bool status)
 {

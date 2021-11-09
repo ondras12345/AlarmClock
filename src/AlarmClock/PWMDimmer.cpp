@@ -79,6 +79,14 @@ void PWMDimmer::set_from_duration(byte start, byte stop, unsigned long duration)
 }
 
 
+/*!
+    @brief  Start dimming
+
+    `set` of `set_from_duration` should be called before starting the
+    dimmer.
+    @see    set
+    @see    set_from_duration
+*/
 void PWMDimmer::start()
 {
     active_ = true;

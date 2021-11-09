@@ -124,9 +124,9 @@ char* AlarmClockCLI::find_next_digit_(char* str)
 }
 
 
-// No tabs in YAML!
 void AlarmClockCLI::indent_(byte level)
 {
+    // No tabs in YAML!
     for (byte i = 0; i < level * Serial_indentation_width; i++)
     {
         ser_->print(' ');
@@ -165,7 +165,7 @@ void AlarmClockCLI::yaml_time_(HoursMinutes time)
 }
 
 
-//! Print an alarm in YAML.
+//! Print out an alarm as YAML.
 //! A valid index must be passed to this function.
 //! This function does not print YAML_begin nor YAML_end
 void AlarmClockCLI::yaml_alarm_(byte index, bool comments)
@@ -241,7 +241,7 @@ void AlarmClockCLI::yaml_alarm_(byte index, bool comments)
 }
 
 
-//! Print the CountdownTimer in YAML.
+//! Print out state of the CountdownTimer as YAML.
 //! This function does not print YAML_begin nor YAML_end
 void AlarmClockCLI::yaml_timer_()
 {
@@ -477,17 +477,16 @@ SerialCLI::error_t AlarmClockCLI::cmd_inh_(char *status)
 
 SerialCLI::error_t AlarmClockCLI::cmd_en_(char *type)
 {
-    // ! - strcmp returns 0 if matches
-    if (!strcmp_P(type, PSTR("en-off")))
+    if (strcmp_P(type, PSTR("en-off")) == 0)
         return set_enabled_(Off);
 
-    if (!strcmp_P(type, PSTR("en-sgl")))
+    if (strcmp_P(type, PSTR("en-sgl")) == 0)
         return set_enabled_(Single);
 
-    if (!strcmp_P(type, PSTR("en-rpt")))
+    if (strcmp_P(type, PSTR("en-rpt")) == 0)
         return set_enabled_(Repeat);
 
-    if (!strcmp_P(type, PSTR("en-skp")))
+    if (strcmp_P(type, PSTR("en-skp")) == 0)
         return set_enabled_(Skip);
 
     return kArgument;

@@ -156,7 +156,7 @@ protected:
     Snooze snooze_;
     Signalization signalization_;
 
-    //! true --> alarm is on (ringing or snooze)
+    //! Returns true if alarm is on (ringing or snooze).
     bool get_active() const
     {
         return current_snooze_count_ < current_snooze_count_inactive_;

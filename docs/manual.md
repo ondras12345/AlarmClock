@@ -93,8 +93,8 @@ Do not modify `src/AlarmClock/Constants.h` unless you know what you are doing.
 
 ## Runtime
 ### RTC time
-RTC time can be set using the Serial CLI. Use the commands `sd` and `st` (type
-`help` for more information).
+RTC (real-time clock) time can be set using the Serial CLI. Use the commands
+`sd` and `st` (type `help` for more information).
 
 Use the RTC screen to set date and time from the GUI. The changes are applied
 once you press the apply button, so you can set the time to now + 10 s

@@ -17,9 +17,10 @@
 
 
 /*!
-    @brief  A command line interface for configuring the alarm.
-    Only one instance should exist at a time, because a lot of stuff needs to
-    be static in order to pass pointers to the commands as function pointers.
+    @brief  A command line interface for configuring the alarm clock.
+    Only one instance should exist at a time, because a lot of stuff
+    needs to be static in order to be able to pass commands as
+    function pointers.
 
     Any program parsing this CLI needs to support both LF and CRLF line
     endings. In incoming data (i.e. commands), CR, LF or any combination of
