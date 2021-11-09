@@ -17,9 +17,28 @@
 
 
 /*!
-    @brief  A command line interface for configuring the alarm.
-    Only one instance should exist at a time, because a lot of stuff needs to
-    be static in order to pass pointers to the commands as function pointers.
+    @brief  A command line interface for configuring the alarm clock.
+    Only one instance should exist at a time, because a lot of stuff
+    needs to be static in order to be able to pass commands as
+    function pointers.
+
+    Any program parsing this CLI needs to support both LF and CRLF line
+    endings. In incoming data (i.e. commands), CR, LF or any combination of
+    them can be used to end a message.
+
+    The CLI aims to be easily parsable. Any entry except for an empty one
+    ("\r\n" is considered empty, but " \r\n" is not) results in an error
+    message that matches this regex: "^err 0x[0-9]{,2}: .*$". Before this
+    message is the command's output, if any.
+
+    Because DEBUG stuff is printed to the same serial port, it is necessary to
+    mark the command output's beginning and end. For commands with YAML output,
+    this is done with `YAML_begin` and `YAML_end` macros from Settings.h
+    (should match "^---$" and "^\.\.\.$", but may contain CR at the end).
+
+    No command shall be sent unless a prompt matching "^A?[0-9]{,3}> " was
+    received. Note that anything can get appended to the prompt, DEBUG messages
+    are a common example of this behavior.
 */
 class AlarmClockCLI
 {
@@ -79,7 +98,8 @@ protected:
         kArgument = 1,
         kNothingSelected = 2,
         kUselessSave = 4,
-        kLast = 8, //!< last; all errors are lower than this
+        kNotFound = 8,
+        kLast = 16, //!< last; all errors are lower than this
     };
 
     //! Error strings corresponding to errors in CommandError
@@ -118,9 +138,15 @@ protected:
     static char * find_digit_(char* str);
     static char * find_next_digit_(char* str);
     static void indent_(byte level);
+    static void yaml_time_(byte hours, byte minutes);
+    static void yaml_time_(byte hours, byte minutes, byte seconds);
+    static void yaml_time_(HoursMinutes time);
+    static void yaml_alarm_(byte index, bool comments);
+    static void yaml_timer_();
 
 
     // commands
+    static SerialCLI::error_t cmd_sync_(char *ignored);
     static SerialCLI::error_t cmd_sel_(char *index);
     static SerialCLI::error_t cmd_amb_(char *duty);
     static SerialCLI::error_t cmd_lamp_(char *status);
@@ -137,6 +163,8 @@ protected:
     static SerialCLI::error_t cmd_sav_(char *ignored);
     static SerialCLI::error_t cmd_rtc_(char *ignored);
     static SerialCLI::error_t cmd_ls_(char *ignored);
+    static SerialCLI::error_t cmd_la_(char *ignored);
+    static SerialCLI::error_t cmd_ver_(char *ignored);
 
     static SerialCLI::error_t select_alarm_(byte index);
     static SerialCLI::error_t set_enabled_(AlarmEnabled status);

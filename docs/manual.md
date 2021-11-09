@@ -93,8 +93,8 @@ Do not modify `src/AlarmClock/Constants.h` unless you know what you are doing.
 
 ## Runtime
 ### RTC time
-RTC time can be set using the Serial CLI. Use the commands `sd` and `st` (type
-`help` for more information).
+RTC (real-time clock) time can be set using the Serial CLI. Use the commands
+`sd` and `st` (type `help` for more information).
 
 Use the RTC screen to set date and time from the GUI. The changes are applied
 once you press the apply button, so you can set the time to now + 10 s
@@ -108,14 +108,14 @@ If the entered date is invalid, nothing happens.
 
 | Option                          | Values               | Type  | Meaning                                       |
 | ------------------------------- | -------------------- | ----- | --------------------------------------------- |
-| Enabled                         | (Off\|SGL\|RPT\|SKP) | enum  | Off, Single: only rings once, Repeat, Skip    |
-| Days of week                    | (1-7):(1\|0)         | bools | Days of the week the alarm is enabled for     |
-| Time                            | (0-23):(0-59)        | time  |                                               |
-| Snooze: time                    | (1-99)               | min   | How long is the alarm in snooze               |
-| Snooze: count                   | (0-9)                | count | How many times can the snooze feature be used |
-| Signalization: Ambient          | (0-255)              |       | Ambient LED strips intensity (0 = disabled)   |
-| Signalization: Lamp             | (0\|1)               | bool  | Is the 'lamp' output activated                |
-| Signalization: Buzzer           | (0\|1)               | bool  | Is the buzzer activated                       |
+| enabled                         | (OFF\|SGL\|RPT\|SKP) | enum  | OFF, Single: only rings once, Repeat, Skip    |
+| days                            | (1-7):(1\|0)         | bools | Days of the week the alarm is enabled for     |
+| time                            | (0-23):(0-59)        | time  |                                               |
+| snooze: time                    | (1-99)               | min   | How long is the alarm in snooze               |
+| snooze: count                   | (0-9)                | count | How many times can the snooze feature be used |
+| signalization: ambient          | (0-255)              |       | Ambient LED strips intensity (0 = disabled)   |
+| signalization: lamp             | (0\|1)               | bool  | Is the 'lamp' output activated                |
+| signalization: buzzer           | (0\|1)               | bool  | Is the buzzer activated                       |
 
 
 **Notes:**  
@@ -154,10 +154,13 @@ Individual commands (messages) must be terminated with CR or LF or both.
 
 For info about available commands, type `help`.
 
+For information on how to interact with the CLI programmatically, see
+documentation of `AlarmClockCLI` class.
+
 ## Error codes
 When a command is executed, it prints a hexadecimal error code.
-If everything is ok, 'err 0: OK' should be printed.
-If something fails, 'err {n}: {explanation}' is printed.
+If everything is ok, 'err 0x0: OK' should be printed.
+If something fails, 'err 0x{n}: {explanation}' is printed.
 The explanation matches the error code, but error codes should be easier to
 decode in scripts.
 

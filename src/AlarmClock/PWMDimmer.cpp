@@ -32,7 +32,7 @@ void PWMDimmer::set(byte start, byte stop, int step, unsigned long interval)
 
 
 /*!
-    @brief  Automatically calculates `step` and `interval` and calls `set`
+    @brief  Automatically calculate `step` and `interval` and call `set`.
     @see `set`
 */
 void PWMDimmer::set_from_duration(byte start, byte stop, unsigned long duration)
@@ -79,6 +79,14 @@ void PWMDimmer::set_from_duration(byte start, byte stop, unsigned long duration)
 }
 
 
+/*!
+    @brief  Start dimming
+
+    `set` of `set_from_duration` should be called before starting the
+    dimmer.
+    @see    set
+    @see    set_from_duration
+*/
 void PWMDimmer::start()
 {
     active_ = true;
@@ -86,6 +94,7 @@ void PWMDimmer::start()
 }
 
 
+//! Set the output to LOW and deactivate.
 void PWMDimmer::stop()
 {
     active_ = false;

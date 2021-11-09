@@ -26,6 +26,7 @@ constexpr char AlarmClockCLI::prompt_default_[];
 
 
 const SerialCLI::command_t AlarmClockCLI::commands[] = {
+    {"sync",    &AlarmClockCLI::cmd_sync_},
     {"sel",     &AlarmClockCLI::cmd_sel_},
     {"amb",     &AlarmClockCLI::cmd_amb_},
     {"lamp",    &AlarmClockCLI::cmd_lamp_},
@@ -42,16 +43,20 @@ const SerialCLI::command_t AlarmClockCLI::commands[] = {
     {"sd",      &AlarmClockCLI::cmd_sd_},
     {"sav",     &AlarmClockCLI::cmd_sav_},
     {"rtc",     &AlarmClockCLI::cmd_rtc_},
-    {"ls",      &AlarmClockCLI::cmd_ls_}
+    {"ls",      &AlarmClockCLI::cmd_ls_},
+    {"la",      &AlarmClockCLI::cmd_la_},
+    {"ver",     &AlarmClockCLI::cmd_ver_}
 };
 const byte AlarmClockCLI::command_count =
     (sizeof(AlarmClockCLI::commands) / sizeof(SerialCLI::command_t));
 
+// TODO make this PROGMEM
 const char* AlarmClockCLI::error_strings[] = {
     "OK",
     "Invalid args",
     "Sel first",
     "Nothing to save",
+    "? SYNTAX ERROR",
 };
 
 
@@ -121,6 +126,7 @@ char* AlarmClockCLI::find_next_digit_(char* str)
 
 void AlarmClockCLI::indent_(byte level)
 {
+    // No tabs in YAML!
     for (byte i = 0; i < level * Serial_indentation_width; i++)
     {
         ser_->print(' ');
@@ -128,10 +134,141 @@ void AlarmClockCLI::indent_(byte level)
 }
 
 
+void AlarmClockCLI::yaml_time_(byte hours, byte minutes)
+{
+    ser_->print('\'');
+    ser_->print(hours);
+    ser_->print(':');
+    if (minutes < 10) ser_->print('0');
+    ser_->print(minutes);
+    ser_->println('\'');
+}
+
+
+void AlarmClockCLI::yaml_time_(byte hours, byte minutes, byte seconds)
+{
+    ser_->print('\'');
+    ser_->print(hours);
+    ser_->print(':');
+    if (minutes < 10) ser_->print('0');
+    ser_->print(minutes);
+    ser_->print(':');
+    if (seconds < 10) ser_->print('0');
+    ser_->print(seconds);
+    ser_->println('\'');
+}
+
+
+void AlarmClockCLI::yaml_time_(HoursMinutes time)
+{
+    yaml_time_(time.hours, time.minutes);
+}
+
+
+//! Print out an alarm as YAML.
+//! A valid index must be passed to this function.
+//! This function does not print YAML_begin nor YAML_end
+void AlarmClockCLI::yaml_alarm_(byte index, bool comments)
+{
+    ser_->print(F("alarm"));
+    ser_->print(index);
+    ser_->println(':');
+
+    indent_(1);
+    ser_->print(F("enabled: "));
+    switch (alarms_[index].get_enabled())
+    {
+        case Off:
+            ser_->println(F("'OFF'"));
+            break;
+
+        case Single:
+            ser_->println(F("SGL"));
+            break;
+
+        case Repeat:
+            ser_->println(F("RPT"));
+            break;
+
+        case Skip:
+            ser_->println(F("SKP"));
+            break;
+    }
+
+    indent_(1);
+    ser_->print(F("dow: 0x"));
+    // Filter out bit 0. It has no meaning and should always be zero.
+    ser_->print(alarms_[index].get_days_of_week().DaysOfWeek & 0xFE, HEX);
+    if (comments)
+    {
+        ser_->print(F("  #"));
+        for (byte i = 1; i <= 7; i++)
+        {
+            ser_->print(' ');
+            ser_->print(days_of_the_week_names_short[
+                    alarms_[index].get_days_of_week().getDayOfWeek(i) ?
+                    i : 0]);  // 0 - two spaces
+        }
+    }
+    ser_->println();
+
+    indent_(1);
+    ser_->print(F("time: "));
+    yaml_time_(alarms_[index].get_time());
+
+    indent_(1);
+    ser_->println(F("snz:"));
+    indent_(2);
+    ser_->print(F("time: "));
+    ser_->print(alarms_[index].get_snooze().time_minutes);
+    if (comments) ser_->println(F("  # min"));
+    else ser_->println();
+    indent_(2);
+    ser_->print(F("count: "));
+    ser_->println(alarms_[index].get_snooze().count);
+
+    indent_(1);
+    ser_->println(F("sig:"));
+    indent_(2);
+    ser_->print(F("ambient: "));
+    ser_->println(alarms_[index].get_signalization().ambient);
+    indent_(2);
+    ser_->print(F("lamp: "));
+    ser_->println(alarms_[index].get_signalization().lamp);
+    indent_(2);
+    ser_->print(F("buzzer: "));
+    ser_->println(alarms_[index].get_signalization().buzzer);
+}
+
+
+//! Print out state of the CountdownTimer as YAML.
+//! This function does not print YAML_begin nor YAML_end
+void AlarmClockCLI::yaml_timer_()
+{
+    ser_->println(F("timer:"));
+    indent_(1);
+    ser_->print(F("running: "));
+    ser_->println(timer_->get_running() ? F("true") : F("false"));
+    indent_(1);
+    ser_->print(F("time left: "));
+    TimeSpan time_left(timer_->time_left);
+    yaml_time_(time_left.hours(), time_left.minutes(), time_left.seconds());
+    indent_(1);
+    ser_->print(F("ambient: "));
+    ser_->println(timer_->events.ambient);
+    indent_(1);
+    ser_->print(F("lamp: "));
+    ser_->println(timer_->events.lamp ? 1 : 0);
+    indent_(1);
+    ser_->print(F("buzzer: "));
+    ser_->println(timer_->events.buzzer ? 1 : 0);
+}
+
+
 void AlarmClockCLI::print_error(SerialCLI::error_t code)
 {
     ser_->println();
-    ser_->print(F("err "));
+    ser_->print(F("err 0x"));
     ser_->print(code, HEX);
     ser_->print(F(": "));
 
@@ -155,10 +292,10 @@ void AlarmClockCLI::print_error(SerialCLI::error_t code)
 
 void AlarmClockCLI::cmd_not_found()
 {
-    ser_->println(F("? SYNTAX ERROR"));
-
     ser_->println();
     ser_->println(F("Help:"));
+    indent_(1);
+    ser_->println(F("ver - static info"));
     indent_(1);
     ser_->println(F("amb - get ambient 0-255"));
     indent_(1);
@@ -173,6 +310,8 @@ void AlarmClockCLI::cmd_not_found()
     ser_->println(F("inh{i} - set inhibit 0|1"));
     indent_(1);
     ser_->println(F("sel{i} - select alarm"));
+    indent_(1);
+    ser_->println(F("la - list all alarms"));
     indent_(1);
     ser_->println(F("Selected alarm:"));
     indent_(2);
@@ -209,6 +348,8 @@ void AlarmClockCLI::cmd_not_found()
     ser_->println(F("tme{a};{l};{b} - set timer events"));
     indent_(2);
     ser_->println(F("tmr-start/tmr-stop"));
+
+    print_error(kNotFound);
 }
 
 
@@ -250,6 +391,21 @@ SerialCLI::error_t AlarmClockCLI::save_()
 
 
 
+/*!
+    @brief  Does nothing.
+    This is useful when a program communicating with this device needs to get
+    a prompt as quickly as possible.
+
+    This command is not documented in CLI `help`, because it is useless for a
+    human user.
+*/
+SerialCLI::error_t AlarmClockCLI::cmd_sync_(char *ignored)
+{
+    (void)ignored;
+    return 0;
+}
+
+
 SerialCLI::error_t AlarmClockCLI::cmd_sel_(char *index)
 {
     index = find_digit_(index);
@@ -268,8 +424,15 @@ SerialCLI::error_t AlarmClockCLI::cmd_amb_(char * duty)
     duty = find_next_digit_(duty);
     if (*duty == '\0')
     {
-        ser_->print(F("amb: "));
+        ser_->println(YAML_begin);
+        ser_->println(F("ambient:"));
+        indent_(1);
+        ser_->print(F("current: "));
         ser_->println(ambientDimmer_->get_value());
+        indent_(1);
+        ser_->print(F("target: "));
+        ser_->println(ambientDimmer_->get_stop());
+        ser_->println(YAML_end);
         return 0;
     }
     ambient = strbyte_(duty);
@@ -285,8 +448,10 @@ SerialCLI::error_t AlarmClockCLI::cmd_lamp_(char *status)
     status = find_next_digit_(status);
     if (*status == '\0')
     {
+        ser_->println(YAML_begin);
         ser_->print(F("lamp: "));
         ser_->println(lamp_->get());
+        ser_->println(YAML_end);
         return 0;
     }
     lamp_->set_manu(strbyte_(status));
@@ -299,8 +464,10 @@ SerialCLI::error_t AlarmClockCLI::cmd_inh_(char *status)
     status = find_next_digit_(status);
     if (*status == '\0')
     {
+        ser_->println(YAML_begin);
         ser_->print(F("inhibit: "));
         ser_->println(get_inhibit_());
+        ser_->println(YAML_end);
         return 0;
     }
     set_inhibit_(strbyte_(status));
@@ -310,17 +477,16 @@ SerialCLI::error_t AlarmClockCLI::cmd_inh_(char *status)
 
 SerialCLI::error_t AlarmClockCLI::cmd_en_(char *type)
 {
-    // ! - strcmp returns 0 if matches
-    if (!strcmp_P(type, PSTR("en-off")))
+    if (strcmp_P(type, PSTR("en-off")) == 0)
         return set_enabled_(Off);
 
-    if (!strcmp_P(type, PSTR("en-sgl")))
+    if (strcmp_P(type, PSTR("en-sgl")) == 0)
         return set_enabled_(Single);
 
-    if (!strcmp_P(type, PSTR("en-rpt")))
+    if (strcmp_P(type, PSTR("en-rpt")) == 0)
         return set_enabled_(Repeat);
 
-    if (!strcmp_P(type, PSTR("en-skp")))
+    if (strcmp_P(type, PSTR("en-skp")) == 0)
         return set_enabled_(Skip);
 
     return kArgument;
@@ -458,11 +624,9 @@ SerialCLI::error_t AlarmClockCLI::cmd_tmr_(char *time)
     time = find_next_digit_(time);
     if (*time == '\0')
     {
-        TimeSpan time_left(timer_->time_left);
-        char buff[8 + 1];
-        sprintf_P(buff, PSTR("%02d:%02d:%02d"),
-                  time_left.hours(), time_left.minutes(), time_left.seconds());
-        ser_->println(buff);
+        ser_->println(YAML_begin);
+        yaml_timer_();
+        ser_->println(YAML_end);
         return 0;
     }
 
@@ -501,11 +665,9 @@ SerialCLI::error_t AlarmClockCLI::cmd_tme_(char *events)
     events = find_next_digit_(events);
     if (*events == '\0')
     {
-        ser_->print(timer_->events.ambient);
-        ser_->print(';');
-        ser_->print(timer_->events.lamp ? 1 : 0);
-        ser_->print(';');
-        ser_->println(timer_->events.buzzer ? 1 : 0);
+        ser_->println(YAML_begin);
+        yaml_timer_();
+        ser_->println(YAML_end);
         return 0;
     }
 
@@ -533,11 +695,20 @@ SerialCLI::error_t AlarmClockCLI::cmd_rtc_(char *ignored)
 {
     (void)ignored;
 
-    if (now_.dayOfTheWeek() == 0) ser_->print(days_of_the_week_names_short[7]);
-    else ser_->print(days_of_the_week_names_short[now_.dayOfTheWeek()]);
+    ser_->println(YAML_begin);
+    ser_->println(F("rtc:"));
+    indent_(1);
+    ser_->print(F("time: "));
     char buff[] = "YYYY-MM-DD hh:mm:ss";
-    ser_->print(' ');
     ser_->println(now_.toString(buff));
+
+    indent_(1);
+    ser_->print(F("dow: "));
+    ser_->println(days_of_the_week_names_short[
+            (now_.dayOfTheWeek() == 0) ? 7 : now_.dayOfTheWeek()
+            ]);
+
+    ser_->println(YAML_end);
     return 0;
 }
 
@@ -549,70 +720,26 @@ SerialCLI::error_t AlarmClockCLI::cmd_ls_(char *ignored)
     if (sel_alarm_index_ == sel_alarm_index_none_)
         return kNothingSelected;
 
-    ser_->print(F("Num: "));
-    ser_->println(sel_alarm_index_);
+    ser_->println(YAML_begin);
+    yaml_alarm_(sel_alarm_index_, true);
+    ser_->println(YAML_end);
 
-    indent_(1);
-    ser_->print(F("Enabled: "));
-    switch (alarms_[sel_alarm_index_].get_enabled())
-    {
-    case Off:
-        ser_->println(F("Off"));
-        break;
+    return 0;
+}
 
-    case Single:
-        ser_->println(F("Single"));
-        break;
 
-    case Repeat:
-        ser_->println(F("Repeat"));
-        break;
+SerialCLI::error_t AlarmClockCLI::cmd_la_(char *ignored)
+{
+    (void)ignored;
+    ser_->println(YAML_begin);
 
-    case Skip:
-        ser_->println(F("Skip"));
-        break;
-    }
+    // Comments are disabled to make the message shorter. Otherwise, printing
+    // all the alarms could take way too long and interfere with normal
+    // operation of the alarm clock.
+    for (byte i = 0; i < alarms_count; i++)
+        yaml_alarm_(i, false);
 
-    indent_(1);
-    ser_->print(F("Days of week: "));
-    for (byte i = 1; i <= 7; i++)
-    {
-        if (alarms_[sel_alarm_index_].get_days_of_week().getDayOfWeek(i))
-        {
-            ser_->print(days_of_the_week_names_short[i]);
-            ser_->print(' ');
-        }
-        else ser_->print(F("   "));
-    }
-    ser_->println();
-
-    indent_(1);
-    ser_->print(F("Time: "));
-    ser_->print(alarms_[sel_alarm_index_].get_time().hours);
-    ser_->print(':');
-    ser_->println(alarms_[sel_alarm_index_].get_time().minutes);
-
-    indent_(1);
-    ser_->println(F("Snooze: "));
-    indent_(2);
-    ser_->print(F("Time: "));
-    ser_->print(alarms_[sel_alarm_index_].get_snooze().time_minutes);
-    ser_->println(F(" min"));
-    indent_(2);
-    ser_->print(F("Count: "));
-    ser_->println(alarms_[sel_alarm_index_].get_snooze().count);
-
-    indent_(1);
-    ser_->println(F("Signalization: "));
-    indent_(2);
-    ser_->print(F("Ambient: "));
-    ser_->println(alarms_[sel_alarm_index_].get_signalization().ambient);
-    indent_(2);
-    ser_->print(F("Lamp: "));
-    ser_->println(alarms_[sel_alarm_index_].get_signalization().lamp);
-    indent_(2);
-    ser_->print(F("Buzzer: "));
-    ser_->println(alarms_[sel_alarm_index_].get_signalization().buzzer);
+    ser_->println(YAML_end);
 
     return 0;
 }
@@ -635,8 +762,29 @@ SerialCLI::error_t AlarmClockCLI::cmd_sd_(char *date)
     if (month > 12 || day > 31) return kArgument;
 
     now_ = rtc_->now();
-    DateTime new_date(year, month, day, now_.hour(), now_.minute());
+    DateTime new_date(year, month, day,
+                      now_.hour(), now_.minute(), now_.second());
     if (!new_date.isValid()) return kArgument;
     rtc_->adjust(new_date);
+    return 0;
+}
+
+
+
+SerialCLI::error_t AlarmClockCLI::cmd_ver_(char *ignored)
+{
+    (void)ignored;
+    ser_->println(YAML_begin);
+    ser_->println(F("ver:"));
+    indent_(1);
+    ser_->print(F("number of alarms: "));
+    ser_->println(alarms_count);
+    indent_(1);
+    ser_->print(F("build time: "));
+    ser_->print(F(__DATE__));
+    ser_->print(F(" "));
+    ser_->println(F(__TIME__));
+    ser_->println(YAML_end);
+
     return 0;
 }

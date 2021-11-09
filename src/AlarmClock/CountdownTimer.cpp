@@ -5,6 +5,7 @@
 #include "CountdownTimer.h"
 
 //! Starts the timer.
+//! Does nothing if `time_left` is 0.
 void CountdownTimer::start()
 {
     if (time_left == 0) return;

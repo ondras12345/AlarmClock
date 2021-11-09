@@ -70,6 +70,7 @@ protected:
     void (&print_error_)(error_t);
     void (&cmd_not_found_)();
     const char* prompt_;
+    bool print_prompt_ = true;
 
     //! maximum command length
     static constexpr byte kSerial_buffer_length_ = 12;

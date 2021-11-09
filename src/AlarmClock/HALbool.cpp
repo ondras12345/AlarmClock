@@ -16,7 +16,7 @@ HALbool::HALbool(void(*set_hw_)(bool))
 
 
 /*!
-    @brief  Manually sets the resource. Normal control cannot  set it to
+    @brief  Manually set the resource. Normal control cannot set it to
             false if manually set to true.
 
     @param s what should the resource be set to

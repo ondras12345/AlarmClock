@@ -455,10 +455,20 @@ void GUI::loop(const DateTime& now)
     }
 }
 
+
+/*!
+    @brief  Apply limits for the rotary encoder.
+
+    The limits are inclusive.
+    @param value current value of edited variable
+    @param step how much to add or subtract
+    @param loop go from limit_high to limit_low and vice versa
+    @return new value of edited variable
+*/
 byte GUI::apply_limits_(byte value, int step, byte limit_low,
                         byte limit_high, bool loop)
 {
-    // Byte cannot be lower than 0, so I have to check before adding step to
+    // byte cannot be less than 0, so I have to check before adding step to
     // the value to be able to detect limit_low
     if (value < limit_low)
         return limit_low;
@@ -480,12 +490,14 @@ byte GUI::apply_limits_(byte value, int step, byte limit_low,
     return byte(value + step);
 }
 
+
 void GUI::switch_screen_(Screen screen)
 {
     current_screen_ = screen;
     cursor_position_ = 0;
     encoder_.write(0);
 }
+
 
 void GUI::update_(const DateTime& now)
 {
@@ -526,7 +538,7 @@ void GUI::update_(const DateTime& now)
         switch (sel_alarm_->get_enabled())
         {
         case Off:
-            strcpy_P(enabled, PSTR("Off"));
+            strcpy_P(enabled, PSTR("OFF"));
             break;
 
         case Single:

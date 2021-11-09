@@ -21,16 +21,18 @@
 
 /*!
     @brief  A single-purpose GUI. It can only be used with the alarm clock.
-    It handles its own lcd, rotary encoder and button.
+
+    It handles its own LCD, rotary encoder and button.
 */
 class GUI
 {
 public:
+    //! Enumeration of all possible states of LCD backlight
     enum backlight_t
     {
-        off = 0,
-        on = 1,
-        permanent = 2
+        off = 0,        //!< off
+        on = 1,         //!< on, will be turned off after GUI_backlight_timeout
+        permanent = 2   //!< on, will NOT time out
     };
 
 
@@ -62,7 +64,11 @@ public:
 
 
 protected:
-    //! Must be contiguous
+    /*!
+        @brief  Enum of all screens.
+
+        Must be contiguous.
+    */
     enum Screen
     {
         screen_home = 0,
@@ -72,6 +78,7 @@ protected:
         //screen_LAST  // Must be the last item in the enum. Not needed yet.
     };
 
+    //! Position of the cursor on the screen
     struct cursor_position_t
     {
         byte column;
@@ -204,11 +211,6 @@ protected:
     bool cursor_clicked_ = false;
     bool change_ = false;  //!< for EEPROM write
 
-    /*!
-        @brief  Apply limits for the rotary encoder.
-        The limits are inclusive.
-        loop - allow the user to move from limit_high to limit_low
-    */
     byte apply_limits_(byte value, int step, byte limit_low, byte limit_high,
                        bool loop = false);
 

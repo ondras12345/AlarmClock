@@ -11,7 +11,8 @@
 
 #include "Arduino.h"
 
-// The custom characters cannot be const because of the library
+// The custom characters cannot be const because of LiquidCrystal_I2C.h
+
 extern byte LCD_char_home[];
 
 extern byte LCD_char_bell[];

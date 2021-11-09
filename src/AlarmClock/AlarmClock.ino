@@ -7,7 +7,7 @@ Code directives:
 
  - all comments in English
 
- - Todo comments must contain 'TODO' (for automated searching)
+ - TODO comments must contain 'TODO' (for automated searching)
 
  - constants should be #defined or const, never write the actual number to the code
 
@@ -18,7 +18,7 @@ Code directives:
 
  - declaring variables in switch - case: https://forum.arduino.cc/index.php?topic=64407.0
 
- - custom lcd characters: https://maxpromer.github.io/LCD-Character-Creator/
+ - custom LCD characters: https://maxpromer.github.io/LCD-Character-Creator/
 */
 
 

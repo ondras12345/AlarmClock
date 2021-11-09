@@ -1,6 +1,6 @@
 /*!
     @file
-    @brief  The actual definitions of the arrays.
+    @brief  Definitions of custom LCD characters.
 */
 
 #include "LCDchars.h"
@@ -13,7 +13,8 @@ byte LCD_char_home[] = {
     B10001,
     B10001,
     B11111,
-    B00000 };
+    B00000
+};
 
 byte LCD_char_bell[] = {
     B00100,
@@ -23,7 +24,8 @@ byte LCD_char_bell[] = {
     B01110,
     B11111,
     B00000,
-    B00100 };
+    B00100
+};
 
 byte LCD_char_timer[] = {
     B11111,
@@ -33,7 +35,8 @@ byte LCD_char_timer[] = {
     B01110,
     B11111,
     B00000,
-    B00000 };
+    B00000
+};
 
 byte LCD_char_apply[] = {
     B00000,
@@ -43,7 +46,8 @@ byte LCD_char_apply[] = {
     B10100,
     B01000,
     B00000,
-    B00000 };
+    B00000
+};
 
 byte LCD_char_cancel[] = {
     B00000,
@@ -53,4 +57,5 @@ byte LCD_char_cancel[] = {
     B01010,
     B10001,
     B00000,
-    B00000 };
+    B00000
+};

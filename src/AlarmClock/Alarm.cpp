@@ -39,7 +39,7 @@ void Alarm::loop(DateTime time)
             // timed-out alarm would disable it's ambient (buzzer and lamp are
             // already solved).
             // This would be quite hard to fix, so a note was added to the
-            // docs and I'm leaving it as-is, at least for now.
+            // docs and I'm leaving it as is, at least for now.
             // A class derived from PWMDimmer could be used to keep track
             // of the number of alarms that want the ambient to be on.
             if ((unsigned long)(millis() - prev_activation_millis_) >= Alarm_timeout)
