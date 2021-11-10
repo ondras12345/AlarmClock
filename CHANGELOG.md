@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+
+
+## [0.5.0] - 2021-11-10
 ### Added
 - Support for backspace key in Serial CLI
 - Buzzer should beep when RTC failure is detected
@@ -15,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - CLI rework. It should be much easier to parse. Commands now output YAML.  
-  **WARNING**: breaking CLI changes
+  **WARNING**: breaking changes in CLI
 
 
 ## [0.4.1] - 2021-03-11
