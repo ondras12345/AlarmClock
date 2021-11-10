@@ -71,7 +71,7 @@ void AlarmClockCLI::loop(const DateTime& now)
     {
         ser_->println();
         ser_->println(F("Autosaving"));
-        print_error(save_());
+        save_();
     }
 }
 
