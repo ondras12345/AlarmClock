@@ -16,7 +16,7 @@ An Arduino-compatible alarm clock with multiple configurable alarms
   from the bed, so that the user cannot reach it while still laying.
 - a 16x2 character LCD with a rotary encoder for configuration
   ([GUI](./docs/manual.md#LCD))
-- a serial port (UART) text-based configuration interface
+- an easy to parse serial port (UART) text-based configuration interface
   ([CLI](./docs/manual.md#Serial-CLI))
 
 ## TODO

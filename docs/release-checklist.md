@@ -1,8 +1,9 @@
 - [ ] Try to compile
-- [ ] Go trough docs/test-checklist.md
-- [ ] Update CHANGELOG.md
-- [ ] Update README.md (??)
-- [ ] Update docs/manual.md
+- [ ] Run unit tests
+- [ ] Go trough [`docs/test-checklist.md`](test-checklist.md)
+- [ ] Update `CHANGELOG.md`
+- [ ] Update `README.md` if necessary
+- [ ] Update `docs/manual.md` if necessary
 - [ ] `git tag`
 - [ ] `git push --tags`
-- [ ] Github release - text from CHANGELOG.md
+- [ ] Github release - text from `CHANGELOG.md`
