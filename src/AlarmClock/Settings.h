@@ -104,7 +104,7 @@ Timer
 Hardware
 */
 // Active buzzer mode. pin_buzzer is only switched on or off instead of
-// being switched at the beeping frequency.
+// producing a PWM modulated sine wave at the selected beeping frequency.
 //
 // Active buzzer - a buzzer that makes noise on its own without the need to
 // feed it with AC signal (tone) - DC power is enough.

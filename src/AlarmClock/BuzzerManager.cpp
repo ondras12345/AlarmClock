@@ -6,19 +6,6 @@
 
 
 /*!
-    @brief  The constructor
-    @param pin The pin the buzzer is connected to. This pin must be configured
-               as OUTPUT before loop() is first called.
-               If pin is set to 255, it is ignored and no hardware is
-               accessed. This is used for tests.
-*/
-BuzzerManager::BuzzerManager(byte pin)
-{
-    pin_ = pin;
-}
-
-
-/*!
     @brief  Call me in your loop()
 */
 void BuzzerManager::loop()
@@ -83,7 +70,7 @@ void BuzzerManager::set_buzzer(bool status)
 #ifdef active_buzzer
         digitalWrite(pin_buzzer, HIGH);
 #else
-        tone(pin_, freq_);
+        sine_.tone(pin_, freq_);
 #endif
     }
     else
@@ -91,7 +78,7 @@ void BuzzerManager::set_buzzer(bool status)
 #ifdef active_buzzer
         digitalWrite(pin_, LOW);
 #else
-        noTone(pin_);
+        sine_.noTone(pin_);
 #endif
     }
 }
