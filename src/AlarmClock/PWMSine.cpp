@@ -32,7 +32,6 @@ void PWMSine::begin()
 {
     Timer1.initialize(timer1_us);
     Timer1.stop();
-    Timer1.attachInterrupt(timer1_ISR);
 }
 
 
@@ -57,6 +56,23 @@ void PWMSine::tone(uint8_t pin, uint16_t freq, uint8_t amplitude)
     // Timer1.pwm needs to be called at least once before setPwmDuty can be
     // used.
     Timer1.pwm(tone_pin, 512);
+    Timer1.attachInterrupt(timer1_ISR);
+    Timer1.start();
+}
+
+
+/*!
+    @brief  Produce signal with zero amplitude on specified pin.
+
+    This is not the same as noTone because noTone will completely stop PWM
+    generation and thus cause the speaker to click.
+    @param pin  Output pin.
+    @see noTone
+*/
+void PWMSine::silence(uint8_t pin)
+{
+    Timer1.detachInterrupt();
+    Timer1.pwm(pin, 512);
     Timer1.start();
 }
 
@@ -70,5 +86,6 @@ void PWMSine::noTone(uint8_t pin)
 {
     Timer1.stop();
     Timer1.disablePwm(pin);
+    Timer1.detachInterrupt();
     digitalWrite(pin, LOW);
 }

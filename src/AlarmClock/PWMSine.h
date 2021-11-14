@@ -23,6 +23,7 @@ public:
     PWMSine() {};
     static void begin();
     static void tone(uint8_t pin, uint16_t freq, uint8_t amplitude=255);
+    static void silence(uint8_t pin);
     static void noTone(uint8_t pin);
 };
 

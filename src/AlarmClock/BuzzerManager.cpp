@@ -50,7 +50,7 @@ void BuzzerManager::set_ringing(BuzzerTone tone)
         if (on_count_ == 0)
         {
             tone_ = ringing_off;
-            set_buzzer(false);
+            set_buzzer(false, true);
             volume_ = 0;
         }
         return;
@@ -74,8 +74,13 @@ void BuzzerManager::set_ringing(BuzzerTone tone)
 }
 
 
-//! Turn the buzzer on or off. Active buzzer is handled here.
-void BuzzerManager::set_buzzer(bool status)
+/*!
+    @brief  Turn the buzzer on or off. Active buzzer is handled here.
+    @param status True if the buzzer should be beeping.
+    @param amp_off  If set to true, the sound output will be completely turned
+                    off (as opposed to just outputting PWM modulated silence).
+*/
+void BuzzerManager::set_buzzer(bool status, bool amp_off)
 {
     status_ = status;
     if (pin_ == 255) return; // tests
@@ -92,7 +97,10 @@ void BuzzerManager::set_buzzer(bool status)
 #ifdef active_buzzer
         digitalWrite(pin_, LOW);
 #else
-        sine_.noTone(pin_);
+        if (amp_off)
+            sine_.noTone(pin_);
+        else
+            sine_.silence(pin_);
 #endif
     }
 }

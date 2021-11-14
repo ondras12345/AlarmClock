@@ -68,7 +68,7 @@ protected:
     unsigned long volume_prev_millis_ = 0;
     uint8_t volume_ = 0;  //!< sine wave amplitude
 
-    void set_buzzer(bool status);
+    void set_buzzer(bool status, bool amp_off=false);
 
 };
 
