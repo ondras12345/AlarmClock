@@ -15,6 +15,18 @@ void BuzzerManager::loop()
         set_buzzer(!status_);
         prev_millis_ = millis();
     }
+
+    if (tone_ != ringing_off && volume_ < 255)
+    {
+        // We need to make 255 steps during Alarm_ringing_ramp_duration.
+        // It won't be that smooth because we only update the amplitude at the
+        // beginning of period_ though.
+        if ((millis() - volume_prev_millis_) >= (Alarm_ringing_ramp_duration / 255UL))
+        {
+            volume_prev_millis_ = millis();
+            volume_++;
+        }
+    }
 }
 
 
@@ -39,6 +51,7 @@ void BuzzerManager::set_ringing(BuzzerTone tone)
         {
             tone_ = ringing_off;
             set_buzzer(false);
+            volume_ = 0;
         }
         return;
     }
@@ -61,6 +74,7 @@ void BuzzerManager::set_ringing(BuzzerTone tone)
 }
 
 
+//! Turn the buzzer on or off. Active buzzer is handled here.
 void BuzzerManager::set_buzzer(bool status)
 {
     status_ = status;
@@ -70,7 +84,7 @@ void BuzzerManager::set_buzzer(bool status)
 #ifdef active_buzzer
         digitalWrite(pin_buzzer, HIGH);
 #else
-        sine_.tone(pin_, freq_);
+        sine_.tone(pin_, freq_, volume_);
 #endif
     }
     else

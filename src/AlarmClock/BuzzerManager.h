@@ -61,10 +61,12 @@ protected:
     PWMSine& sine_;
     bool status_ = false;
     BuzzerTone tone_ = ringing_off;
-    byte on_count_ = 0; //!< number of alarms that want the buzzer to be ringing
-    unsigned long period_;
+    byte on_count_ = 0;  //!< number of alarms that want the buzzer to be ringing
+    unsigned long period_;  //!< duration of sound (and silence) during periodic beeping
     unsigned int freq_;
     unsigned long prev_millis_ = 0;
+    unsigned long volume_prev_millis_ = 0;
+    uint8_t volume_ = 0;  //!< sine wave amplitude
 
     void set_buzzer(bool status);
 

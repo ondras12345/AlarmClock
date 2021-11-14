@@ -68,6 +68,7 @@ void PWMSine::tone(uint8_t pin, uint16_t freq, uint8_t amplitude)
 */
 void PWMSine::noTone(uint8_t pin)
 {
-    (void)pin;
     Timer1.stop();
+    Timer1.disablePwm(pin);
+    digitalWrite(pin, LOW);
 }
