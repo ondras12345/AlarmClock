@@ -14,6 +14,7 @@ void(*AlarmClockCLI::writeEEPROM_)();
 PWMDimmer* AlarmClockCLI::ambientDimmer_;
 HALbool* AlarmClockCLI::lamp_;
 CountdownTimer* AlarmClockCLI::timer_;
+PWMSine* AlarmClockCLI::sine_;
 void(*AlarmClockCLI::set_inhibit_)(bool);
 bool(*AlarmClockCLI::get_inhibit_)();
 
@@ -36,7 +37,6 @@ const SerialCLI::command_t AlarmClockCLI::commands[] = {
     {"dow",     &AlarmClockCLI::cmd_dow_},
     {"snz",     &AlarmClockCLI::cmd_snz_},
     {"sig",     &AlarmClockCLI::cmd_sig_},
-    // tmr needs to be above st because of tmr-start
     {"tmr",     &AlarmClockCLI::cmd_tmr_},
     {"tme",     &AlarmClockCLI::cmd_tme_},
     {"st",      &AlarmClockCLI::cmd_st_},
@@ -45,7 +45,10 @@ const SerialCLI::command_t AlarmClockCLI::commands[] = {
     {"rtc",     &AlarmClockCLI::cmd_rtc_},
     {"ls",      &AlarmClockCLI::cmd_ls_},
     {"la",      &AlarmClockCLI::cmd_la_},
-    {"ver",     &AlarmClockCLI::cmd_ver_}
+    {"ver",     &AlarmClockCLI::cmd_ver_},
+    {"tone",    &AlarmClockCLI::cmd_tone_},
+    {"silence", &AlarmClockCLI::cmd_silence_},
+    {"notone",  &AlarmClockCLI::cmd_notone_},
 };
 const byte AlarmClockCLI::command_count =
     (sizeof(AlarmClockCLI::commands) / sizeof(SerialCLI::command_t));
@@ -57,6 +60,7 @@ const char* AlarmClockCLI::error_strings[] = {
     "Sel first",
     "Nothing to save",
     "? SYNTAX ERROR",
+    "Unsupported"
 };
 
 
@@ -77,16 +81,38 @@ void AlarmClockCLI::loop(const DateTime& now)
 
 
 /*!
-    @brief  Convert a string of digits to a one byte unsigned integer.
-            Negative numbers are not supported.
-            Overflows are not handled.
+    @brief  Convert a string of digits to an 8-bit unsigned integer.
+
+    Negative numbers are not supported. Overflows are not handled.
     @param str  The string.
     @return The number.
             Returns 0 if the first character of the string is not a digit.
+    @see struint16_
 */
 byte AlarmClockCLI::strbyte_(const char* str)
 {
     byte result = 0;
+    while (isDigit(*str))
+    {
+        result = result * 10 + (*str - '0');
+        str++;
+    }
+    return result;
+}
+
+
+/*!
+    @brief  Convert a string of digits to a 16-bit unsigned integer.
+
+    Negative numbers are not supported. Overflows are not handled.
+    @param str  The string.
+    @return The number.
+            Returns 0 if the first character of the string is not a digit.
+    @see strbyte_
+*/
+uint16_t AlarmClockCLI::struint16_(const char* str)
+{
+    uint16_t result = 0;
     while (isDigit(*str))
     {
         result = result * 10 + (*str - '0');
@@ -110,11 +136,13 @@ char* AlarmClockCLI::find_digit_(char* str)
 
 /*!
     @brief  Find the next number in a string.
-            If the first character of the string is a digit, it skips all
-            following characters until it finds one that is not a digit and
-            then calls find_digit_.
+
+    If the first character of the string is a digit, it skips all following
+    characters until it finds one that is not a digit and then calls
+    find_digit_.
     @param str  The string.
     @return Pointer to the first digit of the next number.
+    @see find_digit_
 */
 char* AlarmClockCLI::find_next_digit_(char* str)
 {
@@ -348,6 +376,16 @@ void AlarmClockCLI::cmd_not_found()
     ser_->println(F("tme{a};{l};{b} - set timer events"));
     indent_(2);
     ser_->println(F("tmr-start/tmr-stop"));
+    indent_(1);
+    ser_->println(F("Sound (testing only):"));
+    indent_(2);
+    // The `tone` command would not fit in the buffer if frequency wasn't
+    // divided by 10.
+    ser_->println(F("tone{f/10};{a}"));
+    indent_(2);
+    ser_->println(F("silence"));
+    indent_(2);
+    ser_->println(F("notone"));
 
     print_error(kNotFound);
 }
@@ -787,4 +825,51 @@ SerialCLI::error_t AlarmClockCLI::cmd_ver_(char *ignored)
     ser_->println(YAML_end);
 
     return 0;
+}
+
+
+SerialCLI::error_t AlarmClockCLI::cmd_tone_(char *args)
+{
+#ifdef active_buzzer
+    (void)args;
+    return kUnsupported;
+#else
+    uint16_t frequency;
+    uint8_t amplitude;
+
+    args = find_next_digit_(args);
+    if (*args == '\0') return kArgument;
+    frequency = struint16_(args) * 10;
+    if (frequency == 0 || frequency > 20000) return kArgument;
+    args = find_next_digit_(args);
+    if (*args == '\0') return kArgument;
+    amplitude = strbyte_(args);
+
+    sine_->tone(pin_buzzer, frequency, amplitude);
+    return 0;
+#endif
+}
+
+
+SerialCLI::error_t AlarmClockCLI::cmd_silence_(char *ignored)
+{
+    (void)ignored;
+#ifdef active_buzzer
+    return kUnsupported;
+#else
+    sine_->silence(pin_buzzer);
+    return 0;
+#endif
+}
+
+
+SerialCLI::error_t AlarmClockCLI::cmd_notone_(char *ignored)
+{
+    (void)ignored;
+#ifdef active_buzzer
+    return kUnsupported;
+#else
+    sine_->noTone(pin_buzzer);
+    return 0;
+#endif
 }
