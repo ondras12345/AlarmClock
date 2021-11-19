@@ -4,6 +4,7 @@
 #include "AlarmClockCLI.h"
 #include <RTClib.h>
 #include <avr/pgmspace.h>
+#include <EEPROM.h>
 
 // Assigned in the constructor:
 Stream* AlarmClockCLI::ser_;
@@ -53,6 +54,7 @@ const SerialCLI::command_t AlarmClockCLI::commands[] = {
     {"silence", &AlarmClockCLI::cmd_silence_},
     {"notone",  &AlarmClockCLI::cmd_notone_},
     {"melody",  &AlarmClockCLI::cmd_melody_},
+    {"eew",     &AlarmClockCLI::cmd_eew_},
 };
 const byte AlarmClockCLI::command_count =
     (sizeof(AlarmClockCLI::commands) / sizeof(SerialCLI::command_t));
@@ -394,6 +396,10 @@ void AlarmClockCLI::cmd_not_found()
     ser_->println(F("Melodies:"));
     indent_(2);
     ser_->println(F("melody{i} - play melody 0-15"));
+    indent_(1);
+    ser_->println(F("EEPROM:"));
+    indent_(2);
+    ser_->println(F("eew{aaaa};{ddd} - write data to address"));
 
     print_error(kNotFound);
 }
@@ -906,4 +912,18 @@ SerialCLI::error_t AlarmClockCLI::cmd_melody_(char *id)
     buzzer_playing_ = true;
     return 0;
 #endif
+}
+
+
+SerialCLI::error_t AlarmClockCLI::cmd_eew_(char *args)
+{
+    args = find_next_digit_(args);
+    if (*args == '\0') return kArgument;
+    uint16_t address = struint16_(args);
+    if (address >= EEPROM_size) return kArgument;
+    args = find_next_digit_(args);
+    if (*args == '\0') return kArgument;
+    byte data = strbyte_(args);
+    EEPROM.update(address, data);
+    return 0;
 }
