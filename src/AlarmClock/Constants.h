@@ -51,9 +51,17 @@ POST error codes
 /*
 EEPROM
 */
-#define EEPROM_alarms_offset 10
+#define EEPROM_size 1024
+#define EEPROM_alarms_offset 0x40
 #define EEPROM_alarms_id 0xFE
-#define EEPROM_DEBUG_dump_length 100
+#define EEPROM_DEBUG_dump_length 164
+
+#define EEPROM_melodies_header_start 0x0010
+#define EEPROM_melodies_count 16  // 48 bytes
+// we need to leave enough space for alarms...
+// 16 alarms * 10 bytes per alarm = 160 bytes
+// alarms start at 0x0040
+#define EEPROM_melodies_data_start 0x0100
 
 
 /*
@@ -83,5 +91,13 @@ LCD dimensions
 */
 #define LCD_width 16
 #define LCD_height 2
+
+/*
+Melodies
+*/
+// bit 0 is always 1
+#define melody_header_flag_enabled 1  // bit 1
+
+#define melody_footer_flag_repeat 0  // bit 0
 
 #endif

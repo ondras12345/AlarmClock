@@ -58,6 +58,8 @@ public:
         @param ambientDimmer    Pointer to the ambientDimmer object.
         @param sine Reference to the PWMSine object that is used to produce
                     sound.
+        @param buzzer   Reference to a BuzzerManager object capable of playing
+                        melodies.
         @param lamp     Pointer to the lamp object.
         @param timer    Pointer to the timer object.
         @param set_inhibit  Pointer to a function that sets the status of the
@@ -70,6 +72,7 @@ public:
                   PWMDimmer* ambientDimmer, HALbool* lamp,
                   CountdownTimer* timer,
                   PWMSine& sine,
+                  BuzzerManager& buzzer,
                   void(*set_inhibit)(bool), bool(*get_inhibit)()
                  ) : CLI_(ser, commands, command_count, print_error,
                           cmd_not_found, prompt_)
@@ -82,6 +85,7 @@ public:
         lamp_ = lamp;
         timer_ = timer;
         sine_ = &sine;
+        buzzer_ = &buzzer;
         set_inhibit_ = set_inhibit;
         get_inhibit_ = get_inhibit;
 
@@ -125,8 +129,12 @@ protected:
     static HALbool* lamp_;
     static CountdownTimer* timer_;
     static PWMSine* sine_;
+    static BuzzerManager* buzzer_;
     static void(*set_inhibit_)(bool);
     static bool(*get_inhibit_)();
+
+    //! This keeps BuzzerManager's on_count_ correct.
+    static bool buzzer_playing_;
 
     SerialCLI CLI_;
 
@@ -176,6 +184,7 @@ protected:
     static SerialCLI::error_t cmd_tone_(char *args);
     static SerialCLI::error_t cmd_silence_(char *ignored);
     static SerialCLI::error_t cmd_notone_(char *ignored);
+    static SerialCLI::error_t cmd_melody_(char *id);
 
     static SerialCLI::error_t select_alarm_(byte index);
     static SerialCLI::error_t set_enabled_(AlarmEnabled status);

@@ -15,8 +15,11 @@ PWMDimmer* AlarmClockCLI::ambientDimmer_;
 HALbool* AlarmClockCLI::lamp_;
 CountdownTimer* AlarmClockCLI::timer_;
 PWMSine* AlarmClockCLI::sine_;
+BuzzerManager* AlarmClockCLI::buzzer_;
 void(*AlarmClockCLI::set_inhibit_)(bool);
 bool(*AlarmClockCLI::get_inhibit_)();
+
+bool AlarmClockCLI::buzzer_playing_ = false;
 
 bool AlarmClockCLI::change_ = false;
 byte AlarmClockCLI::sel_alarm_index_ = AlarmClockCLI::sel_alarm_index_none_;
@@ -49,6 +52,7 @@ const SerialCLI::command_t AlarmClockCLI::commands[] = {
     {"tone",    &AlarmClockCLI::cmd_tone_},
     {"silence", &AlarmClockCLI::cmd_silence_},
     {"notone",  &AlarmClockCLI::cmd_notone_},
+    {"melody",  &AlarmClockCLI::cmd_melody_},
 };
 const byte AlarmClockCLI::command_count =
     (sizeof(AlarmClockCLI::commands) / sizeof(SerialCLI::command_t));
@@ -386,6 +390,10 @@ void AlarmClockCLI::cmd_not_found()
     ser_->println(F("silence"));
     indent_(2);
     ser_->println(F("notone"));
+    indent_(1);
+    ser_->println(F("Melodies:"));
+    indent_(2);
+    ser_->println(F("melody{i} - play melody 0-15"));
 
     print_error(kNotFound);
 }
@@ -870,6 +878,32 @@ SerialCLI::error_t AlarmClockCLI::cmd_notone_(char *ignored)
     return kUnsupported;
 #else
     sine_->noTone(pin_buzzer);
+    return 0;
+#endif
+}
+
+
+SerialCLI::error_t AlarmClockCLI::cmd_melody_(char *id)
+{
+#ifdef active_buzzer
+    return kUnsupported;
+#else
+    id = find_digit_(id);
+    if (*id == '\0')
+    {
+        if (buzzer_playing_)
+        {
+            buzzer_->set_ringing(ringing_off);
+            buzzer_playing_ = false;
+        }
+        return 0;
+    }
+
+    byte id_num = strbyte_(id);
+    // We must keep BuzzerManager's on_count_ correct.
+    if (buzzer_playing_) buzzer_->set_ringing(ringing_off);
+    buzzer_->set_ringing((BuzzerTone)(ringing_melody0 + id_num));
+    buzzer_playing_ = true;
     return 0;
 #endif
 }

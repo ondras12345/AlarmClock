@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+### Added
+- Support for PWM generated sine wave audio output.
+- Support for melodies.
+
+### Changed
+- EEPROM data storage format. The section that contains alarms has been moved.
+  All preexisting alarm configuration will be lost after upgrading to this
+  version.  **WARNING** braking changes in EEPROM handling.
 
 
 ## [0.5.0] - 2021-11-10
