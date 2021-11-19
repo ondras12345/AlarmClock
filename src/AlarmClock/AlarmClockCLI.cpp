@@ -54,6 +54,7 @@ const SerialCLI::command_t AlarmClockCLI::commands[] = {
     {"silence", &AlarmClockCLI::cmd_silence_},
     {"notone",  &AlarmClockCLI::cmd_notone_},
     {"melody",  &AlarmClockCLI::cmd_melody_},
+    {"eer",     &AlarmClockCLI::cmd_eer_},
     {"eew",     &AlarmClockCLI::cmd_eew_},
 };
 const byte AlarmClockCLI::command_count =
@@ -398,6 +399,8 @@ void AlarmClockCLI::cmd_not_found()
     ser_->println(F("melody{i} - play melody 0-15"));
     indent_(1);
     ser_->println(F("EEPROM:"));
+    indent_(2);
+    ser_->println(F("eer{aaaa} - read data from address"));
     indent_(2);
     ser_->println(F("eew{aaaa};{ddd} - write data to address"));
 
@@ -912,6 +915,24 @@ SerialCLI::error_t AlarmClockCLI::cmd_melody_(char *id)
     buzzer_playing_ = true;
     return 0;
 #endif
+}
+
+
+SerialCLI::error_t AlarmClockCLI::cmd_eer_(char *args)
+{
+    args = find_next_digit_(args);
+    if (*args == '\0') return kArgument;
+    uint16_t address = struint16_(args);
+    if (address >= EEPROM_size) return kArgument;
+
+    ser_->println(YAML_begin);
+    ser_->println(F("EEPROM:"));
+    indent_(1);
+    ser_->print(address);
+    ser_->print(": ");
+    ser_->println(EEPROM.read(address));
+    ser_->println(YAML_end);
+    return 0;
 }
 
 
