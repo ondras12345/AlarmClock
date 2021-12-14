@@ -16,9 +16,10 @@ uint8_t tone_amplitude;
 uint16_t tone_k;
 
 
+volatile uint16_t i = 0;
+
 void timer1_ISR()
 {
-    static uint16_t i = 0;
     i += tone_k;
     //int16_t value = int8_t(pgm_read_byte_near(sin_LUT + (uint8_t)(i/64))) * tone_amplitude / 256 * 4;
     int16_t value = int8_t(pgm_read_byte_near(sin_LUT + (uint8_t)(i/64))) * tone_amplitude / 64;
@@ -56,6 +57,7 @@ void PWMSine::tone(uint8_t pin, uint16_t freq, uint8_t amplitude)
     // Timer1.pwm needs to be called at least once before setPwmDuty can be
     // used.
     Timer1.pwm(tone_pin, 512);
+    i = 0;  // sync start to sine zero crossing
     Timer1.attachInterrupt(timer1_ISR);
     Timer1.start();
 }
