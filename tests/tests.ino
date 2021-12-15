@@ -412,7 +412,7 @@ test(Alarm_EEPROM_read)
     assertEqual(alarm.get_snooze().count, 9);
     assertEqual(alarm.get_signalization().ambient, 80);
     assertEqual(alarm.get_signalization().lamp, true);
-    assertEqual(alarm.get_signalization().buzzer, false);
+    assertFalse(alarm.get_signalization().buzzer);
 }
 
 
