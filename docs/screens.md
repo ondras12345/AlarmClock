@@ -35,7 +35,16 @@ Only rings once, then disables itself (SGL). Other possible values: OFF, RPT, SK
 Rings at 6:20
 Snooze: 5 * 5 minutes
 Signalization: ambient: 25x (range 0-255 --> 0-25 on this screen);
-               lamp: 1, buzzer: 1
+               lamp: 1, buzzer: standard beeping
+    Buzzer can be either one of these:
+    s: off
+    S: standard beeping
+    0: melody0
+    ...
+    9: melody9
+    A: melody10
+    ...
+    F: melody15
 Buttons:
 - h - (home symbol) - home screen
 ```

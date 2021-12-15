@@ -88,11 +88,16 @@ The maximum time the timer can be set to is 18:12:15.
 
 ## Buzzer
 ### Melody
-If you have a speaker connected to the alarm clock and the feature is enabled
-in Settings.h, you can define a melody that will be used. This melody is
-stored in the EEPROM and can be read or written from the Serial CLI.
+If you have a speaker connected to the alarm clock, you can define a melody
+that will be used instead of standard beeping. This melody is stored in the
+EEPROM and can be read or written using the Serial CLI (currently only using
+direct EEPROM access commands `eer` and `eew`).
 
-See [melody.md](melody.md) for more info.
+If you specify that an alarm should use a melody that is not enabled (does not
+have valid data stored in the EEPROM), standard beeping is used instead.
+
+See [melody.md](melody.md) for more info on how melodies are stored in the
+EEPROM.
 
 
 # Configuration

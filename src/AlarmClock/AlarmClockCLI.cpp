@@ -272,7 +272,16 @@ void AlarmClockCLI::yaml_alarm_(byte index, bool comments)
     ser_->println(alarms_[index].get_signalization().lamp);
     indent_(2);
     ser_->print(F("buzzer: "));
-    ser_->println(alarms_[index].get_signalization().buzzer);
+    ser_->print(alarms_[index].get_signalization().buzzer);
+    if (comments)
+    {
+        ser_->print(F("  # "));
+        ser_->print(signalization_melody_start);
+        ser_->print('-');
+        ser_->print(signalization_melody_end);
+        ser_->print(F(" are melodies"));
+    }
+    ser_->println();
 }
 
 
@@ -360,7 +369,10 @@ void AlarmClockCLI::cmd_not_found()
     indent_(2);
     ser_->println(F("snz{t};{c} - set snooze: time{t}min;count{c}"));
     indent_(2);
-    ser_->println(F("sig{a};{l};{b} - set signalization: ambient{a}0-255;lamp{l}1|0;buzzer{b}1|0"));
+    ser_->print(F("sig{a};{l};{b} - set signalization: ambient{a}0-255;lamp{l}0|1;buzzer{b}0|1|"));
+    ser_->print(signalization_melody_start);
+    ser_->print('-');
+    ser_->println(signalization_melody_end);
     indent_(1);
     ser_->println(F("sav - save all"));
     indent_(1);
@@ -617,8 +629,8 @@ SerialCLI::error_t AlarmClockCLI::cmd_sig_(char *sig)
 {
     if (sel_alarm_index_ == sel_alarm_index_none_) return kNothingSelected;
 
-    byte ambient;
-    bool lamp, buzzer;
+    byte ambient, buzzer;
+    bool lamp;
 
     sig = find_next_digit_(sig);
     if (*sig == '\0') return kArgument;

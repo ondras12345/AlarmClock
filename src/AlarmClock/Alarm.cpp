@@ -23,8 +23,19 @@ void Alarm::loop(DateTime time)
                 snooze_status_ = false;
                 if (signalization_.lamp) lamp_->set(true);
                 if (signalization_.buzzer)
-                    buzzer_->set_ringing((current_snooze_count_ == 0) ?
+                {
+                    if (signalization_.buzzer >= signalization_melody_start &&
+                        signalization_.buzzer <= signalization_melody_end &&
+                        current_snooze_count_ != 0
+                        )
+                    {
+                        buzzer_->set_ringing((BuzzerTone)(ringing_melody0 +
+                                             signalization_.buzzer -
+                                             signalization_melody_start));
+                    }
+                    else buzzer_->set_ringing((current_snooze_count_ == 0) ?
                             ringing_last : ringing_regular);
+                }
                 // for Alarm_timeout - this allows snooze time to be longer than
                 // Alarm_timeout
                 prev_activation_millis_ = millis();
@@ -105,8 +116,18 @@ void Alarm::loop(DateTime time)
         snooze_status_ = false;
 
         if (signalization_.buzzer)
-            buzzer_->set_ringing((current_snooze_count_ == 0) ?
-                    ringing_last : ringing_regular);
+        {
+            if (signalization_.buzzer >= signalization_melody_start &&
+                signalization_.buzzer <= signalization_melody_end &&
+                current_snooze_count_ != 0
+                )
+            {
+                buzzer_->set_ringing((BuzzerTone)(ringing_melody0 +
+                        signalization_.buzzer - signalization_melody_start));
+            }
+            else buzzer_->set_ringing((current_snooze_count_ == 0) ?
+                                        ringing_last : ringing_regular);
+        }
 
         // Do events - can only switch on
         if (signalization_.lamp) lamp_->set(true);
@@ -403,7 +424,7 @@ bool Alarm::set_snooze(byte time_minutes, byte count)
 }
 
 
-bool Alarm::set_signalization(byte ambient, bool lamp, bool buzzer)
+bool Alarm::set_signalization(byte ambient, bool lamp, byte buzzer)
 {
     signalization_.ambient = ambient;
     signalization_.lamp = lamp;
