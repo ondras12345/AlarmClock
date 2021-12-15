@@ -19,10 +19,6 @@ An Arduino-compatible alarm clock with multiple configurable alarms
 - an easy to parse serial port (UART) text-based configuration interface
   ([CLI](./docs/manual.md#Serial-CLI))
 
-## TODO
-- buzzer loudness ramp-up
-- melodies for the buzzer
-
 
 # Requirements
 - https://github.com/adafruit/RTClib >=1.5.0 (RTClib PR #149)
