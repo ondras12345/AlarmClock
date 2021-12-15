@@ -40,6 +40,9 @@ struct HoursMinutes
 };
 
 
+#define signalization_melody_start 10  //!< first melody
+#define signalization_melody_end 25  //!< last melody
+
 /*!
     @brief  Stores information about the means that should be used to wake the
             user up when the alarm activates.
@@ -48,7 +51,9 @@ struct Signalization
 {
     byte ambient; //!< ambient light intensity - dimmable LED strips
     bool lamp;
-    bool buzzer;
+    //! 0 is off, #signalization_melody_start to #signalization_melody_end
+    //! are melody0 to melody15, everything else is standard beeping.
+    byte buzzer;
 };
 
 
@@ -98,7 +103,7 @@ public:
     bool set_snooze(byte time_minutes, byte count);
     Snooze get_snooze() const { return snooze_; };
 
-    bool set_signalization(byte ambient, bool lamp, bool buzzer);
+    bool set_signalization(byte ambient, bool lamp, byte buzzer);
     Signalization get_signalization() const { return signalization_; };
 
     bool get_inhibit() const { return inhibit_; };

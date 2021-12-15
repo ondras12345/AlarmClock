@@ -1,5 +1,6 @@
 #include "Alarm_mockups.h"
 
+PWMSine sine;
 HALbool lamp(set_lamp);
 MockupBuzzerManager buzzer;
 bool lamp_status;
@@ -17,7 +18,7 @@ void stop_callback() { stopped = true; }
 void reset_alarm_mockups()
 {
     lamp = HALbool(set_lamp);
-    buzzer = MockupBuzzerManager();
+    buzzer.reset_mockup();
     lamp_status = false;
     EEPROM_write = false;
     activated = false;

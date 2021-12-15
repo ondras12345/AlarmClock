@@ -14,6 +14,7 @@
 #include "PWMDimmer.h"
 #include "HALbool.h"
 #include "CountdownTimer.h"
+#include "PWMSine.h"
 
 
 /*!
@@ -55,6 +56,10 @@ public:
         @param writeEEPROM  Pointer to a function that writes all alarms to
                             the EEPROM.
         @param ambientDimmer    Pointer to the ambientDimmer object.
+        @param sine Reference to the PWMSine object that is used to produce
+                    sound.
+        @param buzzer   Reference to a BuzzerManager object capable of playing
+                        melodies.
         @param lamp     Pointer to the lamp object.
         @param timer    Pointer to the timer object.
         @param set_inhibit  Pointer to a function that sets the status of the
@@ -66,6 +71,8 @@ public:
                   Alarm* alarms, RTC_DS3231* rtc, void(*writeEEPROM)(),
                   PWMDimmer* ambientDimmer, HALbool* lamp,
                   CountdownTimer* timer,
+                  PWMSine& sine,
+                  BuzzerManager& buzzer,
                   void(*set_inhibit)(bool), bool(*get_inhibit)()
                  ) : CLI_(ser, commands, command_count, print_error,
                           cmd_not_found, prompt_)
@@ -77,6 +84,8 @@ public:
         ambientDimmer_ = ambientDimmer;
         lamp_ = lamp;
         timer_ = timer;
+        sine_ = &sine;
+        buzzer_ = &buzzer;
         set_inhibit_ = set_inhibit;
         get_inhibit_ = get_inhibit;
 
@@ -99,7 +108,8 @@ protected:
         kNothingSelected = 2,
         kUselessSave = 4,
         kNotFound = 8,
-        kLast = 16, //!< last; all errors are lower than this
+        kUnsupported = 16,  //!< command not supported in this build
+        kLast = 32,  //!< last; all errors are lower than this
     };
 
     //! Error strings corresponding to errors in CommandError
@@ -118,8 +128,13 @@ protected:
     static PWMDimmer* ambientDimmer_;
     static HALbool* lamp_;
     static CountdownTimer* timer_;
+    static PWMSine* sine_;
+    static BuzzerManager* buzzer_;
     static void(*set_inhibit_)(bool);
     static bool(*get_inhibit_)();
+
+    //! This keeps BuzzerManager's on_count_ correct.
+    static bool buzzer_playing_;
 
     SerialCLI CLI_;
 
@@ -135,6 +150,7 @@ protected:
 
     // utils
     static byte strbyte_(const char* str);
+    static uint16_t struint16_(const char* str);
     static char * find_digit_(char* str);
     static char * find_next_digit_(char* str);
     static void indent_(byte level);
@@ -165,6 +181,12 @@ protected:
     static SerialCLI::error_t cmd_ls_(char *ignored);
     static SerialCLI::error_t cmd_la_(char *ignored);
     static SerialCLI::error_t cmd_ver_(char *ignored);
+    static SerialCLI::error_t cmd_tone_(char *args);
+    static SerialCLI::error_t cmd_silence_(char *ignored);
+    static SerialCLI::error_t cmd_notone_(char *ignored);
+    static SerialCLI::error_t cmd_melody_(char *id);
+    static SerialCLI::error_t cmd_eer_(char *args);
+    static SerialCLI::error_t cmd_eew_(char *args);
 
     static SerialCLI::error_t select_alarm_(byte index);
     static SerialCLI::error_t set_enabled_(AlarmEnabled status);

@@ -148,11 +148,7 @@ void GUI::loop(const DateTime& now)
                                                           prev_sig.buzzer);
                             break;
 
-                        case cpa_alarm_sig_b:
-                            sel_alarm_->set_signalization(prev_sig.ambient,
-                                                          prev_sig.lamp,
-                                                          !prev_sig.buzzer);
-                            break;
+                        //case cpa_alarm_sig_b: // multiple steps --> encoder
 
                         default:
                             cursor_clicked_ = true;
@@ -321,6 +317,41 @@ void GUI::loop(const DateTime& now)
                             Signalization prev_sig = sel_alarm_->get_signalization();
                             prev_sig.ambient = apply_limits_(prev_sig.ambient,
                                 encoder_full_steps * 10, 0, 255, encoder_loop_ambient);
+                            sel_alarm_->set_signalization(prev_sig.ambient,
+                                                          prev_sig.lamp,
+                                                          prev_sig.buzzer);
+                        }
+                            break;
+
+                        case cpa_alarm_sig_b:
+                        {
+                            Signalization prev_sig = sel_alarm_->get_signalization();
+                            // We create a special system to simplify working
+                            // with the encoder:
+                            // signalization_melody_start-2 is off
+                            // signalization_melody_start-1 is standard beeping
+                            // the rest are melodies
+                            if (prev_sig.buzzer > signalization_melody_end)
+                                prev_sig.buzzer = signalization_melody_start-1;
+                            else if (prev_sig.buzzer == 0)
+                                prev_sig.buzzer = signalization_melody_start-2;
+                            else if (prev_sig.buzzer != 0 &&
+                                    prev_sig.buzzer < signalization_melody_start
+                                    )
+                                prev_sig.buzzer = signalization_melody_start-1;
+                            prev_sig.buzzer = apply_limits_(
+                                    prev_sig.buzzer,
+                                    encoder_full_steps,
+                                    signalization_melody_start-2,
+                                    signalization_melody_end,
+                                    false);
+                            if (prev_sig.buzzer < signalization_melody_start)
+                            {
+                                if (prev_sig.buzzer == signalization_melody_start-2)
+                                    prev_sig.buzzer = 0;
+                                else
+                                    prev_sig.buzzer = 1;
+                            }
                             sel_alarm_->set_signalization(prev_sig.ambient,
                                                           prev_sig.lamp,
                                                           prev_sig.buzzer);
@@ -560,6 +591,7 @@ void GUI::update_(const DateTime& now)
         lcd_.print(line_buffer_);
 
         lcd_.setCursor(0, 1);
+        byte buzzer = sel_alarm_->get_signalization().buzzer;
         sprintf_P(line_buffer_, PSTR("%02d:%02d+%02d*%d  %02d%c%c"),
                   sel_alarm_->get_time().hours,
                   sel_alarm_->get_time().minutes,
@@ -567,7 +599,18 @@ void GUI::update_(const DateTime& now)
                   sel_alarm_->get_snooze().count,
                   sel_alarm_->get_signalization().ambient / 10,
                   sel_alarm_->get_signalization().lamp ? 'L' : 'l',
-                  sel_alarm_->get_signalization().buzzer ? 'B' : 'b' );
+                  (buzzer != 0) ?
+                    (
+                        (buzzer >= signalization_melody_start &&
+                         buzzer <= signalization_melody_end
+                         ) ?
+                            (
+                             (buzzer - signalization_melody_start < 10) ?
+                                '0'+(buzzer - signalization_melody_start) :
+                                'A'+(buzzer - signalization_melody_start-10)
+                            ) : 'S'
+                    ) : 's'
+                  );
         lcd_.print(line_buffer_);
     }
         break;

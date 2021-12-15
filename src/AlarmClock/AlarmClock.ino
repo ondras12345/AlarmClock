@@ -48,6 +48,8 @@ enum SelfTest_level
 #include "HALbool.h"
 #include "BuzzerManager.h"
 
+#include "PWMSine.h"
+
 #ifdef internal_WDT
 #include <avr/wdt.h>
 #endif
@@ -71,11 +73,12 @@ Alarm alarms[alarms_count];
 PWMDimmer ambientDimmer(pin_ambient);
 HALbool lamp(lamp_set);
 HALbool permanent_backlight(set_backlight_permanent);
-BuzzerManager buzzer(pin_buzzer);
+PWMSine sine;
+BuzzerManager buzzer(pin_buzzer, sine);
 DateTime now;
 CountdownTimer countdown_timer(ambientDimmer, lamp, buzzer);
 AlarmClockCLI myCLI(Serial, alarms, &rtc, writeEEPROM, &ambientDimmer, &lamp,
-                    &countdown_timer, set_inhibit, get_inhibit);
+                    &countdown_timer, sine, buzzer, set_inhibit, get_inhibit);
 GUI myGUI(alarms, writeEEPROM, rtc, encoder,
           buttons[button_index_encoder], lcd, set_inhibit, get_inhibit,
           ambientDimmer, lamp, countdown_timer);
@@ -107,6 +110,7 @@ void setup()
     Wire.begin();
     rtc.begin();
     Serial.begin(9600);
+    sine.begin();
 
     lcd_init();
 

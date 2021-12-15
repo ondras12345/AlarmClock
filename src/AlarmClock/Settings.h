@@ -47,6 +47,12 @@ Alarms
 // default: 500
 #define Alarm_regular_ringing_period 500 // ms
 
+
+// Buzzer volume ramp-up duration
+// This setting has no effect if active_buzzer mode is enabled
+// default: 20 * 1000UL
+#define Alarm_ringing_ramp_duration 20 * 1000UL // ms
+
 // default: 2000
 #define Alarm_last_ringing_freq 2000 // Hz
 
@@ -104,7 +110,7 @@ Timer
 Hardware
 */
 // Active buzzer mode. pin_buzzer is only switched on or off instead of
-// being switched at the beeping frequency.
+// producing a PWM modulated sine wave at the selected beeping frequency.
 //
 // Active buzzer - a buzzer that makes noise on its own without the need to
 // feed it with AC signal (tone) - DC power is enough.
