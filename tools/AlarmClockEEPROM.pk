@@ -1,0 +1,171 @@
+/*
+ * GNU poke pickle for stuff saved in the EEPROM.
+ *
+ * Run `poke eeprom.bin`, `load AlarmClockEEPROM` and do
+ * `var eeprom = EEPROM @ 0#B`. You can then take a look at
+ * `eeprom.alarms`. You might want to `.set pretty-print yes`.
+ */
+
+type Signalization = struct {
+    uint<8> ambient;
+    uint<8> lamp;
+    uint<8> buzzer;
+};
+
+
+type Snooze = struct {
+    uint<8> time_minutes;
+    uint<8> count;
+    method _print = void:
+    {
+        printf "#<time:%u8d,count:%u8d>", time_minutes, count;
+    }
+};
+
+
+type DaysOfWeek = struct {
+    uint<1> Sunday;
+    uint<1> Saturday;
+    uint<1> Friday;
+    uint<1> Thursday;
+    uint<1> Wednesday;
+    uint<1> Tuesday;
+    uint<1> Monday;
+    uint<1> unused;
+
+    method _print = void:
+    {
+        var s = "";
+        if (Monday)
+            s = s + "Monday,";
+        if (Tuesday)
+            s = s + "Tuesday,";
+        if (Wednesday)
+            s = s + "Wednesday,";
+        if (Thursday)
+            s = s + "Thursday,";
+        if (Friday)
+            s = s + "Friday,";
+        if (Saturday)
+            s = s + "Saturday,";
+        if (Sunday)
+            s = s + "Sunday,";
+
+        print "#<" + rtrim (s, ",") + ">";
+    }
+};
+
+
+type EEPROM_alarm = struct {
+    uint<8> magic = 0xFE;
+    uint<8> hours;
+    uint<8> minutes;
+    uint<8> AlarmEnabled;  /* TODO enum */
+    DaysOfWeek days_of_week;
+    Snooze snooze;
+    Signalization signalization;
+    method _print = void:
+    {
+        print "#<\n";
+        printf "  enabled: %s\n", AlarmEnabled ? "yes" : "no";
+        printf "  days of week: %v\n", days_of_week;
+        printf "  time: %u8d:%u8d\n", hours, minutes;
+        printf "  snooze: %v\n",  snooze;
+        printf "  signalization: %v\n", signalization;
+        print ">";
+    }
+};
+
+
+
+/*
+ * Melodies
+ */
+
+set_endian(ENDIAN_LITTLE);
+
+type EEPROM_melody_header = struct {
+    uint<6>;
+    uint<1> enabled;
+    uint<1> valid = 1;
+    uint<16> data_address;
+    method _print = void:
+    {
+        print "#<\n";
+        printf "  enabled: %s\n", enabled ? "yes" : "no";
+        printf "  address: 0x%u16x\n", data_address;
+        print ">";
+    }
+};
+
+
+type melody_tone = struct {
+    uint<8> frequency;
+    uint<8> amplitude;
+    uint<8> duration : duration > 0;
+
+    method get_frequency = uint:
+    {
+        return frequency * 32 + 32;
+    }
+
+    method set_frequency = (uint val) void:
+    {
+        frequency = (val - 32)/32;
+    }
+
+    method get_duration = uint:
+    {
+        return duration * 25;
+    }
+
+    method set_duration = (uint val) void:
+    {
+        duration = val / 25;
+    }
+
+    method _print = void:
+    {
+        printf "#<frequency: %u16d Hz,amplitude: %u8d,duration: %u16d ms>",
+               get_frequency, amplitude, get_duration;
+    }
+};
+
+
+type EEPROM_melody_data = struct {
+    /* We are using little endian. */
+    uint<24> magic = 0xAA55FD;
+
+    /* This will map tones until the duration constraint fails. */
+    melody_tone[] tones;
+
+    uint<32> footer_magic = 0xFF000000;
+    uint<1> repeat;
+    uint<7>;
+    uint<8>[3] offsets;
+
+    method _print = void:
+    {
+        print "#<\n";
+        printf "  tones: %Tv\n", tones;
+        printf "  repeat: %s\n", repeat ? "yes" : "no";
+        printf "  offsets: %v\n", offsets;
+        print ">";
+    }
+};
+
+
+/*
+ * Whole EEPROM
+ */
+type EEPROM = struct  {
+    /* There should be 15 melody headers, but some of them might be
+     * uninitialized, which could cause our constraints to fail...
+     */
+    EEPROM_melody_header[] melody_headers @ 0x0010#B;
+
+    /* This will map alarms until the magic constraint fails. */
+    EEPROM_alarm[] alarms @ 0x0040#B;
+
+    /* TODO EEPROM_melody_data */
+};
