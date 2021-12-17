@@ -1,4 +1,3 @@
-
 // https://github.com/PaulStoffregen/TimerOne
 // version 1.1.0 (git tag 1.1)
 #include <TimerOne.h>
@@ -8,14 +7,15 @@
 
 uint8_t tone_pin;
 uint8_t tone_amplitude;
-uint16_t tone_k;  // number of sine wave points per interrupt * 64 (*64 to increase resolution)
+// number of sine wave points per interrupt * 64
+// (*64 increases resolution)
+uint16_t tone_k;
 
 
 void timer1_ISR()
 {
     static uint16_t i = 0;
     i += tone_k;
-    //int16_t value = int8_t(pgm_read_byte_near(sin_LUT + (uint8_t)(i/64))) * tone_amplitude / 256 * 4;
     int16_t value = int8_t(pgm_read_byte_near(sin_LUT + (uint8_t)(i/64))) * tone_amplitude / 64;
     Timer1.setPwmDuty(tone_pin, value + 512);
 }
@@ -39,8 +39,9 @@ void PWMSine_tone(uint8_t pin, uint16_t freq, uint8_t amplitude)
     //Serial.print("ampl: ");
     //Serial.println(amplitude);
     //Serial.flush();
-    //Timer1.attachInterrupt(timer1_ISR);
-    Timer1.pwm(tone_pin, 512);  // Timer1.pwm needs to be called at least once
+    // Timer1.pwm needs to be called at least once before setPwmDuty can be
+    // used.
+    Timer1.pwm(tone_pin, 512);
     Timer1.start();
 }
 
@@ -49,5 +50,4 @@ void PWMSine_noTone(uint8_t pin)
 {
     (void)pin;
     Timer1.stop();
-    //Timer1.detachInterrupt();  // TODO do we really need this?
 }

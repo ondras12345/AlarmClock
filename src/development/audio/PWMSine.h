@@ -1,8 +1,3 @@
-/*!
-    @file
-    @brief PWM sine wave tones using Timer1.
-*/
-
 #ifndef PWMSINE_H
 #define PWMSINE_H
 

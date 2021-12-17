@@ -12,16 +12,16 @@
 
 
 ### Program
-- I tried the `Basic` and `volume` examples, use `CHA` instead of `CHB`.
+- I tried the `Basic` and `volume` examples using `CHA` instead of `CHB`.
 - Seems to work really well, but won't fit in flash:
 
-AC on UNO without this lib:
+AlarmClock on Arduino UNO without this lib:
 ```
 Sketch uses 26944 bytes (83%) of program storage space. Maximum is 32256 bytes.
 Global variables use 1411 bytes (68%) of dynamic memory, leaving 637 bytes for local variables. Maximum is 2048 bytes.
 ```
 
-with include:
+with this library included:
 ```
 Sketch uses 26974 bytes (83%) of program storage space. Maximum is 32256 bytes.
 Global variables use 1411 bytes (68%) of dynamic memory, leaving 637 bytes for local variables. Maximum is 2048 bytes.
@@ -45,12 +45,12 @@ Error compiling for board Arduino Uno.
 
 
 
-## Own version
+## Custom version
 - I couldn't find anything that would be small and useful, so I wrote my own.
 - Only sine waves are supported.
 - Volume can be controlled.
 - I was doing all of my testing with an analog amplifier based on TDA2030,
-  I was feeding the signal in through this circuit:
+  I was feeding the signal to the amplifier through this circuit:
 
 ```
                                              _______
