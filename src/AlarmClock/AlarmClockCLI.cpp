@@ -84,6 +84,21 @@ void AlarmClockCLI::loop(const DateTime& now)
         ser_->println(F("Autosaving"));
         save_();
     }
+
+    // send Serial_change_character (BEL) on change of state
+    static bool prev_inhibit = false;
+    static byte prev_ambient = 0;
+    static bool prev_lamp = false;
+    if (get_inhibit_() != prev_inhibit ||
+        ambientDimmer_->get_stop() != prev_ambient ||
+        lamp_->get() != prev_lamp
+       )
+    {
+        prev_inhibit = get_inhibit_();
+        prev_ambient = ambientDimmer_->get_stop();
+        prev_lamp = lamp_->get();
+        ser_->print(Serial_change_character);
+    }
 }
 
 

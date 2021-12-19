@@ -147,6 +147,7 @@ void setup()
     }
 
     Serial.println(F("boot"));
+    Serial.print(Serial_change_character);
 
 #ifdef internal_WDT
     wdt_enable(WDTO_4S);
