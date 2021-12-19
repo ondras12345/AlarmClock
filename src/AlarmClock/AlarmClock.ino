@@ -235,27 +235,6 @@ EEPROM
 */
 bool readEEPROM()
 {
-#ifdef DEBUG
-    Serial.print(F("EEPROM dump"));
-    byte val;
-    for (byte i = 0; i < EEPROM_DEBUG_dump_length; i++)
-    {
-        if (i % 16 == 0)
-        {
-            Serial.println();
-            if (i < 16) Serial.print('0');
-            Serial.print(i, HEX); // address
-            Serial.print("  ");
-        }
-        val = EEPROM.read(i);
-        if (val < 16) Serial.print('0');
-        Serial.print(val, HEX);
-        Serial.print(' ');
-    }
-    Serial.println();
-#endif // DEBUG
-
-
     bool err = false;
     // basic config:
 

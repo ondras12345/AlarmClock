@@ -54,7 +54,6 @@ EEPROM
 #define EEPROM_size 1024
 #define EEPROM_alarms_offset 0x40
 #define EEPROM_alarms_id 0xFE
-#define EEPROM_DEBUG_dump_length 164
 
 #define EEPROM_melodies_header_start 0x0010
 #define EEPROM_melodies_count 16  // 48 bytes
