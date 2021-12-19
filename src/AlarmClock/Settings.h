@@ -182,6 +182,11 @@ Serial CLI
 // default: 1000UL
 #define Serial_ambient_dimming_duration 1000UL  // ms
 
+// Character that should be sent to the serial port when a change of state
+// occurs.
+// default: '\a' (= '\x07' = ASCII BEL)
+#define Serial_change_character '\a'
+
 
 
 /*

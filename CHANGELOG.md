@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Support for PWM generated sine wave audio output.
 - Support for melodies.
+- CLI now sends the BEL character (`0x07`) every time the state of the
+  hardware (ambient, lamp) or settings (inhibit) changes.
 
 ### Changed
 - EEPROM data storage format. The section that contains alarms has been moved.

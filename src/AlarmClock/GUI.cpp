@@ -241,13 +241,22 @@ void GUI::loop(const DateTime& now)
                         switch (cursor_position_)
                         {
                         case cph_ambient:
+                        {
+                            byte value = apply_limits_(
+                                    ambientDimmer_.get_stop(),
+                                    encoder_full_steps * 10, 0, 255,
+                                    encoder_loop_ambient);
+                            // without this, it could happen that the display
+                            // shows '00', the duty cycle of ambient PWM output
+                            // is 0 (handled in PWMDimmer) but CLI report
+                            // e.g. 6
+                            if (value < 10) value = 0;
                             ambientDimmer_.set_from_duration(
                                     ambientDimmer_.get_value(),
-                                    apply_limits_(ambientDimmer_.get_stop(),
-                                        encoder_full_steps * 10, 0, 255,
-                                        encoder_loop_ambient),
+                                    value,
                                     GUI_ambient_dimming_duration);
                             ambientDimmer_.start();
+                        }
                             break;
 
                         }
