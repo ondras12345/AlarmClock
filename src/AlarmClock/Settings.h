@@ -68,8 +68,8 @@ Alarms
 #define Alarm_ambient_dimming_duration 15 * 60UL * 1000UL  // ms
 
 // Ambient LED fade-out time
-// default: 2000UL
-#define Alarm_ambient_fade_out_duration 2000UL  // ms
+// default: 10 * 1000UL
+#define Alarm_ambient_fade_out_duration 10 * 1000UL  // ms
 
 
 // Alarm timeout

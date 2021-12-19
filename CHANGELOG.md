@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - EEPROM data storage format. The section that contains alarms has been moved.
   All preexisting alarm configuration will be lost after upgrading to this
   version.  **WARNING** braking changes in EEPROM handling.
+- Default value of `Alarm_ambient_fade_out_duration` is now 10 seconds instead
+  of 2.
 
 
 ## [0.5.0] - 2021-11-10
