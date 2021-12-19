@@ -4,7 +4,7 @@ An Arduino-compatible alarm clock with multiple configurable alarms
 **WARNING**: This project is still under development.
 
 
-# Features
+## Features
 - configurable number (default 6, max 16) of
   [configurable](./docs/manual.md#Alarms) alarms
 - snooze feature with configurable time and count
@@ -18,19 +18,21 @@ An Arduino-compatible alarm clock with multiple configurable alarms
   ([GUI](./docs/manual.md#LCD))
 - an easy to parse serial port (UART) text-based configuration interface
   ([CLI](./docs/manual.md#Serial-CLI))
+- a [Python library][PyAlarmClock] for easy control from a PC and automation
 
 
-# Requirements
+## Requirements
 - https://github.com/adafruit/RTClib >=1.5.0 (RTClib PR #149)
 - https://github.com/johnrickman/LiquidCrystal_I2C
 - https://github.com/thomasfredericks/Bounce2
 - https://github.com/PaulStoffregen/Encoder
 
 
-# Documentation
+## Documentation
 See the [manual][manual].
 
 You can generate documentation for the source code using `doxygen`.
 
 
 [manual]: ./docs/manual.md
+[PyAlarmClock]: https://github.com/ondras12345/PyAlarmClock
