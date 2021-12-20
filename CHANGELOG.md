@@ -15,7 +15,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - EEPROM data storage format. The section that contains alarms has been moved.
   All preexisting alarm configuration will be lost after upgrading to this
-  version.  **WARNING** braking changes in EEPROM handling.
+  version. **WARNING** braking changes in EEPROM handling.
+  You should be able to migrate your current alarm config using PyAlarmClock:
+    ```python
+    import PyAlarmClock
+    ac = PyAlarmClock.SerialAlarmClock('/dev/ttyUSB0')
+    alarms = ac.read_alarms()
+    ac.close()
+
+    # Upload new firmware now
+
+    ac = PyAlarmClock.SerialAlarmClock('/dev/ttyUSB0')
+    for index,alarm in enumerate(alarms):
+        ac.write_alarm(index, alarm)
+    ac.save_EEPROM()
+    ac.close()
+    ```
 - Default value of `Alarm_ambient_fade_out_duration` is now 10 seconds instead
   of 2.
 
