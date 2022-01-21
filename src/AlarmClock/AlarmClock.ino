@@ -22,6 +22,12 @@ Code directives:
 */
 
 
+#if 0
+// needed because of platformio, unused
+#include <SPI.h>
+#endif
+
+
 #include "Settings.h"
 #include "Constants.h"
 
@@ -72,6 +78,7 @@ Encoder encoder(pin_encoder_clk, pin_encoder_dt);
 Alarm alarms[alarms_count];
 PWMDimmer ambientDimmer(pin_ambient);
 HALbool lamp(lamp_set);
+void set_backlight_permanent(bool s);  // platformio needs this
 HALbool permanent_backlight(set_backlight_permanent);
 PWMSine sine;
 BuzzerManager buzzer(pin_buzzer, sine);
