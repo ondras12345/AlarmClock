@@ -45,16 +45,16 @@ enum SelfTest_level
 #include <RTClib.h>
 #include <Bounce2.h>
 #include <Encoder.h>
-#include "Alarm.h"
-#include "CountdownTimer.h"
-#include "PWMDimmer.h"
-#include "AlarmClockCLI.h"
-#include "GUI.h"
-#include "LCDchars.h"
-#include "HALbool.h"
-#include "BuzzerManager.h"
+#include <Alarm.h>
+#include <CountdownTimer.h>
+#include <PWMDimmer.h>
+#include <AlarmClockCLI.h>
+#include <GUI.h>
+#include <LCDchars.h>
+#include <HALbool.h>
+#include <BuzzerManager.h>
 
-#include "PWMSine.h"
+#include <PWMSine.h>
 
 #ifdef internal_WDT
 #include <avr/wdt.h>
