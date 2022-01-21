@@ -5,14 +5,14 @@
 #ifndef ALARM_H
 #define ALARM_H
 
-#include "Arduino.h"
+#include <Arduino.h>
 
 #include "Settings.h"
 #include "Constants.h"
-#include "PWMDimmer.h"
-#include "HALbool.h"
-#include "BuzzerManager.h"
-#include "DaysOfWeek.h"
+#include <PWMDimmer.h>
+#include <HALbool.h>
+#include <BuzzerManager.h>
+#include <DaysOfWeek.h>
 #include <RTClib.h> // for datetime
 
 

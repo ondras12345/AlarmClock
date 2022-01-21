@@ -5,7 +5,7 @@
 #ifndef PWMDIMMER_H
 #define PWMDIMMER_H
 
-#include "Arduino.h"
+#include <Arduino.h>
 
 #include "Settings.h"
 #include "Constants.h"

@@ -22,25 +22,18 @@ An Arduino-compatible alarm clock with multiple configurable alarms
 
 
 ## Building
-### Arduino IDE
-Install the following libraries:
-- https://github.com/adafruit/RTClib >=1.5.0 (RTClib PR #149)
-- https://github.com/johnrickman/LiquidCrystal_I2C
-- https://github.com/thomasfredericks/Bounce2
-- https://github.com/PaulStoffregen/Encoder
-- https://github.com/PaulStoffregen/TimerOne
-
-Open `src/AlarmClock/AlarmClock.ino` and press Verify to compile the firmware.
-Press Upload to upload the firmware to and Arduino board.
-
-### PlatformIO
-PlatformIO will handle the dependencies automatically. Just run
+Use [PlatformIO][PlatformIO] to build the firmware. It will handle the
+dependencies automatically. Just run
 ```sh
 # compile
 pio run
 # upload
 pio run -t upload
 ```
+
+Building with Arduino IDE should be possible, but you might need to create a
+few symlinks. I use PlatformIO exclusively for my testing, so Arduino IDE
+should be considered unsupported.
 
 
 ## Documentation
@@ -51,3 +44,4 @@ You can generate documentation for the source code using `doxygen`.
 
 [manual]: ./docs/manual.md
 [PyAlarmClock]: https://github.com/ondras12345/PyAlarmClock
+[PlatformIO]: https://platformio.org/

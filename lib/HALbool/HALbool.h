@@ -5,7 +5,7 @@
 #ifndef HALBOOL_H
 #define HALBOOL_H
 
-#include "Arduino.h"
+#include <Arduino.h> // TODO remove
 
 /*!
     @brief  A boolean hardware resource that needs to be true unless all

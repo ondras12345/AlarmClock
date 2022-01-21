@@ -6,7 +6,7 @@
 #ifndef DAYSOFWEEK_H
 #define DAYSOFWEEK_H
 
-#include "Arduino.h"
+#include <Arduino.h> // TODO remove Arduino
 
 
 /*!

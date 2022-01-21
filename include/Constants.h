@@ -34,12 +34,6 @@ WDT
 
 
 /*
-String constants
-*/
-extern const char* days_of_the_week_names_short[8];
-
-
-/*
 POST error codes
 */
 #define err_I2C_ping_DS3231 1

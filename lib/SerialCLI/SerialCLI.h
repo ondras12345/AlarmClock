@@ -5,7 +5,7 @@
 #ifndef SERIALCLI_H
 #define SERIALCLI_H
 
-#include "Arduino.h"
+#include <Arduino.h>
 
 // For DEBUG:
 #include "Settings.h"

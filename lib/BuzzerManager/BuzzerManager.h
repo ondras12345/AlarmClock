@@ -5,10 +5,10 @@
 #ifndef BUZZERMANAGER_H
 #define BUZZERMANAGER_H
 
-#include "Arduino.h"
+#include <Arduino.h>
 
 #include "Settings.h"
-#include "PWMSine.h"
+#include <PWMSine.h>
 
 
 /*!

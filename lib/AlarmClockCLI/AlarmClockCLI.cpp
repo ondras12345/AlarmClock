@@ -71,6 +71,13 @@ const char* AlarmClockCLI::error_strings[] = {
 };
 
 
+// TODO make this progmem
+//! 1 = Monday, 7 = Sunday; 0 = two spaces (same length as other elements)
+const char* days_of_the_week_names_short[] = {
+    "  ", "Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"
+};
+
+
 void AlarmClockCLI::loop(const DateTime& now)
 {
     now_ = now;
