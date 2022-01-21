@@ -1,13 +1,13 @@
 #ifndef _ALARM_MOCKUPS_H
 #define _ALARM_MOCKUPS_H
 
-#include "Arduino.h"
+#include <Arduino.h>
 
-#include "src/AlarmClock/HALbool.h"
-#include "src/AlarmClock/PWMSine.h"
-#include "src/AlarmClock/BuzzerManager.h"
-#include "src/AlarmClock/Alarm.h"
-#include "src/AlarmClock/PWMDimmer.h"
+#include <HALbool.h>
+#include <PWMSine.h>
+#include <BuzzerManager.h>
+#include <Alarm.h>
+#include <PWMDimmer.h>
 
 
 extern PWMSine sine;

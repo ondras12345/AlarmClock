@@ -30,7 +30,7 @@ public:
         bit 1 is Monday,
         bit 7 (MSB) is Sunday.
     */
-    uint8_t days_of_week;
+    uint8_t days_of_week = 0x00;
     bool getDayOfWeek(uint8_t num) const;
     bool getDayOfWeek_Adafruit(uint8_t num) const;
     bool setDayOfWeek(uint8_t num, bool status);

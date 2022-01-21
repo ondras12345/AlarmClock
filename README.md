@@ -36,6 +36,16 @@ few symlinks. I use PlatformIO exclusively for my testing, so Arduino IDE
 should be considered unsupported.
 
 
+## Testing
+```
+# run native tests:
+pio test -e native
+
+# run tests on embedded device
+pio test
+```
+
+
 ## Documentation
 See the [manual][manual].
 
