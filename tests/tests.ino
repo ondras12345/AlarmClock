@@ -60,7 +60,7 @@ test(Alarm_trigger)
         assertTrue(alarm.set_time(12, 13));
         assertTrue(alarm.set_enabled(Single));
         DaysOfWeek dow;
-        dow.DaysOfWeek = 0xFE;
+        dow.days_of_week = 0xFE;
         assertTrue(alarm.set_days_of_week(dow));
         assertTrue(alarm.set_snooze(1, 2));
         assertTrue(alarm.set_signalization(80, true, true));
@@ -178,7 +178,7 @@ test(Alarm_snooze)
     assertTrue(alarm.set_time(12, 13));
     assertTrue(alarm.set_enabled(Single));
     DaysOfWeek dow;
-    dow.DaysOfWeek = 0xFE;
+    dow.days_of_week = 0xFE;
     assertTrue(alarm.set_days_of_week(dow));
     assertTrue(alarm.set_snooze(0, 2));
     assertTrue(alarm.set_signalization(80, true, true));
@@ -224,7 +224,7 @@ test(Alarm_ambient)
         assertTrue(alarm.set_time(12, 13));
         assertTrue(alarm.set_enabled(Repeat));
         DaysOfWeek dow;
-        dow.DaysOfWeek = 0xFE;
+        dow.days_of_week = 0xFE;
         assertTrue(alarm.set_days_of_week(dow));
         assertTrue(alarm.set_snooze(1, 2));
         assertTrue(alarm.set_signalization(80, true, true));
@@ -426,7 +426,7 @@ test(Alarm_EEPROM_write)
     assertTrue(alarm.set_time(23, 59));
     assertTrue(alarm.set_enabled(Repeat));
     DaysOfWeek dow;
-    dow.DaysOfWeek = 0x08;
+    dow.days_of_week = 0x08;
     assertTrue(alarm.set_days_of_week(dow));
     assertTrue(alarm.set_snooze(99, 9));
     assertTrue(alarm.set_signalization(80, true, false));

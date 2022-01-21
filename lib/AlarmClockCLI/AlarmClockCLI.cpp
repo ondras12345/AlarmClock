@@ -255,7 +255,7 @@ void AlarmClockCLI::yaml_alarm_(byte index, bool comments)
     indent_(1);
     ser_->print(F("dow: 0x"));
     // Filter out bit 0. It has no meaning and should always be zero.
-    ser_->print(alarms_[index].get_days_of_week().DaysOfWeek & 0xFE, HEX);
+    ser_->print(alarms_[index].get_days_of_week().days_of_week & 0xFE, HEX);
     if (comments)
     {
         ser_->print(F("  #"));

@@ -5,7 +5,7 @@
 #ifndef HALBOOL_H
 #define HALBOOL_H
 
-#include <Arduino.h> // TODO remove
+#include <stdint.h>
 
 /*!
     @brief  A boolean hardware resource that needs to be true unless all
@@ -35,9 +35,9 @@ protected:
         Manual control (e.g. GUI, CLI) sets this number to  0 (false) or
         255 (true) when it wants to set the resource.
     */
-    byte true_count = 0;
+    uint8_t true_count = 0;
     //! true_count == 255 --> manually true (GUI, CLI)
-    static constexpr byte true_count_manu = 255;
+    static constexpr uint8_t true_count_manu = 255;
 
 };
 

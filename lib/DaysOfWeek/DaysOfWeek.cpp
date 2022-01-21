@@ -4,14 +4,22 @@
 
 #include "DaysOfWeek.h"
 
+
+#define bitRead(value, bit) (((value) >> (bit)) & 0x01)
+#define bitSet(value, bit) ((value) |= (1 << (bit)))
+#define bitClear(value, bit) ((value) &= ~(1 << (bit)))
+#define bitToggle(value, bit) ((value) ^= (1 << (bit)))
+#define bitWrite(value, bit, bitvalue) ((bitvalue) ? bitSet(value, bit) : bitClear(value, bit))
+
+
 /*!
     @brief  Check whether the alarm should activate on a given day of the week.
     @param num day of the week (1 = Monday, 7 = Sunday)
     @see getDayOfWeek_Adafruit
 */
-bool DaysOfWeek::getDayOfWeek(byte num) const
+bool DaysOfWeek::getDayOfWeek(uint8_t num) const
 {
-    return bitRead(DaysOfWeek, num);
+    return bitRead(days_of_week, num);
 }
 
 
@@ -20,10 +28,10 @@ bool DaysOfWeek::getDayOfWeek(byte num) const
     @param num day of the week, Adafruit style (0 = Sunday, 6 = Saturday)
     @see getDayOfWeek
 */
-bool DaysOfWeek::getDayOfWeek_Adafruit(byte num) const
+bool DaysOfWeek::getDayOfWeek_Adafruit(uint8_t num) const
 {
-    if (num == 0) return bitRead(DaysOfWeek, 7);
-    else return bitRead(DaysOfWeek, num);
+    if (num == 0) return bitRead(days_of_week, 7);
+    else return bitRead(days_of_week, num);
 }
 
 
@@ -34,10 +42,10 @@ bool DaysOfWeek::getDayOfWeek_Adafruit(byte num) const
     @return true if the input data is valid; false if it fails
     @see setDayOfWeek_Adafruit
 */
-bool DaysOfWeek::setDayOfWeek(byte num, bool status)
+bool DaysOfWeek::setDayOfWeek(uint8_t num, bool status)
 {
     if (num > 7 || num == 0) return false;
-    bitWrite(DaysOfWeek, num, status);
+    bitWrite(days_of_week, num, status);
     return true;
 }
 
@@ -49,10 +57,10 @@ bool DaysOfWeek::setDayOfWeek(byte num, bool status)
     @return true if the input data is valid; false if it fails
     @see setDayOfWeek
 */
-bool DaysOfWeek::setDayOfWeek_Adafruit(byte num, bool status)
+bool DaysOfWeek::setDayOfWeek_Adafruit(uint8_t num, bool status)
 {
     if (num > 6) return false;
-    if (num == 0) bitWrite(DaysOfWeek, 7, status);
-    else bitWrite(DaysOfWeek, num, status);
+    if (num == 0) bitWrite(days_of_week, 7, status);
+    else bitWrite(days_of_week, num, status);
     return true;
 }

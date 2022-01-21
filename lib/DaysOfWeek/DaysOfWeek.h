@@ -6,7 +6,7 @@
 #ifndef DAYSOFWEEK_H
 #define DAYSOFWEEK_H
 
-#include <Arduino.h> // TODO remove Arduino
+#include <stdint.h>
 
 
 /*!
@@ -30,11 +30,11 @@ public:
         bit 1 is Monday,
         bit 7 (MSB) is Sunday.
     */
-    byte DaysOfWeek;
-    bool getDayOfWeek(byte num) const;
-    bool getDayOfWeek_Adafruit(byte num) const;
-    bool setDayOfWeek(byte num, bool status);
-    bool setDayOfWeek_Adafruit(byte num, bool status);
+    uint8_t days_of_week;
+    bool getDayOfWeek(uint8_t num) const;
+    bool getDayOfWeek_Adafruit(uint8_t num) const;
+    bool setDayOfWeek(uint8_t num, bool status);
+    bool setDayOfWeek_Adafruit(uint8_t num, bool status);
 };
 
 #endif

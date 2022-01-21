@@ -291,7 +291,7 @@ Alarm::Alarm()
 {
     when_ = { 0, 0 };
     enabled_ = Off;
-    days_of_week_.DaysOfWeek = 0;
+    days_of_week_.days_of_week = 0;
     snooze_ = { 0, 0 };
     signalization_ = { 0, false, false };
     current_snooze_count_ = current_snooze_count_inactive_;
@@ -331,7 +331,7 @@ bool Alarm::ReadEEPROM(byte data[Alarm::EEPROM_length])
     if (data[3] <= AlarmEnabled_max) enabled_ = AlarmEnabled(data[3]);
     else return false;
 
-    days_of_week_.DaysOfWeek = data[4];
+    days_of_week_.days_of_week = data[4];
 
     if (data[5] <= 99) snooze_.time_minutes = data[5];
     else return false;
@@ -365,7 +365,7 @@ byte * Alarm::WriteEPROM()
     EEPROM_data_[1] = when_.hours;
     EEPROM_data_[2] = when_.minutes;
     EEPROM_data_[3] = byte(enabled_);
-    EEPROM_data_[4] = days_of_week_.DaysOfWeek;
+    EEPROM_data_[4] = days_of_week_.days_of_week;
     EEPROM_data_[5] = snooze_.time_minutes;
     EEPROM_data_[6] = snooze_.count;
     EEPROM_data_[7] = signalization_.ambient;
