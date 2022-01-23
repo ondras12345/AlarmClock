@@ -25,11 +25,15 @@ An Arduino-compatible alarm clock with multiple configurable alarms
 Use [PlatformIO][PlatformIO] to build the firmware. It will handle the
 dependencies automatically. Just run
 ```sh
+# update libraries
+make update
 # compile
-pio run
+make
 # upload
-pio run -t upload
+make upload
 ```
+
+For more information, type `make help`.
 
 Building with Arduino IDE should be possible, but you might need to create a
 few symlinks. I use PlatformIO exclusively for my testing, so Arduino IDE
@@ -37,12 +41,16 @@ should be considered unsupported.
 
 
 ## Testing
+Native unit tests run natively on the computer used for development.
+Not everything can be tested that way, so additional tests were written that
+need to run on the target microcontroller (embedded device). A new firmware is
+uploaded to the device and test results are received through UART.
 ```
 # run native tests:
-pio test -e native
+make test
 
-# run tests on embedded device
-pio test
+# run tests on embedded device:
+make test_embedded
 ```
 
 
@@ -50,6 +58,7 @@ pio test
 See the [manual][manual].
 
 You can generate documentation for the source code using `doxygen`.
+Just type `make docs`.
 
 
 [manual]: ./docs/manual.md

@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Default value of `Alarm_ambient_fade_out_duration` is now 10 seconds instead
   of 2.
 - Firmware is now compiled using PlatformIO instead of Arduino IDE.
+  A `Makefile` has been added.
 
 ### Removed
 - DEBUG EEPROM dump after boot - this is no longer useful now that we have
