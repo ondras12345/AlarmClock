@@ -39,6 +39,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the `eer` CLI command
 
 
+### Fixed
+- Potential out-of-bounds write in SerialCLI.
+
+
 ## [0.5.0] - 2021-11-10
 ### Added
 - Support for backspace key in Serial CLI

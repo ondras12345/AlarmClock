@@ -75,7 +75,7 @@ protected:
     //! maximum command length
     static constexpr byte kSerial_buffer_length_ = 12;
     char Serial_buffer_[kSerial_buffer_length_ + 1]; // +1 for termination
-    byte Serial_buffer_index_;
+    byte Serial_buffer_index_ = 0;
 
     unsigned long prev_command_millis_ = 0;
 
