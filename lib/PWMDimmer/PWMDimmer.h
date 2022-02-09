@@ -32,7 +32,7 @@ protected:
 
 
 public:
-    PWMDimmer(byte pin);
+    explicit PWMDimmer(byte pin);
 
     void set(byte start, byte stop, int step, unsigned long interval);
 

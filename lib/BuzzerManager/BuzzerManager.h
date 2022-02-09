@@ -69,6 +69,8 @@ public:
         @param sine An initialized PWMSine object. This is only used if
                     #active_buzzer is not defined.
     */
+    // cppcheck-suppress uninitMemberVar symbolName=BuzzerManager::period_
+    // cppcheck-suppress uninitMemberVar symbolName=BuzzerManager::freq_
     BuzzerManager(byte pin, PWMSine& sine) : pin_(pin), sine_(sine) {};
 
     void loop();

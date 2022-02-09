@@ -39,6 +39,8 @@ public:
     void set_backlight(backlight_t status);
     backlight_t get_backlight() const { return backlight_; };
     void loop(const DateTime& time);
+
+    // cppcheck-suppress uninitMemberVar symbolName=GUI::line_buffer_
     GUI(Alarm* alarms, void(&writeEEPROM)(), RTC_DS3231& rtc,
         Encoder& encoder, Bounce& encoder_button,
         LiquidCrystal_I2C& lcd,

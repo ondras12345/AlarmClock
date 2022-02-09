@@ -15,7 +15,7 @@
 class HALbool
 {
 public:
-    HALbool(void(*set_hw_)(bool));
+    explicit HALbool(void(*set_hw_)(bool));
     void set(bool s);
     void set_manu(bool s);
     bool get() const { return status; };
