@@ -1,6 +1,5 @@
-- [ ] Try to compile
-- [ ] Run unit tests
 - [ ] Go trough [`docs/test-checklist.md`](test-checklist.md)
+- [ ] `make docs`
 - [ ] Update `CHANGELOG.md`
 - [ ] Update `README.md` if necessary
 - [ ] Update `docs/manual.md` if necessary

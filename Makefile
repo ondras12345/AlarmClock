@@ -1,24 +1,27 @@
-.PHONY: all upload clean upload help docs test test_embedded
+.PHONY: all upload clean upload help docs check test test_embedded
 
-all:        ## Compile firmware.
+all:            ## Compile firmware.
 	pio run
 
-upload:     ## Upload firmware.
+upload:         ## Upload firmware.
 	pio run --target upload
 
-clean:      ## Clean project.
+clean:          ## Clean project.
 	pio run --target clean
 
-update:     ## Update PlatformIO core and libraries.
+update:         ## Update PlatformIO core and libraries.
 	pio update
 
-help:       ## Show this help.
+help:           ## Show this help.
 	@grep -F -h "##" $(MAKEFILE_LIST) | sed -e '/unique_BhwaDzu7C/d;s/\\$$//;s/##//'
 
-docs:       ## Generate Doxygen documentation.
+docs:           ## Generate Doxygen documentation.
 	doxygen
 
-test:       ## Run native tests.
+check:          ## Run static code analysis.
+	pio check
+
+test:           ## Run native tests.
 	pio test -e native
 
 test_embedded:  ## Run tests on the embedded device.

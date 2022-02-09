@@ -41,11 +41,18 @@ should be considered unsupported.
 
 
 ## Testing
+Static code analysis is performed on the computer used for development using
+`cppcheck`.
+
 Native unit tests run natively on the computer used for development.
+
 Not everything can be tested that way, so additional tests were written that
 need to run on the target microcontroller (embedded device). A new firmware is
 uploaded to the device and test results are received through UART.
 ```
+# run static code analysis:
+make check
+
 # run native tests:
 make test
 
