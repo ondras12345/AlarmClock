@@ -1,13 +1,18 @@
 .PHONY: all upload clean upload help docs check test test_embedded
 
+ifdef ENVIRONMENT
+    ENV_FLAG := -e $(ENVIRONMENT)
+endif
+
+
 all:            ## Compile firmware.
-	pio run
+	pio run $(ENV_FLAG)
 
 upload:         ## Upload firmware.
-	pio run --target upload
+	pio run $(ENV_FLAG) --target upload
 
 clean:          ## Clean project.
-	pio run --target clean
+	pio run $(ENV_FLAG) --target clean
 
 update:         ## Update PlatformIO core and libraries.
 	pio update
@@ -19,10 +24,10 @@ docs:           ## Generate Doxygen documentation.
 	doxygen
 
 check:          ## Run static code analysis.
-	pio check
+	pio check $(ENV_FLAG)
 
 test:           ## Run native tests.
 	pio test -e native
 
 test_embedded:  ## Run tests on the embedded device.
-	pio test
+	pio test $(ENV_FLAG)
