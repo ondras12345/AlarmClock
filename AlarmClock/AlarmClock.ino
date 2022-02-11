@@ -75,7 +75,7 @@ LiquidCrystal_I2C lcd(I2C_LCD_address, LCD_width, LCD_height);
 RTC_DS3231 rtc; // DS3231
 Bounce buttons[button_count];
 Encoder encoder(pin_encoder_clk, pin_encoder_dt);
-Alarm alarms[alarms_count];
+Alarm * alarms[alarms_count];
 PWMDimmer ambientDimmer(pin_ambient);
 HALbool lamp(lamp_set);
 void set_backlight_permanent(bool s);  // platformio needs this
@@ -116,7 +116,7 @@ void setup()
     buttons[button_index_encoder].attach(pin_encoder_sw, INPUT);
     for (byte i = 0; i < button_count; i++) buttons[i].interval(button_debounce_interval);
 
-    init_hardware();
+    init_alarms();
 
     Wire.begin();
     rtc.begin();
@@ -191,7 +191,7 @@ void loop()
 
     myCLI.loop(now);
     myGUI.loop(now);
-    for (byte i = 0; i < alarms_count; i++) alarms[i].loop(now);
+    for (byte i = 0; i < alarms_count; i++) alarms[i]->loop(now);
     countdown_timer.loop(now);
     ambientDimmer.loop();
 
@@ -208,7 +208,7 @@ void loop()
                 myGUI.set_backlight(GUI::on_full);
                 break;
             default:
-                for (byte i = 0; i < alarms_count; i++) alarms[i].ButtonSnooze();
+                for (byte i = 0; i < alarms_count; i++) alarms[i]->ButtonSnooze();
                 DEBUG_println(F("snooze pressed"));
                 break;
         }
@@ -216,7 +216,7 @@ void loop()
     if (buttons[button_index_stop].fell())
     {
         if(myGUI.get_backlight() == GUI::off) myGUI.set_backlight(GUI::on_full);
-        for (byte i = 0; i < alarms_count; i++) alarms[i].ButtonStop();
+        for (byte i = 0; i < alarms_count; i++) alarms[i]->ButtonStop();
         countdown_timer.ButtonStop();
         DEBUG_println(F("stop pressed"));
     }
@@ -227,11 +227,17 @@ void loop()
 }
 
 
-void init_hardware()
+/*!
+    @brief  Initialize the `alarms` array.
+
+    This uses dynamic memory allocation.
+    Do not call twice without deleting the individual alarms.
+*/
+void init_alarms()
 {
     for (byte i = 0; i < alarms_count; i++)
-        alarms[i].SetHardware(&lamp, &ambientDimmer, &buzzer, writeEEPROM,
-                               alarm_activation_callback, alarm_stop_callback);
+        alarms[i] = new Alarm(lamp, ambientDimmer, buzzer, writeEEPROM,
+                              alarm_activation_callback, alarm_stop_callback);
 }
 
 
@@ -266,7 +272,7 @@ bool readEEPROM()
         {
             data[j] = EEPROM.read((i * Alarm::EEPROM_length) + j + EEPROM_alarms_offset);
         }
-        err |= !alarms[i].ReadEEPROM(data);
+        err |= !alarms[i]->ReadEEPROM(data);
     }
 
     return !err;
@@ -285,7 +291,7 @@ void writeEEPROM()
         Serial.print(F("Alarm "));
         Serial.println(i);
 #endif
-        byte * data = alarms[i].WriteEPROM();
+        byte * data = alarms[i]->WriteEPROM();
         for (byte j = 0; j < Alarm::EEPROM_length; j++)
         {
             unsigned int address = (i * Alarm::EEPROM_length) + j + EEPROM_alarms_offset;
@@ -303,14 +309,19 @@ void writeEEPROM()
 }
 
 
-/*
-Factory reset
+/*!
+    @brief  Perform a factory reset
+
+    Must NOT be called before init_alarms.
 */
 void factory_reset()
 {
     Serial.println(F("Factory reset"));
+
     for (byte i = 0; i < alarms_count; i++)
-        alarms[i] = Alarm();
+        delete alarms[i];
+
+    init_alarms();
 
     writeEEPROM();
 }
@@ -411,7 +422,7 @@ void set_inhibit(bool status)
 {
     inhibit_prev_millis = millis();
     inhibit = status;
-    for (byte i = 0; i < alarms_count; i++) alarms[i].set_inhibit(status);
+    for (byte i = 0; i < alarms_count; i++) alarms[i]->set_inhibit(status);
     // Removing the braces around DEBUG_println in the else statement causes a
     // compiler error if DEBUG is turned off.
     if (status) { DEBUG_println(F("inhibit enabled")); }

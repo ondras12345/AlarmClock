@@ -42,7 +42,7 @@ public:
     void loop(const DateTime& time);
 
     // cppcheck-suppress uninitMemberVar symbolName=GUI::line_buffer_
-    GUI(Alarm* alarms, void(&writeEEPROM)(), RTC_DS3231& rtc,
+    GUI(Alarm* (&alarms)[alarms_count], void(&writeEEPROM)(), RTC_DS3231& rtc,
         Encoder& encoder, Bounce& encoder_button,
         LiquidCrystal_I2C& lcd,
         void(&set_inhibit)(bool), bool(&get_inhibit)(),
@@ -58,12 +58,7 @@ public:
                                ambientDimmer_(ambientDimmer),
                                lamp_(lamp),
                                timer_(timer)
-   {
-       // First alarm.
-       // I can't initialize it in the definition because the compiler doesn't
-       // know the address yet.
-       sel_alarm_ = alarms_;
-   }
+   { };
 
 
 protected:
@@ -146,7 +141,7 @@ protected:
     };
 
 
-    Alarm* alarms_;
+    Alarm* (&alarms_)[alarms_count];
     void(&writeEEPROM_)();
     RTC_DS3231& rtc_;
     Encoder& encoder_;
@@ -159,7 +154,6 @@ protected:
     CountdownTimer& timer_;
 
     byte sel_alarm_index_ = 0;
-    Alarm* sel_alarm_;  //!< set when switching alarms
     Screen current_screen_ = screen_home;
     DateTime RTC_set_;
     backlight_t backlight_ = on_full;  //!< LCD backlight is turned on in setup()

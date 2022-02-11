@@ -23,13 +23,13 @@ void test_Alarm_trigger()
 
     while (myTest != last)
     {
-        TestAlarm alarm;  // needs to be here to reset prev_activation_millis
-        alarm.SetHardware(&lamp, &ambientDimmer, &buzzer,
-                          writeEEPROM, activation_callback, stop_callback);
+        // alarm initialization needs to be here to reset
+        // prev_activation_millis
+        TestAlarm alarm(lamp, ambientDimmer, buzzer,
+                        writeEEPROM, activation_callback, stop_callback);
         TEST_ASSERT_TRUE(alarm.set_time(12, 13));
         TEST_ASSERT_TRUE(alarm.set_enabled(Single));
-        DaysOfWeek dow;
-        dow.days_of_week = 0xFE;
+        DaysOfWeek dow(0xFE);
         TEST_ASSERT_TRUE(alarm.set_days_of_week(dow));
         TEST_ASSERT_TRUE(alarm.set_snooze(1, 2));
         TEST_ASSERT_TRUE(alarm.set_signalization(80, true, true));
@@ -137,16 +137,14 @@ void test_Alarm_trigger()
 
 void test_Alarm_snooze()
 {
-    TestAlarm alarm;
-
     MockupPWMDimmer ambientDimmer;
-    alarm.SetHardware(&lamp, &ambientDimmer, &buzzer,
-                      writeEEPROM, activation_callback, stop_callback);
+
+    TestAlarm alarm(lamp, ambientDimmer, buzzer,
+                    writeEEPROM, activation_callback, stop_callback);
 
     TEST_ASSERT_TRUE(alarm.set_time(12, 13));
     TEST_ASSERT_TRUE(alarm.set_enabled(Single));
-    DaysOfWeek dow;
-    dow.days_of_week = 0xFE;
+    DaysOfWeek dow(0xFE);
     TEST_ASSERT_TRUE(alarm.set_days_of_week(dow));
     TEST_ASSERT_TRUE(alarm.set_snooze(0, 2));
     TEST_ASSERT_TRUE(alarm.set_signalization(80, true, true));
@@ -192,13 +190,12 @@ void test_Alarm_ambient()
     while (myTest != last)
     {
         MockupPWMDimmer ambientDimmer;
-        TestAlarm alarm;  // needs to be here to reset prev_activation_millis
-        alarm.SetHardware(&lamp, &ambientDimmer, &buzzer,
-                          writeEEPROM, activation_callback, stop_callback);
+        // needs to be here to reset prev_activation_millis
+        TestAlarm alarm(lamp, ambientDimmer, buzzer,
+                        writeEEPROM, activation_callback, stop_callback);
         TEST_ASSERT_TRUE(alarm.set_time(12, 13));
         TEST_ASSERT_TRUE(alarm.set_enabled(Repeat));
-        DaysOfWeek dow;
-        dow.days_of_week = 0xFE;
+        DaysOfWeek dow(0xFE);
         TEST_ASSERT_TRUE(alarm.set_days_of_week(dow));
         TEST_ASSERT_TRUE(alarm.set_snooze(1, 2));
         TEST_ASSERT_TRUE(alarm.set_signalization(80, true, true));
@@ -332,10 +329,9 @@ void test_Alarm_ambient()
 
 void test_Alarm_EEPROM_read()
 {
-    TestAlarm alarm;
     MockupPWMDimmer ambientDimmer;
-    alarm.SetHardware(&lamp, &ambientDimmer, &buzzer,
-                      writeEEPROM, activation_callback, stop_callback);
+    TestAlarm alarm(lamp, ambientDimmer, buzzer,
+                    writeEEPROM, activation_callback, stop_callback);
 
     // Bad id
     byte data1[Alarm::EEPROM_length] = {
@@ -392,15 +388,13 @@ void test_Alarm_EEPROM_read()
 
 void test_Alarm_EEPROM_write()
 {
-    TestAlarm alarm;
     MockupPWMDimmer ambientDimmer;
-    alarm.SetHardware(&lamp, &ambientDimmer, &buzzer,
-                      writeEEPROM, activation_callback, stop_callback);
+    TestAlarm alarm(lamp, ambientDimmer, buzzer,
+                    writeEEPROM, activation_callback, stop_callback);
 
     TEST_ASSERT_TRUE(alarm.set_time(23, 59));
     TEST_ASSERT_TRUE(alarm.set_enabled(Repeat));
-    DaysOfWeek dow;
-    dow.days_of_week = 0x08;
+    DaysOfWeek dow(0x08);
     TEST_ASSERT_TRUE(alarm.set_days_of_week(dow));
     TEST_ASSERT_TRUE(alarm.set_snooze(99, 9));
     TEST_ASSERT_TRUE(alarm.set_signalization(80, true, false));

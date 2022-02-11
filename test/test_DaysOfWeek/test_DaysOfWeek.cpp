@@ -31,8 +31,7 @@ void test_decode()
 {
     for (size_t i = 0; i < sizeof(Cases)/sizeof(Cases[0]); i++)
     {
-        DaysOfWeek dow;
-        dow.days_of_week = Cases[i].code;
+        DaysOfWeek dow(Cases[i].code);
         for (size_t j = 0; j < sizeof(Cases[i].days)/sizeof(Cases[i].days[0]); j++)
         {
             if (Cases[i].days[j])

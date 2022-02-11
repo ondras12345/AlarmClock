@@ -18,10 +18,14 @@
 */
 class DaysOfWeek
 {
-protected:
-
-
 public:
+    /*!
+        @brief  Construct the object.
+        @param code Value of `days_of_week`. 0x00 if unspecified.
+                    Bitwise ANDed with 0xFE to filter out the unused bit 0.
+    */
+    DaysOfWeek(uint8_t code = 0x00) : days_of_week(code & 0xFE) {};
+
     /*!
         @brief  A one byte long representation of the object.
         The value for each day of the week is represented as a single bit in

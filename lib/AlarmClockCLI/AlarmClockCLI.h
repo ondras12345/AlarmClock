@@ -51,7 +51,7 @@ public:
     /*!
         Warning: only one instance of this class should exist at a time.
         @param ser  Reference to the Stream object the CLI should be provided on.
-        @param alarms   Pointer to the alarms array.
+        @param alarms   The alarms array.
         @param rtc      Pointer to the RTC object. (Used for adjusting time.)
         @param writeEEPROM  Pointer to a function that writes all alarms to
                             the EEPROM.
@@ -68,12 +68,11 @@ public:
                             inhibit function.
     */
     AlarmClockCLI(Stream& ser,
-                  Alarm* alarms, RTC_DS3231* rtc, void(*writeEEPROM)(),
-                  PWMDimmer* ambientDimmer, HALbool* lamp,
-                  CountdownTimer* timer,
-                  PWMSine& sine,
-                  BuzzerManager& buzzer,
-                  void(*set_inhibit)(bool), bool(*get_inhibit)()
+                  Alarm* alarms[alarms_count], RTC_DS3231* rtc,
+                  void(*writeEEPROM)(), PWMDimmer* ambientDimmer,
+                  HALbool* lamp, CountdownTimer* timer, PWMSine& sine,
+                  BuzzerManager& buzzer, void(*set_inhibit)(bool),
+                  bool(*get_inhibit)()
                  ) : CLI_(ser, commands, command_count, print_error,
                           cmd_not_found, prompt_)
     {
@@ -121,7 +120,7 @@ protected:
     static void print_error(SerialCLI::error_t code);
     static void cmd_not_found();
 
-    static Alarm* alarms_;
+    static Alarm** alarms_;
     static DateTime now_;
     static RTC_DS3231* rtc_;
     static void(*writeEEPROM_)();

@@ -78,15 +78,15 @@ public:
     byte * WriteEPROM();
 
     void loop(DateTime time);
-    void SetHardware(HALbool *lamp,
-                     PWMDimmer *ambient_dimmer,
-                     BuzzerManager *buzzer,
-                     void(*writeEEPROM)(),
-                     void(*activation_callback)(),
-                     void(*stop_callback)());
     void ButtonSnooze();
     void ButtonStop();
-    Alarm();
+    Alarm(HALbool& lamp,
+          PWMDimmer& ambient_dimmer,
+          BuzzerManager& buzzer,
+          void(*writeEEPROM)(),
+          void(*activation_callback)(),
+          void(*stop_callback)()
+          );
 
 
     bool set_enabled(AlarmEnabled enabled);
@@ -133,7 +133,8 @@ protected:
     bool first_ambient_ = true;
 
     static constexpr byte current_snooze_count_inactive_ = 255;
-    byte current_snooze_count_;  //!< max 9; 255 has special meaning defined above
+    //! max 9; 255 has special meaning defined above
+    byte current_snooze_count_ = current_snooze_count_inactive_;
 
     /*!
         Used to time snooze and as prev_activation_millis_ for ambient.
@@ -141,13 +142,13 @@ protected:
         alarms starting in the first minute of runtime being ignored.
     */
     unsigned long prev_millis_ = 0;
-    bool inhibit_;
-    bool snooze_status_;  //!< currently in snooze
-    bool ambient_status_;  //!< ambient is active
+    bool inhibit_ = false;
+    bool snooze_status_ = false;  //!< currently in snooze
+    bool ambient_status_ = false;  //!< ambient is active
 
-    HALbool *lamp_;
-    PWMDimmer *ambient_dimmer_;
-    BuzzerManager *buzzer_;
+    HALbool& lamp_;
+    PWMDimmer& ambient_dimmer_;
+    BuzzerManager& buzzer_;
     void(*write_EEPROM_all_)();  //!< write all alarms to EEPROM
     void(*activation_callback_)();
     void(*stop_callback_)();
@@ -155,11 +156,11 @@ protected:
     /*
     saved in the EEPROM:
     */
-    HoursMinutes when_;
-    AlarmEnabled enabled_;
-    DaysOfWeek days_of_week_;
-    Snooze snooze_;
-    Signalization signalization_;
+    HoursMinutes when_ = { 0, 0 };
+    AlarmEnabled enabled_ = Off;
+    DaysOfWeek days_of_week_ = DaysOfWeek(0x00);
+    Snooze snooze_ = { 0, 0 };
+    Signalization signalization_ = { 0, false, 0 };
 
     //! Returns true if alarm is on (ringing or snooze).
     bool get_active() const

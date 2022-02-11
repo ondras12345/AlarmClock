@@ -24,6 +24,16 @@ public:
 class TestAlarm : public Alarm
 {
 public:
+    TestAlarm(
+        HALbool& lamp,
+        PWMDimmer& ambient_dimmer,
+        BuzzerManager& buzzer,
+        void(*writeEEPROM)(),
+        void(*activation_callback)(),
+        void(*stop_callback)()
+        ) : Alarm(lamp, ambient_dimmer, buzzer,
+                  writeEEPROM, activation_callback, stop_callback) { };
+
     byte test_get_current_snooze_count() { return current_snooze_count_; };
     bool test_get_snooze_status() { return snooze_status_; };
     bool test_get_ambient_status() { return ambient_status_; };

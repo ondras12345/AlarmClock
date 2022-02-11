@@ -9,7 +9,7 @@
 
 // Assigned in the constructor:
 Stream* AlarmClockCLI::ser_;
-Alarm* AlarmClockCLI::alarms_;
+Alarm** AlarmClockCLI::alarms_;
 DateTime AlarmClockCLI::now_;
 RTC_DS3231* AlarmClockCLI::rtc_;
 void(*AlarmClockCLI::writeEEPROM_)();
@@ -234,7 +234,7 @@ void AlarmClockCLI::yaml_alarm_(byte index, bool comments)
 
     indent_(1);
     ser_->print(F("enabled: "));
-    switch (alarms_[index].get_enabled())
+    switch (alarms_[index]->get_enabled())
     {
         case Off:
             ser_->println(F("'OFF'"));
@@ -256,7 +256,7 @@ void AlarmClockCLI::yaml_alarm_(byte index, bool comments)
     indent_(1);
     ser_->print(F("dow: 0x"));
     // Filter out bit 0. It has no meaning and should always be zero.
-    ser_->print(alarms_[index].get_days_of_week().days_of_week & 0xFE, HEX);
+    ser_->print(alarms_[index]->get_days_of_week().days_of_week & 0xFE, HEX);
     if (comments)
     {
         ser_->print(F("  #"));
@@ -264,7 +264,7 @@ void AlarmClockCLI::yaml_alarm_(byte index, bool comments)
         {
             ser_->print(' ');
             ser_->print(days_of_the_week_names_short[
-                    alarms_[index].get_days_of_week().getDayOfWeek(i) ?
+                    alarms_[index]->get_days_of_week().getDayOfWeek(i) ?
                     i : 0]);  // 0 - two spaces
         }
     }
@@ -272,30 +272,30 @@ void AlarmClockCLI::yaml_alarm_(byte index, bool comments)
 
     indent_(1);
     ser_->print(F("time: "));
-    yaml_time_(alarms_[index].get_time());
+    yaml_time_(alarms_[index]->get_time());
 
     indent_(1);
     ser_->println(F("snz:"));
     indent_(2);
     ser_->print(F("time: "));
-    ser_->print(alarms_[index].get_snooze().time_minutes);
+    ser_->print(alarms_[index]->get_snooze().time_minutes);
     if (comments) ser_->println(F("  # min"));
     else ser_->println();
     indent_(2);
     ser_->print(F("count: "));
-    ser_->println(alarms_[index].get_snooze().count);
+    ser_->println(alarms_[index]->get_snooze().count);
 
     indent_(1);
     ser_->println(F("sig:"));
     indent_(2);
     ser_->print(F("ambient: "));
-    ser_->println(alarms_[index].get_signalization().ambient);
+    ser_->println(alarms_[index]->get_signalization().ambient);
     indent_(2);
     ser_->print(F("lamp: "));
-    ser_->println(alarms_[index].get_signalization().lamp);
+    ser_->println(alarms_[index]->get_signalization().lamp);
     indent_(2);
     ser_->print(F("buzzer: "));
-    ser_->print(alarms_[index].get_signalization().buzzer);
+    ser_->print(alarms_[index]->get_signalization().buzzer);
     if (comments)
     {
         ser_->print(F("  # "));
@@ -461,7 +461,7 @@ SerialCLI::error_t AlarmClockCLI::set_enabled_(AlarmEnabled status)
 {
     if (sel_alarm_index_ == sel_alarm_index_none_) return kNothingSelected;
 
-    alarms_[sel_alarm_index_].set_enabled(status);
+    alarms_[sel_alarm_index_]->set_enabled(status);
 
     change_ = true;
     return 0;
@@ -595,7 +595,7 @@ SerialCLI::error_t AlarmClockCLI::cmd_time_(char *time)
     if (*time == '\0') return kArgument;
     minutes = strbyte_(time);
 
-    if (alarms_[sel_alarm_index_].set_time(hours, minutes))
+    if (alarms_[sel_alarm_index_]->set_time(hours, minutes))
     {
         change_ = true;
         return 0;
@@ -617,7 +617,7 @@ SerialCLI::error_t AlarmClockCLI::cmd_dow_(char *dow)
     if (*dow == '\0') return kArgument;
     status = strbyte_(dow);
 
-    if (alarms_[sel_alarm_index_].set_day_of_week(day, status))
+    if (alarms_[sel_alarm_index_]->set_day_of_week(day, status))
     {
         change_ = true;
         return 0;
@@ -639,7 +639,7 @@ SerialCLI::error_t AlarmClockCLI::cmd_snz_(char *snooze)
     if (*snooze == '\0') return kArgument;
     count = strbyte_(snooze);
 
-    if (alarms_[sel_alarm_index_].set_snooze(time, count))
+    if (alarms_[sel_alarm_index_]->set_snooze(time, count))
     {
         change_ = true;
         return 0;
@@ -665,7 +665,7 @@ SerialCLI::error_t AlarmClockCLI::cmd_sig_(char *sig)
     if (*sig == '\0') return kArgument;
     buzzer = strbyte_(sig);
 
-    if (alarms_[sel_alarm_index_].set_signalization(ambient, lamp, buzzer))
+    if (alarms_[sel_alarm_index_]->set_signalization(ambient, lamp, buzzer))
     {
         change_ = true;
         return 0;

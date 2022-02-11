@@ -41,6 +41,8 @@ void GUI::set_backlight(backlight_t status)
 
 void GUI::loop(const DateTime& now)
 {
+    Alarm* sel_alarm_ = alarms_[sel_alarm_index_];
+
     /*
     LCD Backlight
     */
@@ -285,7 +287,8 @@ void GUI::loop(const DateTime& now)
                             sel_alarm_index_ = apply_limits_(
                                 sel_alarm_index_, encoder_full_steps, 0,
                                 alarms_count - 1, encoder_loop_alarm);
-                            sel_alarm_ = (alarms_ + sel_alarm_index_);
+                            // cppcheck-suppress unreadVariable symbolName=sel_alarm_  // false positive
+                            sel_alarm_ = alarms_[sel_alarm_index_];
                             break;
 
                         case cpa_alarm_enabled:
@@ -556,6 +559,8 @@ void GUI::switch_screen_(Screen screen)
 
 void GUI::update_(const DateTime& now)
 {
+    Alarm* sel_alarm_ = alarms_[sel_alarm_index_];
+
     lcd_.noCursor();
     lcd_.noBlink();
     lcd_.setCursor(0, 0);
