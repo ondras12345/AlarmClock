@@ -1,3 +1,7 @@
+/*!
+    @file
+*/
+
 /*
 Days of week in GUI and EEPROM: 1=Monday
 
