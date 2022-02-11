@@ -12,10 +12,8 @@
                 If pin is set to 255, it is ignored and no hardware is
                 accessed. This is used for tests.
 */
-PWMDimmer::PWMDimmer(byte pin)
-{
-    pin_ = pin;
-}
+PWMDimmer::PWMDimmer(byte pin) : pin_(pin)
+{ }
 
 
 /*!
