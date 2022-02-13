@@ -101,7 +101,6 @@ byte WDT_prev_seconds = 61;  // 61 to avoid random behavior
 #endif
 
 
-// cppcheck-suppress unusedFunction
 void setup()
 {
     pinMode(pin_ambient, OUTPUT);
