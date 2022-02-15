@@ -27,8 +27,10 @@ dependencies automatically. Just run
 ```sh
 # update libraries
 make update
+
 # compile
 make
+
 # upload
 make upload
 ```
