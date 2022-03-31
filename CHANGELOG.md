@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   of 2.
 - Firmware is now compiled using PlatformIO instead of Arduino IDE.
   A `Makefile` has been added.
+- Buttons now need external pull-up resistors.
 
 ### Removed
 - DEBUG EEPROM dump after boot - this is no longer useful now that we have

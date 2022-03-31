@@ -106,10 +106,12 @@ void setup()
     pinMode(pin_ambient, OUTPUT);
     pinMode(pin_lamp, OUTPUT);
     pinMode(pin_buzzer, OUTPUT);
+    pinMode(pin_buzzer_emergency, OUTPUT);
+    digitalWrite(pin_buzzer_emergency, HIGH);
 
-    buttons[button_index_snooze].attach(pin_button_snooze, INPUT_PULLUP); // # TODO DEBUG only, then switch to external pull-ups
-    buttons[button_index_stop].attach(pin_button_stop, INPUT_PULLUP);
-    buttons[button_index_encoder].attach(pin_encoder_sw);  // The module already has its own pull-up
+    buttons[button_index_snooze].attach(pin_button_snooze, INPUT);
+    buttons[button_index_stop].attach(pin_button_stop, INPUT);
+    buttons[button_index_encoder].attach(pin_encoder_sw, INPUT);
     for (byte i = 0; i < button_count; i++) buttons[i].interval(button_debounce_interval);
 
     init_hardware();

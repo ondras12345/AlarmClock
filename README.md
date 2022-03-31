@@ -3,6 +3,9 @@ An Arduino-compatible alarm clock with multiple configurable alarms
 
 **WARNING**: This project is still under development.
 
+Hardware design files are available in a separate repository:
+[AlarmClock-hardware][AlarmClock-hardware]
+
 
 ## Features
 - configurable number (default 6, max 16) of
@@ -72,4 +75,5 @@ Just type `make docs`.
 
 [manual]: ./docs/manual.md
 [PyAlarmClock]: https://github.com/ondras12345/PyAlarmClock
+[AlarmClock-hardware]: https://github.com/ondras12345/AlarmClock-hardware
 [PlatformIO]: https://platformio.org/

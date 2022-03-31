@@ -145,11 +145,13 @@ Pins
 #define pin_button_snooze 4
 #define pin_button_stop 5
 #define pin_ambient 6  // PWM
-// 7, 8
+#define pin_LCD_BLU 7
+// 8
 #define pin_buzzer 9  // PWM, TimerOne
-#define pin_lamp 10  // PWM
-// 11, 12, 13, A0, A1 - reserved for 2 SPI devices (e.g. Ethernet module)
+#define pin_lamp 10
+// 11, 12, 13, A0, A1 - reserved for ISP and 2 SPI devices
 #define pin_encoder_sw A2  // rotary encoder button
+#define pin_buzzer_emergency A3  // buzzer powered from RTC backup battery, active low
 // A4, A5 - I2C
 
 
