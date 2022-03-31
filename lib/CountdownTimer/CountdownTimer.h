@@ -5,12 +5,12 @@
 #ifndef COUNTDOWNTIMER_H
 #define COUNTDOWNTIMER_H
 
-#include "Arduino.h"
+#include <Arduino.h>
 
 #include "Settings.h"
-#include "BuzzerManager.h"
-#include "HALbool.h"
-#include "PWMDimmer.h"
+#include <BuzzerManager.h>
+#include <HALbool.h>
+#include <PWMDimmer.h>
 #include <RTClib.h>
 
 

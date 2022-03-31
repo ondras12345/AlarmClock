@@ -5,7 +5,7 @@
 #ifndef SERIALCLI_H
 #define SERIALCLI_H
 
-#include "Arduino.h"
+#include <Arduino.h>
 
 // For DEBUG:
 #include "Settings.h"
@@ -52,6 +52,7 @@ public:
                                 if no valid command is found in the user input.
         @param prompt   Pointer to a string that should be used as a prompt.
     */
+    // cppcheck-suppress uninitMemberVar symbolName=SerialCLI::Serial_buffer_
     SerialCLI(Stream& ser, const command_t* commands, const byte command_count,
               void (&print_error)(error_t),
               void (&cmd_not_found)(), const char* prompt

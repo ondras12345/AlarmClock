@@ -5,14 +5,14 @@
 #ifndef GUI_H
 #define GUI_H
 
-#include "Arduino.h"
+#include <Arduino.h>
 
 #include "Settings.h"
 #include "Constants.h"
-#include "Alarm.h"
-#include "PWMDimmer.h"
-#include "HALbool.h"
-#include "CountdownTimer.h"
+#include <Alarm.h>
+#include <PWMDimmer.h>
+#include <HALbool.h>
+#include <CountdownTimer.h>
 #include <Encoder.h>
 #include <Bounce2.h>
 #include <LiquidCrystal_I2C.h>
@@ -39,6 +39,8 @@ public:
     void set_backlight(backlight_t status);
     backlight_t get_backlight() const { return backlight_; };
     void loop(const DateTime& time);
+
+    // cppcheck-suppress uninitMemberVar symbolName=GUI::line_buffer_
     GUI(Alarm* alarms, void(&writeEEPROM)(), RTC_DS3231& rtc,
         Encoder& encoder, Bounce& encoder_button,
         LiquidCrystal_I2C& lcd,

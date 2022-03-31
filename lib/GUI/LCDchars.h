@@ -9,7 +9,7 @@
 #ifndef LCDCHARS_H
 #define LCDCHARS_H
 
-#include "Arduino.h"
+#include <Arduino.h> // TODO remove Arduino.h
 
 // The custom characters cannot be const because of LiquidCrystal_I2C.h
 

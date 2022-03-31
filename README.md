@@ -21,18 +21,55 @@ An Arduino-compatible alarm clock with multiple configurable alarms
 - a [Python library][PyAlarmClock] for easy control from a PC and automation
 
 
-## Requirements
-- https://github.com/adafruit/RTClib >=1.5.0 (RTClib PR #149)
-- https://github.com/johnrickman/LiquidCrystal_I2C
-- https://github.com/thomasfredericks/Bounce2
-- https://github.com/PaulStoffregen/Encoder
+## Building
+Use [PlatformIO][PlatformIO] to build the firmware. It will handle the
+dependencies automatically. Just run
+```sh
+# update libraries
+make update
+
+# compile
+make
+
+# upload
+make upload
+```
+
+For more information, type `make help`.
+
+Building with Arduino IDE should be possible, but you might need to create a
+few symlinks. I use PlatformIO exclusively for my testing, so Arduino IDE
+should be considered unsupported.
+
+
+## Testing
+Static code analysis is performed on the computer used for development using
+`cppcheck`.
+
+Native unit tests run natively on the computer used for development.
+
+Not everything can be tested that way, so additional tests were written that
+need to run on the target microcontroller (embedded device). A new firmware is
+uploaded to the device and test results are received through UART.
+```
+# run static code analysis:
+make check
+
+# run native tests:
+make test
+
+# run tests on embedded device:
+make test_embedded
+```
 
 
 ## Documentation
 See the [manual][manual].
 
 You can generate documentation for the source code using `doxygen`.
+Just type `make docs`.
 
 
 [manual]: ./docs/manual.md
 [PyAlarmClock]: https://github.com/ondras12345/PyAlarmClock
+[PlatformIO]: https://platformio.org/

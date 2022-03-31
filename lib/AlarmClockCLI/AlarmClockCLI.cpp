@@ -71,6 +71,13 @@ const char* AlarmClockCLI::error_strings[] = {
 };
 
 
+// TODO make this progmem
+//! 1 = Monday, 7 = Sunday; 0 = two spaces (same length as other elements)
+const char* days_of_the_week_names_short[] = {
+    "  ", "Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"
+};
+
+
 void AlarmClockCLI::loop(const DateTime& now)
 {
     now_ = now;
@@ -248,7 +255,7 @@ void AlarmClockCLI::yaml_alarm_(byte index, bool comments)
     indent_(1);
     ser_->print(F("dow: 0x"));
     // Filter out bit 0. It has no meaning and should always be zero.
-    ser_->print(alarms_[index].get_days_of_week().DaysOfWeek & 0xFE, HEX);
+    ser_->print(alarms_[index].get_days_of_week().days_of_week & 0xFE, HEX);
     if (comments)
     {
         ser_->print(F("  #"));

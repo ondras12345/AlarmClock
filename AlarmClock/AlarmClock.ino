@@ -22,6 +22,12 @@ Code directives:
 */
 
 
+#if 0
+// needed because of platformio, unused
+#include <SPI.h>
+#endif
+
+
 #include "Settings.h"
 #include "Constants.h"
 
@@ -39,16 +45,16 @@ enum SelfTest_level
 #include <RTClib.h>
 #include <Bounce2.h>
 #include <Encoder.h>
-#include "Alarm.h"
-#include "CountdownTimer.h"
-#include "PWMDimmer.h"
-#include "AlarmClockCLI.h"
-#include "GUI.h"
-#include "LCDchars.h"
-#include "HALbool.h"
-#include "BuzzerManager.h"
+#include <Alarm.h>
+#include <CountdownTimer.h>
+#include <PWMDimmer.h>
+#include <AlarmClockCLI.h>
+#include <GUI.h>
+#include <LCDchars.h>
+#include <HALbool.h>
+#include <BuzzerManager.h>
 
-#include "PWMSine.h"
+#include <PWMSine.h>
 
 #ifdef internal_WDT
 #include <avr/wdt.h>
@@ -72,6 +78,7 @@ Encoder encoder(pin_encoder_clk, pin_encoder_dt);
 Alarm alarms[alarms_count];
 PWMDimmer ambientDimmer(pin_ambient);
 HALbool lamp(lamp_set);
+void set_backlight_permanent(bool s);  // platformio needs this
 HALbool permanent_backlight(set_backlight_permanent);
 PWMSine sine;
 BuzzerManager buzzer(pin_buzzer, sine);

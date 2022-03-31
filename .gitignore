@@ -1,2 +1,5 @@
 tests/src
 docs/doxygen
+
+.pio
+.ccls

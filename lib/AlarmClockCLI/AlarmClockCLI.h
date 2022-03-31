@@ -5,16 +5,16 @@
 #ifndef ALARMCLOCKCLI_H
 #define ALARMCLOCKCLI_H
 
-#include "Arduino.h"
+#include <Arduino.h>
 
 #include "Settings.h"
 #include "Constants.h"
-#include "SerialCLI.h"
-#include "Alarm.h"
-#include "PWMDimmer.h"
-#include "HALbool.h"
-#include "CountdownTimer.h"
-#include "PWMSine.h"
+#include <SerialCLI.h>
+#include <Alarm.h>
+#include <PWMDimmer.h>
+#include <HALbool.h>
+#include <CountdownTimer.h>
+#include <PWMSine.h>
 
 
 /*!

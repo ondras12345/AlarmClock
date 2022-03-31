@@ -5,7 +5,7 @@
 #ifndef PWMDIMMER_H
 #define PWMDIMMER_H
 
-#include "Arduino.h"
+#include <Arduino.h>
 
 #include "Settings.h"
 #include "Constants.h"
@@ -20,7 +20,7 @@ class PWMDimmer
 protected:
     unsigned long prev_change_millis_ = 0;
     byte pin_;
-    int value_; // int because of overflows
+    int value_ = 0; // int because of overflows
 
     // I need to initialize these variables with values because start() could
     // be called before set().
@@ -32,7 +32,7 @@ protected:
 
 
 public:
-    PWMDimmer(byte pin);
+    explicit PWMDimmer(byte pin);
 
     void set(byte start, byte stop, int step, unsigned long interval);
 

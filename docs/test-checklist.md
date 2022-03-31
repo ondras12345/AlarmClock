@@ -1,14 +1,11 @@
 # Checklist for tests
+- [ ] `make`
+- [ ] `make check`
+- [ ] `make test`
+- [ ] `make test_embedded`
 - [ ] Run `test_hardware` from [PyAlarmClock][PyAlarmClock]
-
-- [ ] Buttons
-    - If `test_hardware` passed, buttons must be working...
-    - [ ] 'snooze' button (with DEBUG on)
-    - [ ] 'stop' button (with DEBUG on)
-
 - [ ] Compile time options
     - [ ] Alarm count
-    - [ ] Alarm ringing frequency and period
     - [ ] DEBUG
 
 
