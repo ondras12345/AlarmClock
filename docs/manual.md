@@ -102,8 +102,8 @@ EEPROM.
 
 # Configuration
 ## Compile-time
-Edit `src/AlarmClock/Settings.h`.  
-Do not modify `src/AlarmClock/Constants.h` unless you know what you are doing.
+Edit `include/Settings.h`.  
+Do not modify `include/Constants.h` unless you know what you are doing.
 
 
 ## Runtime
