@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CLI now sends the BEL character (`0x07`) every time the state of the
   hardware (ambient, lamp) or settings (inhibit) changes.
 - Native unit tests.
+- Support for the new PCB.
 
 ### Changed
 - EEPROM data storage format. The section that contains alarms has been moved.
@@ -41,7 +42,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - DEBUG EEPROM dump after boot - this is no longer useful now that we have
   the `eer` CLI command
-
 
 ### Fixed
 - Potential out-of-bounds write in SerialCLI.

@@ -26,7 +26,9 @@ Hardware design files are available in a separate repository:
 
 ## Building
 Use [PlatformIO][PlatformIO] to build the firmware. It will handle the
-dependencies automatically. Just run
+dependencies automatically.
+
+Upload to an Arduino UNO development board via UART:
 ```sh
 # update libraries
 make update
@@ -34,8 +36,23 @@ make update
 # compile
 make
 
-# upload
+# upload via UART
 make upload
+```
+
+Upload to the [AlarmClock-hardware][AlarmClock-hardware] board using USBasp:
+```sh
+# update libraries
+make update
+
+# compile
+make ENVIRONMENT=atmega328p
+
+# burn fuses and bootloader
+make bootloader ENVIRONMENT=atmega328p
+
+# upload using USBasp ICSP programmer
+make upload ENVIRONMENT=atmega328p
 ```
 
 For more information, type `make help`.

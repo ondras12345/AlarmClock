@@ -14,6 +14,11 @@ upload: $(extra_files)
 upload:         ## Upload firmware.
 	pio run $(ENV_FLAG) --target upload
 
+.PHONY: bootloader
+bootloader: $(extra_files)
+bootloader:     ## Burn fuses and bootloader.
+	pio run $(ENV_FLAG) --target bootloader
+
 .PHONY: clean
 clean:          ## Clean project.
 	pio run $(ENV_FLAG) --target clean
