@@ -31,8 +31,9 @@ public:
     enum backlight_t
     {
         off = 0,        //!< off
-        on = 1,         //!< on, will be turned off after GUI_backlight_timeout
-        permanent = 2   //!< on, will NOT time out
+        on_dim = 1,     //!< night mode, reduced brightness
+        on_full = 2,    //!< full brightness, will be turned off after GUI_backlight_timeout
+        permanent = 3   //!< full brightness, will NOT time out
     };
 
 
@@ -161,7 +162,7 @@ protected:
     Alarm* sel_alarm_;  //!< set when switching alarms
     Screen current_screen_ = screen_home;
     DateTime RTC_set_;
-    backlight_t backlight_ = on;  //!< LCD backlight is turned on in setup()
+    backlight_t backlight_ = on_full;  //!< LCD backlight is turned on in setup()
     unsigned long update_prev_millis_ = 0;
     unsigned long backlight_prev_millis_ = 0;
     unsigned long encoder_prev_millis_ = 0;

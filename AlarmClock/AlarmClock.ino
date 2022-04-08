@@ -103,11 +103,13 @@ byte WDT_prev_seconds = 61;  // 61 to avoid random behavior
 
 void setup()
 {
+    pinMode(pin_buzzer_emergency, OUTPUT);
+    digitalWrite(pin_buzzer_emergency, HIGH);
     pinMode(pin_ambient, OUTPUT);
     pinMode(pin_lamp, OUTPUT);
     pinMode(pin_buzzer, OUTPUT);
-    pinMode(pin_buzzer_emergency, OUTPUT);
-    digitalWrite(pin_buzzer_emergency, HIGH);
+    pinMode(pin_LCD_BLU, OUTPUT);
+    digitalWrite(pin_LCD_BLU, LOW);
 
     buttons[button_index_snooze].attach(pin_button_snooze, INPUT);
     buttons[button_index_stop].attach(pin_button_stop, INPUT);
@@ -195,16 +197,23 @@ void loop()
     for (byte i = 0; i < button_count; i++) buttons[i].update();
     if (buttons[button_index_snooze].fell())
     {
-        if(myGUI.get_backlight() != GUI::off)
+        switch (myGUI.get_backlight())
         {
-            for (byte i = 0; i < alarms_count; i++) alarms[i].ButtonSnooze();
-            DEBUG_println(F("snooze pressed"));
+            case GUI::off:
+                myGUI.set_backlight(GUI::on_dim);
+                break;
+            case GUI::on_dim:
+                myGUI.set_backlight(GUI::on_full);
+                break;
+            default:
+                for (byte i = 0; i < alarms_count; i++) alarms[i].ButtonSnooze();
+                DEBUG_println(F("snooze pressed"));
+                break;
         }
-        else myGUI.set_backlight(GUI::on);
     }
     if (buttons[button_index_stop].fell())
     {
-        if(myGUI.get_backlight() == GUI::off) myGUI.set_backlight(GUI::on);
+        if(myGUI.get_backlight() == GUI::off) myGUI.set_backlight(GUI::on_full);
         for (byte i = 0; i < alarms_count; i++) alarms[i].ButtonStop();
         countdown_timer.ButtonStop();
         DEBUG_println(F("stop pressed"));
@@ -414,5 +423,5 @@ bool get_inhibit() { return inhibit; }
 void set_backlight_permanent(bool s)
 {
     if (s) myGUI.set_backlight(GUI::permanent);
-    else myGUI.set_backlight(GUI::on);  // disable permanent backlight
+    else myGUI.set_backlight(GUI::on_full);  // disable permanent backlight
 }

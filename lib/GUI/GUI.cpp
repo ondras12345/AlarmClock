@@ -18,8 +18,23 @@ constexpr byte GUI::selectables_count_[];
 void GUI::set_backlight(backlight_t status)
 {
     backlight_ = status;
-    if (backlight_ == off) lcd_.noBacklight();
-    else lcd_.backlight();
+    switch (backlight_)
+    {
+        case off:
+            lcd_.noBacklight();
+            break;
+
+        case on_dim:
+            digitalWrite(pin_LCD_BLU, HIGH);
+            lcd_.backlight();
+            break;
+
+        case on_full:
+        case permanent:
+            digitalWrite(pin_LCD_BLU, LOW);
+            lcd_.backlight();
+            break;
+    }
     backlight_prev_millis_ = millis();
 }
 
@@ -29,7 +44,7 @@ void GUI::loop(const DateTime& now)
     /*
     LCD Backlight
     */
-    if (backlight_ == on &&
+    if ((backlight_ == on_full || backlight_ == on_dim) &&
         (unsigned long)(millis() - backlight_prev_millis_) >= GUI_backlight_timeout)
     {
         set_backlight(off);
@@ -38,9 +53,9 @@ void GUI::loop(const DateTime& now)
     if (encoder_button_.fell() || abs(encoder_.read()) >= encoder_step)
     {
         backlight_prev_millis_ = millis();
-        if (backlight_ == off)
+        if (backlight_ == off || backlight_ == on_dim)
         {
-            set_backlight(on);
+            set_backlight((backlight_ == off) ? on_dim : on_full);
             encoder_.write(encoder_.read() % encoder_step);
         }
         else

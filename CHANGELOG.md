@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   hardware (ambient, lamp) or settings (inhibit) changes.
 - Native unit tests.
 - Support for the new PCB.
+- LCD backlight dimming (night mode).
 
 ### Changed
 - EEPROM data storage format. The section that contains alarms has been moved.

@@ -145,9 +145,15 @@ returns to "Repeat" afterwards.
 # LCD
 The backlight of the LCD turns off automatically after `GUI_backlight_timeout`
 milliseconds. To turn it on again, you need to press the rotary encoder
-button, rotate the knob or press the snooze button. If the backlight is set to
-permanent (e.g. an alarm is active), it won't turn off automatically. Once the
-alarm is stopped, the backlight returns back to the timed mode.
+button, rotate the knob or press the snooze button. First press only lights up
+the display very dimly without allowing further interaction with the GUI.
+This is useful when the user wants to know the time at night. Another press of
+the button or rotation of the rotary encoder will result in full display
+brightness and unlock the GUI.
+
+If the backlight is set to permanent (e.g. an alarm is active), it won't turn
+off automatically. Once the alarm is stopped, the backlight returns back to
+the timed mode.
 
 Use the encoder to move the cursor under the item you want to change,
 then press the encoder button. Boolean type values and buttons react

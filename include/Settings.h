@@ -145,7 +145,7 @@ Pins
 #define pin_button_snooze 4
 #define pin_button_stop 5
 #define pin_ambient 6  // PWM
-#define pin_LCD_BLU 7
+#define pin_LCD_BLU 7  // LOW = full brightness
 // 8
 #define pin_buzzer 9  // PWM, TimerOne
 #define pin_lamp 10
