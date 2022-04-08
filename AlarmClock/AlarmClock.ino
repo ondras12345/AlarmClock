@@ -150,8 +150,10 @@ void setup()
 
     if (err & err_critical_mask)
     {
-        // TODO show the error first, write to log if it is not EEPROM error,
-        // the wait for the user
+        // TODO write to EEPROM log if it is not EEPROM error,
+        // then wait for the user.
+        Serial.print(F("POST critical error: 0x"));
+        Serial.println(err, HEX);
 
         if (!(err & err_I2C_ping_DS3231))
             factory_reset();
