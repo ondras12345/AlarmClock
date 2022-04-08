@@ -33,7 +33,7 @@ Last alarm index: 15 (0x0F)
 Enabled for all days of the week
 Only rings once, then disables itself (SGL). Other possible values: OFF, RPT, SKP
 Rings at 6:20
-Snooze: 5 * 5 minutes
+Snooze: 5 minutes * 5
 Signalization: ambient: 25x (range 0-255 --> 0-25 on this screen);
                lamp: 1, buzzer: standard beeping
     Buzzer can be either one of these:
