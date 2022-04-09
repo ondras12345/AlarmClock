@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Native unit tests.
 - Support for the new PCB.
 - LCD backlight dimming (night mode).
+- `version` (git commit id, tag and similar) in `ver` CLI command.
 
 ### Changed
 - EEPROM data storage format. The section that contains alarms has been moved.
@@ -41,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Buttons now need external pull-up resistors.
 - Disabled days of the week are now indicated by a `-` instead of a space in
   GUI configuration of alarms.
+- Format of `build time` in `ver` CLI command.
 
 ### Removed
 - DEBUG EEPROM dump after boot - this is no longer useful now that we have

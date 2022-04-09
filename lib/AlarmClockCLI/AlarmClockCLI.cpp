@@ -5,6 +5,7 @@
 #include <RTClib.h>
 #include <avr/pgmspace.h>
 #include <EEPROM.h>
+#include "version.h"
 
 // Assigned in the constructor:
 Stream* AlarmClockCLI::ser_;
@@ -869,10 +870,11 @@ SerialCLI::error_t AlarmClockCLI::cmd_ver_(char *ignored)
     ser_->print(F("number of alarms: "));
     ser_->println(alarms_count);
     indent_(1);
+    ser_->print(F("version: "));
+    ser_->println(F(AlarmClock_version));
+    indent_(1);
     ser_->print(F("build time: "));
-    ser_->print(F(__DATE__));
-    ser_->print(F(" "));
-    ser_->println(F(__TIME__));
+    ser_->println(F(AlarmClock_build_time));
     ser_->println(YAML_end);
 
     return 0;

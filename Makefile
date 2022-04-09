@@ -2,7 +2,7 @@ ifdef ENVIRONMENT
     ENV_FLAG := -e $(ENVIRONMENT)
 endif
 
-extra_files = lib/PWMSine/sinlut.h
+extra_files = lib/PWMSine/sinlut.h include/version.h
 
 .PHONY: all
 all:            ## Compile firmware.
@@ -54,3 +54,10 @@ test_embedded: $(extra_files)
 
 lib/PWMSine/sinlut.h: lib/PWMSine/sinlut.py
 	cd lib/PWMSine && ./sinlut.py
+
+# This needs to be regenerated on every run to be able to
+# detect the -dirty state.
+.PHONY: include/version.h
+include/version.h:
+	echo "#define AlarmClock_version \"$(shell git describe --dirty --always --tags)\"" > include/version.h
+	echo "#define AlarmClock_build_time \"$(shell date --utc +"%Y%m%dT%H%M%SZ")\"" >> include/version.h

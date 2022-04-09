@@ -1,5 +1,5 @@
-tests/src
 docs/doxygen
+include/version.h
 
 .pio
 .ccls
