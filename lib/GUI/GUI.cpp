@@ -584,9 +584,8 @@ void GUI::update_(const DateTime& now)
         days_of_week[7] = '\0';
         for (byte i = 1; i <= 7; i++)
         {
-            if (sel_alarm_->get_days_of_week().getDayOfWeek(i))
-                days_of_week[i - 1] = char('0' + i);
-            else days_of_week[i - 1] = ' ';
+            days_of_week[i-1] = sel_alarm_->get_days_of_week().getDayOfWeek(i)
+                                    ? char('0' + i) : '-';
         }
 
         char enabled[4] = "";

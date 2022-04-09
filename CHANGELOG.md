@@ -39,6 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Firmware is now compiled using PlatformIO instead of Arduino IDE.
   A `Makefile` has been added.
 - Buttons now need external pull-up resistors.
+- Disabled days of the week are now indicated by a `-` instead of a space in
+  GUI configuration of alarms.
 
 ### Removed
 - DEBUG EEPROM dump after boot - this is no longer useful now that we have
