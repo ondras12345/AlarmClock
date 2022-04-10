@@ -295,7 +295,8 @@ void writeEEPROM()
         Serial.print(F("Alarm "));
         Serial.println(i);
 #endif
-        byte * data = alarms[i]->WriteEPROM();
+        byte data[Alarm::EEPROM_length];
+        alarms[i]->WriteEEPROM(data);
         for (byte j = 0; j < Alarm::EEPROM_length; j++)
         {
             unsigned int address = (i * Alarm::EEPROM_length) + j + EEPROM_alarms_offset;

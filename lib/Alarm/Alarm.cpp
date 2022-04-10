@@ -334,33 +334,31 @@ bool Alarm::ReadEEPROM(byte data[Alarm::EEPROM_length])
 
 /*!
     @brief  Converts the alarm to an EEPROM record.
-    @return A pointer to the first byte of the data.
+    @param  data    Array to store the resulting data in.
 */
-byte * Alarm::WriteEPROM()
+void Alarm::WriteEEPROM(byte data[EEPROM_length])
 {
-    EEPROM_data_[0] = EEPROM_alarms_id;
+    data[0] = EEPROM_alarms_id;
 
-    EEPROM_data_[1] = when_.hours;
-    EEPROM_data_[2] = when_.minutes;
-    EEPROM_data_[3] = byte(enabled_);
-    EEPROM_data_[4] = days_of_week_.days_of_week;
-    EEPROM_data_[5] = snooze_.time_minutes;
-    EEPROM_data_[6] = snooze_.count;
-    EEPROM_data_[7] = signalization_.ambient;
-    EEPROM_data_[8] = signalization_.lamp;
-    EEPROM_data_[9] = signalization_.buzzer;
+    data[1] = when_.hours;
+    data[2] = when_.minutes;
+    data[3] = byte(enabled_);
+    data[4] = days_of_week_.days_of_week;
+    data[5] = snooze_.time_minutes;
+    data[6] = snooze_.count;
+    data[7] = signalization_.ambient;
+    data[8] = signalization_.lamp;
+    data[9] = signalization_.buzzer;
 
 #if defined(DEBUG) && defined(DEBUG_EEPROM_alarms)
     Serial.println(F("EEPROM alarm write:"));
     for (byte i = 0; i < EEPROM_length; i++)
     {
-        Serial.print(EEPROM_data_[i], HEX);
+        Serial.print(data[i], HEX);
         Serial.print(' ');
     }
     Serial.println();
 #endif // DEBUG
-
-    return EEPROM_data_;
 }
 
 

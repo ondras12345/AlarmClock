@@ -75,7 +75,7 @@ public:
     */
     static constexpr byte EEPROM_length = 1 + 2 + 1 + 1 + 2 + 3;
     bool ReadEEPROM(byte data[EEPROM_length]);
-    byte * WriteEPROM();
+    void WriteEEPROM(byte data[EEPROM_length]);
 
     void loop(DateTime time);
     void ButtonSnooze();
@@ -111,10 +111,6 @@ public:
 
 
 protected:
-    //! This variable needs to exist all the time because a function is
-    //! returning a pointer to it.
-    byte EEPROM_data_[EEPROM_length];
-
     /*
     not saved in EEPROM:
     */

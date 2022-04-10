@@ -400,7 +400,8 @@ void test_Alarm_EEPROM_write()
     TEST_ASSERT_TRUE(alarm.set_signalization(80, true, false));
     TEST_ASSERT_TRUE(alarm.set_inhibit(false));
 
-    byte * data = alarm.WriteEPROM();
+    byte data[Alarm::EEPROM_length];
+    alarm.WriteEEPROM(data);
 
     byte correct_data[Alarm::EEPROM_length] = {
         EEPROM_alarms_id, 23, 59, 2, 0x08, 99, 9, 80, 1, 0
