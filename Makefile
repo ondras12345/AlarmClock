@@ -21,7 +21,9 @@ bootloader:     ## Burn fuses and bootloader.
 
 .PHONY: clean
 clean:          ## Clean project.
+# Not cleaning extra_files, because they are currently tracked by git.
 	pio run $(ENV_FLAG) --target clean
+	-rm include/version.h
 
 .PHONY: update
 update:         ## Update PlatformIO core and libraries.
@@ -33,7 +35,6 @@ help:           ## Show this help.
 
 .PHONY: docs
 docs:           ## Generate Doxygen documentation.
-# Not cleaning extra_files, because they are currently tracked by git.
 docs: $(extra_files)
 	doxygen
 
