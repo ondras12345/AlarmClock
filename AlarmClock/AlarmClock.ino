@@ -153,7 +153,7 @@ void setup()
 
 #ifdef internal_WDT
     wdt_enable(WDTO_4S);
-    DEBUG_println(F("WDT enabled"));
+    DEBUG_println(F("WDT 4s"));
 #endif
 
 }
@@ -413,10 +413,8 @@ void set_inhibit(bool status)
     inhibit_prev_millis = millis();
     inhibit = status;
     for (byte i = 0; i < alarms_count; i++) alarms[i]->set_inhibit(status);
-    // Removing the braces around DEBUG_println in the else statement causes a
-    // compiler error if DEBUG is turned off.
-    if (status) { DEBUG_println(F("inhibit enabled")); }
-    else { DEBUG_println(F("inhibit disabled")); }
+    DEBUG_print(F("inhibit "));
+    DEBUG_println(status);
 }
 
 

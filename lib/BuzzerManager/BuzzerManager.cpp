@@ -25,7 +25,7 @@ void BuzzerManager::loop()
                 if (frequency == 0 && amplitude == 0)
                 {
                     // stop detected, read footer
-                    DEBUG_println(F("reading melody footer"));
+                    DEBUG_println(F("melody footer"));
                     if (next_tone_address_ + 5 >= EEPROM_size) melody_fail();
                     if (EEPROM.read(next_tone_address_++) != 0xFF) melody_fail();
                     uint8_t flags = EEPROM.read(next_tone_address_);
@@ -229,7 +229,7 @@ bool BuzzerManager::play_melody(byte id)
     if (EEPROM.read(next_tone_address_++) != 0x55) return false;
     if (EEPROM.read(next_tone_address_++) != 0xAA) return false;
     melody_start_address_ = next_tone_address_;
-    DEBUG_println(F("valid melody header"));
+    DEBUG_println(F("melody header OK"));
     return true;
 }
 
