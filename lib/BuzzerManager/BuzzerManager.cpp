@@ -161,7 +161,10 @@ void BuzzerManager::set_tone(BuzzerTone tone)
     }
 
     if (!melody_ && tone_ != ringing_off)
+    {
         set_buzzer(true);
+        prev_millis_ = millis();
+    }
 }
 
 
