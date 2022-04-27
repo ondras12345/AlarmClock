@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+### Fixed
+- Speaker clicking when going from `noTone` to `tone` or `silence`.
 
 
 ## [0.6.0] - 2022-04-23
