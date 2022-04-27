@@ -5,24 +5,9 @@
 /*
 Days of week in GUI and EEPROM: 1=Monday
 
+Try to follow https://google.github.io/styleguide/cppguide.html
 
-Code directives:
- - try to follow https://google.github.io/styleguide/cppguide.html
-
- - all comments in English
-
- - TODO comments must contain 'TODO' (for automated searching)
-
- - constants should be #defined or const, never write the actual number to the code
-
- - millis() checking: https://www.baldengineer.com/arduino-how-do-you-reset-millis.html
-     if ((unsigned long)(millis() - previousMillis) >= interval)
-
- - returning array: https://www.tutorialspoint.com/cplusplus/cpp_return_arrays_from_functions.htm
-
- - declaring variables in switch - case: https://forum.arduino.cc/index.php?topic=64407.0
-
- - custom LCD characters: https://maxpromer.github.io/LCD-Character-Creator/
+Declaring variables in switch-case: https://forum.arduino.cc/index.php?topic=64407.0
 */
 
 
