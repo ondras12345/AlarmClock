@@ -39,10 +39,12 @@ used if the timed-out alarm requested it because it has a higher priority.
 This is not considered a major problem and will likely not be fixed.
 
 
-## Ambient LED strip
-A LED strip can be connected to the device. It slowly lights up when the
-alarm enables it. [PWM][Wikipedia PWM] is used for dimming. It can also be
-controlled manually trough the [Serial CLI](#Serial-CLI) and
+## Ambient LED
+An LED can be connected to the device. It slowly lights up when the
+alarm enables it. [PWM][Wikipedia PWM] is output by the microcontroller, but
+the hardware setup I use ([AlarmClock-hardware][AlarmClock-hardware]) converts
+it to constant current reduction linear dimming.
+It can also be controlled manually trough the [Serial CLI](#Serial-CLI) and
 the LCD GUI (home screen).
 
 Ambient is turned on `Alarm_ambient_dimming_duration` before the alarm
@@ -128,7 +130,7 @@ If the entered date is invalid, nothing happens.
 | time                            | (0-23):(0-59)        | time  |                                               |
 | snooze: time                    | (1-99)               | min   | How long is the alarm in snooze               |
 | snooze: count                   | (0-9)                | count | How many times can the snooze feature be used |
-| signalization: ambient          | (0-255)              |       | Ambient LED strips intensity (0 = disabled)   |
+| signalization: ambient          | (0-255)              |       | Ambient LED intensity (0 = disabled)          |
 | signalization: lamp             | (0\|1)               | bool  | Is the 'lamp' output activated                |
 | signalization: buzzer           | (0\|1)               | bool  | Is the buzzer activated                       |
 
@@ -136,7 +138,7 @@ If the entered date is invalid, nothing happens.
 **Notes:**  
 bool: [boolean][Wikipedia boolean]  
 days of week: Mo = 1, Su = 7  
-Ambient LED strip dimming: [PWM][Wikipedia PWM]
+Ambient LED dimming: [PWM][Wikipedia PWM]
 
 If "Enabled" is set to "Skip", the next activation is inhibited. The alarm
 returns to "Repeat" afterwards.
@@ -214,6 +216,7 @@ Explanation:
 
 
 [Github repo]: https://github.com/ondras12345/AlarmClock
+[AlarmClock-hardware]: https://github.com/ondras12345/AlarmClock-hardware
 [Wikipedia PWM]: https://en.wikipedia.org/wiki/Pulse-width_modulation
 [Wikipedia boolean]: https://en.wikipedia.org/wiki/Boolean_data_type
 [PuTTY]: https://www.putty.org/

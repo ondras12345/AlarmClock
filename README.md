@@ -1,27 +1,34 @@
 # AlarmClock
 An Arduino-compatible alarm clock with multiple configurable alarms
 
-**WARNING**: This project is still under development.
-
 Hardware design files are available in a separate repository:
 [AlarmClock-hardware][AlarmClock-hardware]
+
+![Front side of AlarmClock in a wooden enclosure](./docs/img/final-front.jpg)
+![Back side of AlarmClock in a wooden enclosure](./docs/img/final-back.jpg)
 
 
 ## Features
 - configurable number (default 6, max 16) of
-  [configurable](./docs/manual.md#Alarms) alarms
+  [configurable alarms](./docs/manual.md#Alarms)
 - snooze feature with configurable time and count
-- a different [ringing](./docs/manual.md#Ringing) tone when snooze cannot be
+- a different [ringing tone](./docs/manual.md#Ringing) when snooze cannot be
   used (last ringing)
-- a LED strip that slowly lights up before the alarm sounds
+- an LED that slowly lights up before the alarm sounds
   ([ambient](./docs/manual.md#Ambient-LED-strip))
 - 2 separate buttons (snooze and stop). Stop can be installed further away
   from the bed, so that the user cannot reach it while still laying.
 - a 16x2 character LCD with a rotary encoder for configuration
-  ([GUI](./docs/manual.md#LCD))
+  ([GUI](./docs/manual.md#LCD))  
+  ![Example LCD content for alarm configuration](./docs/img/screen-alarms.png)
 - an easy to parse serial port (UART) text-based configuration interface
   ([CLI](./docs/manual.md#Serial-CLI))
-- a [Python library][PyAlarmClock] for easy control from a PC and automation
+- a [Python library and MQTT adapter][PyAlarmClock] for easy control from a PC
+  and automation (device needs to be connected to a server / PC via UART)  
+  ![Ambient LED control within Home Assistant](./docs/img/homeassistant-ambient.png)
+- a [web-based configuration interface][AlarmClockWeb] (runs on PC, requires
+  the MQTT adapter to be set up)  
+  ![Web configuration of AlarmClock](./docs/img/web-qutebrowser.png)
 
 
 ## Building
@@ -92,5 +99,6 @@ Just type `make docs`.
 
 [manual]: ./docs/manual.md
 [PyAlarmClock]: https://github.com/ondras12345/PyAlarmClock
+[AlarmClockWeb]: https://github.com/ondras12345/AlarmClockWeb
 [AlarmClock-hardware]: https://github.com/ondras12345/AlarmClock-hardware
 [PlatformIO]: https://platformio.org/
