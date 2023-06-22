@@ -96,9 +96,13 @@ See the [manual][manual].
 You can generate documentation for the source code using `doxygen`.
 Just type `make docs`.
 
+I also published [comprehensive documentation of the development
+process][AlarmClock-doc], but it is only available in Czech.
+
 
 [manual]: ./docs/manual.md
 [PyAlarmClock]: https://github.com/ondras12345/PyAlarmClock
 [AlarmClockWeb]: https://github.com/ondras12345/AlarmClockWeb
 [AlarmClock-hardware]: https://github.com/ondras12345/AlarmClock-hardware
+[AlarmClock-doc]: https://github.com/ondras12345/AlarmClock-doc
 [PlatformIO]: https://platformio.org/
