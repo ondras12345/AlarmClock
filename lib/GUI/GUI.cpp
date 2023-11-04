@@ -593,27 +593,27 @@ void GUI::update_(const DateTime& now)
                                     ? char('0' + i) : '-';
         }
 
-        char enabled[4] = "";
+        PGM_P enabled = "";
         switch (sel_alarm_->get_enabled())
         {
         case Off:
-            strcpy_P(enabled, PSTR("OFF"));
+            enabled = PSTR("OFF");
             break;
 
         case Single:
-            strcpy_P(enabled, PSTR("SGL"));
+            enabled = PSTR("SGL");
             break;
 
         case Repeat:
-            strcpy_P(enabled, PSTR("RPT"));
+            enabled = PSTR("RPT");
             break;
 
         case Skip:
-            strcpy_P(enabled, PSTR("SKP"));
+            enabled = PSTR("SKP");
             break;
         }
 
-        sprintf_P(line_buffer_, PSTR("%c%X/%X %s %s"),
+        sprintf_P(line_buffer_, PSTR("%c%X/%X %s %S"),
                   char(LCD_char_home_index), sel_alarm_index_, alarms_count - 1,
                   days_of_week, enabled );
         lcd_.print(line_buffer_);
