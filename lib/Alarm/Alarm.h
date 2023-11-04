@@ -109,6 +109,12 @@ public:
     bool get_inhibit() const { return inhibit_; };
     bool set_inhibit(bool inhibit);
 
+    //! Returns true if alarm is on (ringing or snooze).
+    bool get_active() const
+    {
+        return current_snooze_count_ < current_snooze_count_inactive_;
+    };
+
 
 protected:
     /*
@@ -157,12 +163,6 @@ protected:
     DaysOfWeek days_of_week_ = DaysOfWeek(0x00);
     Snooze snooze_ = { 0, 0 };
     Signalization signalization_ = { 0, false, 0 };
-
-    //! Returns true if alarm is on (ringing or snooze).
-    bool get_active() const
-    {
-        return current_snooze_count_ < current_snooze_count_inactive_;
-    };
 
 
     bool ShouldTrigger(DateTime time);

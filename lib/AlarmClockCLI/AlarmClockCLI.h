@@ -187,6 +187,7 @@ protected:
     static SerialCLI::error_t cmd_melody_(char *id);
     static SerialCLI::error_t cmd_eer_(char *args);
     static SerialCLI::error_t cmd_eew_(char *args);
+    static SerialCLI::error_t cmd_active_(char *ignored);
 
     static SerialCLI::error_t select_alarm_(byte index);
     static SerialCLI::error_t set_enabled_(AlarmEnabled status);

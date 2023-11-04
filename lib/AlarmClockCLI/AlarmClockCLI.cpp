@@ -58,6 +58,7 @@ const SerialCLI::command_t AlarmClockCLI::commands[] = {
     {"melody",  &AlarmClockCLI::cmd_melody_},
     {"eer",     &AlarmClockCLI::cmd_eer_},
     {"eew",     &AlarmClockCLI::cmd_eew_},
+    {"active",  &AlarmClockCLI::cmd_active_},
 };
 const byte AlarmClockCLI::command_count =
     (sizeof(AlarmClockCLI::commands) / sizeof(SerialCLI::command_t));
@@ -373,6 +374,7 @@ void AlarmClockCLI::cmd_not_found()
         "  sel{i} - select alarm\r\n"
         "  la - list all alarms\r\n"
         "  stop - stop button\r\n"
+        "  active - print active alarms\r\n"
         "  Selected alarm:\r\n"
         "    ls - list\r\n"
         "    en-off/en-sgl/en-rpt/en-skp - enable\r\n"
@@ -962,5 +964,24 @@ SerialCLI::error_t AlarmClockCLI::cmd_eew_(char *args)
     if (*args == '\0') return kArgument;
     byte data = strbyte_(args);
     EEPROM.update(address, data);
+    return 0;
+}
+
+
+SerialCLI::error_t AlarmClockCLI::cmd_active_(char *ignored)
+{
+    (void)ignored;
+    ser_->println(YAML_begin);
+    ser_->println(F("active alarms:"));
+    for (uint8_t i = 0; i < alarms_count; i++)
+    {
+        if (alarms_[i]->get_active())
+        {
+            indent_(1);
+            ser_->print(F("- "));
+            ser_->println(i);
+        }
+    }
+    ser_->println(YAML_end);
     return 0;
 }
