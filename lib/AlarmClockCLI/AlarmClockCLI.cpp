@@ -360,84 +360,53 @@ void AlarmClockCLI::print_error(SerialCLI::error_t code)
 void AlarmClockCLI::cmd_not_found()
 {
     ser_->println();
-    ser_->println(F("Help:"));
-    indent_(1);
-    ser_->println(F("ver - static info"));
-    indent_(1);
-    ser_->println(F("amb - get ambient 0-255"));
-    indent_(1);
-    ser_->println(F("amb{n} - ambient 0-255"));
-    indent_(1);
-    ser_->println(F("lamp - get 0|1"));
-    indent_(1);
-    ser_->println(F("lamp{l} - set 0|1"));
-    indent_(1);
-    ser_->println(F("inh - get inhibit 0|1"));
-    indent_(1);
-    ser_->println(F("inh{i} - set inhibit 0|1"));
-    indent_(1);
-    ser_->println(F("sel{i} - select alarm"));
-    indent_(1);
-    ser_->println(F("la - list all alarms"));
-    indent_(1);
-    ser_->println(F("Selected alarm:"));
-    indent_(2);
-    ser_->println(F("ls - list"));
-    indent_(2);
-    ser_->println(F("en-off/en-sgl/en-rpt/en-skp - enable"));
-    indent_(2);
-    ser_->println(F("time{h}:{m}"));
-    indent_(2);
-    ser_->println(F("dow{d}:{s} - set day {d}1-7 of week to {s}1|0"));
-    indent_(2);
-    ser_->println(F("snz{t};{c} - set snooze: time{t}min;count{c}"));
-    indent_(2);
-    ser_->print(F("sig{a};{l};{b} - set signalization: ambient{a}0-255;lamp{l}0|1;buzzer{b}0|1|"));
+    ser_->print(F(
+        "Help:\r\n"
+        "  ver - static info\r\n"
+        "  amb - get ambient 0-255\r\n"
+        "  amb{n} - ambient 0-255\r\n"
+        "  lamp - get 0|1\r\n"
+        "  lamp{l} - set 0|1\r\n"
+        "  inh - get inhibit 0|1\r\n"
+        "  inh{i} - set inhibit 0|1\r\n"
+        "  sel{i} - select alarm\r\n"
+        "  la - list all alarms\r\n"
+        "  Selected alarm:\r\n"
+        "    ls - list\r\n"
+        "    en-off/en-sgl/en-rpt/en-skp - enable\r\n"
+        "    time{h}:{m}\r\n"
+        "    dow{d}:{s} - set day {d}1-7 of week to {s}1|0\r\n"
+        "    snz{t};{c} - set snooze: time{t}min;count{c}\r\n"
+        "    sig{a};{l};{b} - set signalization: ambient{a}0-255;lamp{l}0|1;buzzer{b}0|1|"
+    ));
     ser_->print(signalization_melody_start);
     ser_->print('-');
     ser_->println(signalization_melody_end);
-    indent_(1);
-    ser_->println(F("sav - save all"));
-    indent_(1);
-    ser_->println(F("RTC:"));
-    indent_(2);
-    ser_->println(F("rtc - get RTC time"));
-    indent_(2);
-    ser_->println(F("sd{YYYY-MM-DD} - set RTC date"));
-    indent_(2);
-    ser_->println(F("st{hh:mm[:ss]} - set RTC time"));
-    indent_(1);
-    ser_->println(F("Timer:"));
-    indent_(2);
-    ser_->println(F("tmr - get timer time"));
-    indent_(2);
-    ser_->println(F("tmr{hh:mm:ss} - set timer time"));
-    indent_(2);
-    ser_->println(F("tme - get timer events"));
-    indent_(2);
-    ser_->println(F("tme{a};{l};{b} - set timer events"));
-    indent_(2);
-    ser_->println(F("tmr-start/tmr-stop"));
-    indent_(1);
-    ser_->println(F("Sound (testing only):"));
-    indent_(2);
-    // The `tone` command would not fit in the buffer if frequency wasn't
-    // divided by 10.
-    ser_->println(F("tone{f/10};{a}"));
-    indent_(2);
-    ser_->println(F("silence"));
-    indent_(2);
-    ser_->println(F("notone"));
-    indent_(1);
-    ser_->println(F("Melodies:"));
-    indent_(2);
-    ser_->println(F("melody{i} - play melody 0-15"));
-    indent_(1);
-    ser_->println(F("EEPROM:"));
-    indent_(2);
-    ser_->println(F("eer{aaaa} - read data from address"));
-    indent_(2);
-    ser_->println(F("eew{aaaa};{ddd} - write data to address"));
+
+    ser_->print(F(
+        "  sav - save all\r\n"
+        "  RTC:\r\n"
+        "    rtc - get RTC time\r\n"
+        "    sd{YYYY-MM-DD} - set RTC date\r\n"
+        "    st{hh:mm[:ss]} - set RTC time\r\n"
+        "  Timer:\r\n"
+        "    tmr - get timer time\r\n"
+        "    tmr{hh:mm:ss} - set timer time\r\n"
+        "    tme - get timer events\r\n"
+        "    tme{a};{l};{b} - set timer events\r\n"
+        "    tmr-start/tmr-stop\r\n"
+        "  Sound (testing only):\r\n"
+        // The `tone` command would not fit in the buffer if frequency wasn't
+        // divided by 10.
+        "    tone{f/10};{a}\r\n"
+        "    silence\r\n"
+        "    notone\r\n"
+        "  Melodies:\r\n"
+        "    melody{i} - play melody 0-15\r\n"
+        "  EEPROM:\r\n"
+        "    eer{aaaa} - read data from address\r\n"
+        "    eew{aaaa};{ddd} - write data to address\r\n"
+    ));
 
     print_error(kNotFound);
 }
