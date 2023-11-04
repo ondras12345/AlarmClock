@@ -982,6 +982,16 @@ SerialCLI::error_t AlarmClockCLI::cmd_active_(char *ignored)
             ser_->println(i);
         }
     }
+    ser_->println(F("alarms with active ambient:"));
+    for (uint8_t i = 0; i < alarms_count; i++)
+    {
+        if (alarms_[i]->get_ambient_status())
+        {
+            indent_(1);
+            ser_->print(F("- "));
+            ser_->println(i);
+        }
+    }
     ser_->println(YAML_end);
     return 0;
 }

@@ -113,6 +113,12 @@ public:
         return current_snooze_count_ < current_snooze_count_inactive_;
     };
 
+    //! Returns true if alarm has enabled ambient.
+    bool get_ambient_status() const
+    {
+        return ambient_status_;
+    }
+
 
 protected:
     /*
