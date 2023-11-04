@@ -12,6 +12,8 @@
 */
 void Alarm::loop(DateTime time)
 {
+    // TODO make this a proper state machine.
+
     if (get_active())
     {
         // alarm is already active
