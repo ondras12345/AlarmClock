@@ -171,6 +171,7 @@ protected:
     static SerialCLI::error_t cmd_dow_(char *dow);
     static SerialCLI::error_t cmd_snz_(char *snooze);
     static SerialCLI::error_t cmd_sig_(char *sig);
+    static SerialCLI::error_t cmd_stop_(char *ignored);
     static SerialCLI::error_t cmd_st_(char *time);
     static SerialCLI::error_t cmd_sd_(char *date);
     static SerialCLI::error_t cmd_tmr_(char *time);

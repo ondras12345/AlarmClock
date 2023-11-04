@@ -42,6 +42,7 @@ const SerialCLI::command_t AlarmClockCLI::commands[] = {
     {"dow",     &AlarmClockCLI::cmd_dow_},
     {"snz",     &AlarmClockCLI::cmd_snz_},
     {"sig",     &AlarmClockCLI::cmd_sig_},
+    {"stop",    &AlarmClockCLI::cmd_stop_},
     {"tmr",     &AlarmClockCLI::cmd_tmr_},
     {"tme",     &AlarmClockCLI::cmd_tme_},
     {"st",      &AlarmClockCLI::cmd_st_},
@@ -371,6 +372,7 @@ void AlarmClockCLI::cmd_not_found()
         "  inh{i} - set inhibit 0|1\r\n"
         "  sel{i} - select alarm\r\n"
         "  la - list all alarms\r\n"
+        "  stop - stop button\r\n"
         "  Selected alarm:\r\n"
         "    ls - list\r\n"
         "    en-off/en-sgl/en-rpt/en-skp - enable\r\n"
@@ -640,6 +642,15 @@ SerialCLI::error_t AlarmClockCLI::cmd_sig_(char *sig)
         return 0;
     }
     else return kArgument;
+}
+
+
+SerialCLI::error_t AlarmClockCLI::cmd_stop_(char *ignored)
+{
+    (void)ignored;
+    for (byte i = 0; i < alarms_count; i++) alarms_[i]->ButtonStop();
+    timer_->ButtonStop();
+    return 0;
 }
 
 
