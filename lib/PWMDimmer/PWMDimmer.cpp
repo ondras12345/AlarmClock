@@ -37,20 +37,20 @@ void PWMDimmer::set_from_duration(byte start, byte stop, unsigned long duration)
 {
     int step_sign = (start > stop) ? -1 : 1;
     byte diff = abs(stop - start);
-    int step_ = 0;
-    unsigned long interval_;
+    int step = 0;
+    unsigned long interval;
     unsigned long duration_ = duration;
 
     if (duration_ < 500) duration_ = 500;
 
     // Choose interval
     // interval >= 50 ms
-    interval_ = duration_ / diff;
-    if(interval_ < 50) interval_ = 50;
+    interval = duration_ / diff;
+    if (interval < 50) interval = 50;
 
 
-    step_ = step_sign * ((interval_ * diff) / duration_);
-    if (step_ == 0) step_ = step_sign; // step must not be 0
+    step = step_sign * ((interval * diff) / duration_);
+    if (step == 0) step = step_sign; // step must not be 0
 
 #if defined(DEBUG) && defined(DEBUG_dimmer)
     DEBUG_print(F("dimmer - start: "));
@@ -66,14 +66,14 @@ void PWMDimmer::set_from_duration(byte start, byte stop, unsigned long duration)
     DEBUG_println(duration_);
 
     DEBUG_print(F("dimmer - interval: "));
-    DEBUG_println(interval_);
+    DEBUG_println(interval);
 
     DEBUG_print(F("dimmer - step: "));
-    DEBUG_println(step_);
+    DEBUG_println(step);
 #endif
 
 
-    set(start, stop, step_, interval_);
+    set(start, stop, step, interval);
 }
 
 

@@ -559,7 +559,7 @@ void GUI::switch_screen_(Screen screen)
 
 void GUI::update_(const DateTime& now)
 {
-    Alarm* sel_alarm_ = alarms_[sel_alarm_index_];
+    const Alarm* sel_alarm_ = alarms_[sel_alarm_index_];
 
     lcd_.noCursor();
     lcd_.noBlink();

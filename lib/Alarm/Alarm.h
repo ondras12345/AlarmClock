@@ -74,8 +74,8 @@ public:
         Signalization signalization_    3
     */
     static constexpr byte EEPROM_length = 1 + 2 + 1 + 1 + 2 + 3;
-    bool ReadEEPROM(byte data[EEPROM_length]);
-    void WriteEEPROM(byte data[EEPROM_length]);
+    bool ReadEEPROM(const uint8_t data[EEPROM_length]);
+    void WriteEEPROM(uint8_t data[EEPROM_length]);
 
     void loop(DateTime time);
     void ButtonSnooze();

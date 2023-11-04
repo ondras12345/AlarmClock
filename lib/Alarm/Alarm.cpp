@@ -288,7 +288,7 @@ Alarm::Alarm(
             If it returns false, the alarm may be set to incomplete (and
             probably random) data.
 */
-bool Alarm::ReadEEPROM(byte data[Alarm::EEPROM_length])
+bool Alarm::ReadEEPROM(const uint8_t data[Alarm::EEPROM_length])
 {
 #if defined(DEBUG) && defined(DEBUG_EEPROM_alarms)
     Serial.println();
@@ -338,7 +338,7 @@ bool Alarm::ReadEEPROM(byte data[Alarm::EEPROM_length])
     @brief  Converts the alarm to an EEPROM record.
     @param  data    Array to store the resulting data in.
 */
-void Alarm::WriteEEPROM(byte data[EEPROM_length])
+void Alarm::WriteEEPROM(uint8_t data[EEPROM_length])
 {
     data[0] = EEPROM_alarms_id;
 
