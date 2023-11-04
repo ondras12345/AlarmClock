@@ -64,16 +64,14 @@ struct Signalization
 class Alarm
 {
 public:
-    /*!
-        @brief  EEPROM record length in bytes.
-        EEPROM_alarms_id                1
-        HoursMinutes when_              2
-        AlarmEnabled enabled_           1
-        DaysOfWeek days_of_week_        1
-        Snooze snooze_                  2
-        Signalization signalization_    3
-    */
-    static constexpr byte EEPROM_length = 1 + 2 + 1 + 1 + 2 + 3;
+    /// EEPROM record length in bytes.
+    static constexpr uint8_t EEPROM_length =
+        /* EEPROM_alarms_id */              1 +
+        /* HoursMinutes when_ */            2 +
+        /* AlarmEnabled enabled_ */         1 +
+        /* DaysOfWeek days_of_week_ */      1 +
+        /* Snooze snooze_ */                2 +
+        /* Signalization signalization_ */  3;
     bool ReadEEPROM(const uint8_t data[EEPROM_length]);
     void WriteEEPROM(uint8_t data[EEPROM_length]);
 
