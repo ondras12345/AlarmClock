@@ -92,6 +92,7 @@ public:
     };
 
     void notify_alarms_changed();
+    static void report_display_backlight(uint8_t);
 
 protected:
     /*!
@@ -121,6 +122,7 @@ protected:
     /// Used to prevent unnecessary cmd_la_ after other state changes.
     /// Defaults to true.
     static bool alarms_changed;
+    static uint8_t display_backlight_status_;
 
     //! Error strings corresponding to errors in CommandError
     static const char* error_strings[];

@@ -22,6 +22,7 @@ void(*AlarmClockCLI::set_inhibit_)(bool);
 bool(*AlarmClockCLI::get_inhibit_)();
 
 bool AlarmClockCLI::alarms_changed = true;
+uint8_t AlarmClockCLI::display_backlight_status_ = 0;
 bool AlarmClockCLI::buzzer_playing_ = false;
 
 bool AlarmClockCLI::change_ = false;
@@ -125,6 +126,17 @@ void AlarmClockCLI::notify_alarms_changed()
 {
     alarms_changed = true;
     notify_change();
+}
+
+
+/**
+ * Remember display backlight status for later reporting.
+ * (AlarmClockCLI does not have a reference to GUI and thus cannot obtain this
+ * information autonomously.)
+ */
+void AlarmClockCLI::report_display_backlight(uint8_t status)
+{
+    display_backlight_status_ = status;
 }
 
 
@@ -1042,6 +1054,8 @@ SerialCLI::error_t AlarmClockCLI::cmd_status_(char *ignored)
 
     ser_->print(F("alarms changed: "));
     ser_->println(alarms_changed);
+    ser_->print(F("display: "));
+    ser_->println(display_backlight_status_);
     yaml_ambient_();
     yaml_lamp_();
     yaml_inhibit_();

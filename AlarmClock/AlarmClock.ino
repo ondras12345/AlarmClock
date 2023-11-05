@@ -178,6 +178,7 @@ void loop()
     }
 #endif
 
+    myCLI.report_display_backlight(myGUI.get_backlight());
     myCLI.loop(now);
     myGUI.loop(now);
     for (byte i = 0; i < alarms_count; i++) alarms[i]->loop(now);

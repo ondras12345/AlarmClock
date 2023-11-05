@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CLI now also sends Serial_change_character when alarm configuration changes.
 - CLI command to print all status information at once (`status`). Useful as a
   response to `Serial_change_character` to know what changed.
+- CLI `status` command now prints display backlight status.
 
 
 ## [0.6.1] - 2022-04-27
