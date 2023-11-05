@@ -114,14 +114,14 @@ protected:
         kLast = 32,  //!< last; all errors are lower than this
     };
 
-    void notify_change();
+    void notify_change_();
 
-    unsigned long last_BEL_change = 0;
-    bool BEL_change = false;
+    unsigned long last_BEL_change_ = 0;
+    bool BEL_change_ = false;
     /// Set to true by notify_alarms changed and back to false by cmd_la_.
     /// Used to prevent unnecessary cmd_la_ after other state changes.
     /// Defaults to true.
-    static bool alarms_changed;
+    static bool alarms_changed_;
     static uint8_t display_backlight_status_;
 
     //! Error strings corresponding to errors in CommandError

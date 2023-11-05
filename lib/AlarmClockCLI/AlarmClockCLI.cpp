@@ -21,7 +21,7 @@ BuzzerManager* AlarmClockCLI::buzzer_;
 void(*AlarmClockCLI::set_inhibit_)(bool);
 bool(*AlarmClockCLI::get_inhibit_)();
 
-bool AlarmClockCLI::alarms_changed = true;
+bool AlarmClockCLI::alarms_changed_ = true;
 uint8_t AlarmClockCLI::display_backlight_status_ = 0;
 bool AlarmClockCLI::buzzer_playing_ = false;
 
@@ -110,12 +110,12 @@ void AlarmClockCLI::loop(const DateTime& now)
         prev_inhibit = get_inhibit_();
         prev_ambient = ambientDimmer_->get_stop();
         prev_lamp = lamp_->get();
-        notify_change();
+        notify_change_();
     }
 
-    if (BEL_change && millis_now - last_BEL_change >= Serial_change_debounce)
+    if (BEL_change_ && millis_now - last_BEL_change_ >= Serial_change_debounce)
     {
-        BEL_change = false;
+        BEL_change_ = false;
         ser_->print(Serial_change_character);
     }
 }
@@ -124,8 +124,8 @@ void AlarmClockCLI::loop(const DateTime& now)
 /// Notify the serial client of a change in configuration of alarms.
 void AlarmClockCLI::notify_alarms_changed()
 {
-    alarms_changed = true;
-    notify_change();
+    alarms_changed_ = true;
+    notify_change_();
 }
 
 
@@ -143,10 +143,10 @@ void AlarmClockCLI::report_display_backlight(uint8_t status)
 /**
  * Send Serial_change_character to notify the serial client of a state change.
  */
-void AlarmClockCLI::notify_change()
+void AlarmClockCLI::notify_change_()
 {
-    BEL_change = true;
-    last_BEL_change = millis();
+    BEL_change_ = true;
+    last_BEL_change_ = millis();
 }
 
 
@@ -869,7 +869,7 @@ SerialCLI::error_t AlarmClockCLI::cmd_la_(char *ignored)
 
     ser_->println(YAML_end);
 
-    alarms_changed = false;
+    alarms_changed_ = false;
     return 0;
 }
 
@@ -1053,7 +1053,7 @@ SerialCLI::error_t AlarmClockCLI::cmd_status_(char *ignored)
     }
 
     ser_->print(F("alarms changed: "));
-    ser_->println(alarms_changed);
+    ser_->println(alarms_changed_);
     ser_->print(F("display: "));
     ser_->println(display_backlight_status_);
     yaml_ambient_();
