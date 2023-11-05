@@ -117,6 +117,10 @@ protected:
 
     unsigned long last_BEL_change = 0;
     bool BEL_change = false;
+    /// Set to true by notify_alarms changed and back to false by cmd_la_.
+    /// Used to prevent unnecessary cmd_la_ after other state changes.
+    /// Defaults to true.
+    static bool alarms_changed;
 
     //! Error strings corresponding to errors in CommandError
     static const char* error_strings[];
@@ -165,6 +169,9 @@ protected:
     static void yaml_time_(HoursMinutes time);
     static void yaml_alarm_(byte index, bool comments);
     static void yaml_timer_();
+    static void yaml_ambient_();
+    static void yaml_lamp_();
+    static void yaml_inhibit_();
 
 
     // commands
@@ -194,7 +201,7 @@ protected:
     static SerialCLI::error_t cmd_melody_(char *id);
     static SerialCLI::error_t cmd_eer_(char *args);
     static SerialCLI::error_t cmd_eew_(char *args);
-    static SerialCLI::error_t cmd_active_(char *ignored);
+    static SerialCLI::error_t cmd_status_(char *ignored);
 
     static SerialCLI::error_t select_alarm_(byte index);
     static SerialCLI::error_t set_enabled_(AlarmEnabled status);

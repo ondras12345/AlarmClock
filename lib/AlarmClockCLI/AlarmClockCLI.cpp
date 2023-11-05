@@ -21,6 +21,7 @@ BuzzerManager* AlarmClockCLI::buzzer_;
 void(*AlarmClockCLI::set_inhibit_)(bool);
 bool(*AlarmClockCLI::get_inhibit_)();
 
+bool AlarmClockCLI::alarms_changed = true;
 bool AlarmClockCLI::buzzer_playing_ = false;
 
 bool AlarmClockCLI::change_ = false;
@@ -43,6 +44,7 @@ const SerialCLI::command_t AlarmClockCLI::commands[] = {
     {"snz",     &AlarmClockCLI::cmd_snz_},
     {"sig",     &AlarmClockCLI::cmd_sig_},
     {"stop",    &AlarmClockCLI::cmd_stop_},
+    {"status",  &AlarmClockCLI::cmd_status_},
     {"tmr",     &AlarmClockCLI::cmd_tmr_},
     {"tme",     &AlarmClockCLI::cmd_tme_},
     {"st",      &AlarmClockCLI::cmd_st_},
@@ -58,7 +60,6 @@ const SerialCLI::command_t AlarmClockCLI::commands[] = {
     {"melody",  &AlarmClockCLI::cmd_melody_},
     {"eer",     &AlarmClockCLI::cmd_eer_},
     {"eew",     &AlarmClockCLI::cmd_eew_},
-    {"active",  &AlarmClockCLI::cmd_active_},
 };
 const byte AlarmClockCLI::command_count =
     (sizeof(AlarmClockCLI::commands) / sizeof(SerialCLI::command_t));
@@ -122,6 +123,7 @@ void AlarmClockCLI::loop(const DateTime& now)
 /// Notify the serial client of a change in configuration of alarms.
 void AlarmClockCLI::notify_alarms_changed()
 {
+    alarms_changed = true;
     notify_change();
 }
 
@@ -358,6 +360,32 @@ void AlarmClockCLI::yaml_timer_()
 }
 
 
+void AlarmClockCLI::yaml_ambient_()
+{
+    ser_->println(F("ambient:"));
+    indent_(1);
+    ser_->print(F("current: "));
+    ser_->println(ambientDimmer_->get_value());
+    indent_(1);
+    ser_->print(F("target: "));
+    ser_->println(ambientDimmer_->get_stop());
+}
+
+
+void AlarmClockCLI::yaml_lamp_()
+{
+    ser_->print(F("lamp: "));
+    ser_->println(lamp_->get());
+}
+
+
+void AlarmClockCLI::yaml_inhibit_()
+{
+    ser_->print(F("inhibit: "));
+    ser_->println(get_inhibit_());
+}
+
+
 void AlarmClockCLI::print_error(SerialCLI::error_t code)
 {
     ser_->println();
@@ -398,7 +426,7 @@ void AlarmClockCLI::cmd_not_found()
         "  sel{i} - select alarm\r\n"
         "  la - list all alarms\r\n"
         "  stop - stop button\r\n"
-        "  active - print active alarms\r\n"
+        "  status - print status\r\n"
         "  Selected alarm:\r\n"
         "    ls - list\r\n"
         "    en-off/en-sgl/en-rpt/en-skp - enable\r\n"
@@ -512,13 +540,7 @@ SerialCLI::error_t AlarmClockCLI::cmd_amb_(char * duty)
     if (*duty == '\0')
     {
         ser_->println(YAML_begin);
-        ser_->println(F("ambient:"));
-        indent_(1);
-        ser_->print(F("current: "));
-        ser_->println(ambientDimmer_->get_value());
-        indent_(1);
-        ser_->print(F("target: "));
-        ser_->println(ambientDimmer_->get_stop());
+        yaml_ambient_();
         ser_->println(YAML_end);
         return 0;
     }
@@ -536,8 +558,7 @@ SerialCLI::error_t AlarmClockCLI::cmd_lamp_(char *status)
     if (*status == '\0')
     {
         ser_->println(YAML_begin);
-        ser_->print(F("lamp: "));
-        ser_->println(lamp_->get());
+        yaml_lamp_();
         ser_->println(YAML_end);
         return 0;
     }
@@ -552,8 +573,7 @@ SerialCLI::error_t AlarmClockCLI::cmd_inh_(char *status)
     if (*status == '\0')
     {
         ser_->println(YAML_begin);
-        ser_->print(F("inhibit: "));
-        ser_->println(get_inhibit_());
+        yaml_inhibit_();
         ser_->println(YAML_end);
         return 0;
     }
@@ -837,6 +857,7 @@ SerialCLI::error_t AlarmClockCLI::cmd_la_(char *ignored)
 
     ser_->println(YAML_end);
 
+    alarms_changed = false;
     return 0;
 }
 
@@ -992,10 +1013,11 @@ SerialCLI::error_t AlarmClockCLI::cmd_eew_(char *args)
 }
 
 
-SerialCLI::error_t AlarmClockCLI::cmd_active_(char *ignored)
+SerialCLI::error_t AlarmClockCLI::cmd_status_(char *ignored)
 {
     (void)ignored;
     ser_->println(YAML_begin);
+
     ser_->println(F("active alarms:"));
     for (uint8_t i = 0; i < alarms_count; i++)
     {
@@ -1006,6 +1028,7 @@ SerialCLI::error_t AlarmClockCLI::cmd_active_(char *ignored)
             ser_->println(i);
         }
     }
+
     ser_->println(F("alarms with active ambient:"));
     for (uint8_t i = 0; i < alarms_count; i++)
     {
@@ -1016,6 +1039,13 @@ SerialCLI::error_t AlarmClockCLI::cmd_active_(char *ignored)
             ser_->println(i);
         }
     }
+
+    ser_->print(F("alarms changed: "));
+    ser_->println(alarms_changed);
+    yaml_ambient_();
+    yaml_lamp_();
+    yaml_inhibit_();
+
     ser_->println(YAML_end);
     return 0;
 }
