@@ -136,6 +136,7 @@ void AlarmClockCLI::notify_alarms_changed()
  */
 void AlarmClockCLI::report_display_backlight(uint8_t status)
 {
+    if (display_backlight_status_ != status) notify_change_();
     display_backlight_status_ = status;
 }
 

@@ -92,7 +92,7 @@ public:
     };
 
     void notify_alarms_changed();
-    static void report_display_backlight(uint8_t);
+    void report_display_backlight(uint8_t);
 
 protected:
     /*!
