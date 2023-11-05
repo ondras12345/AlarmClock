@@ -165,7 +165,6 @@ protected:
     static uint16_t struint16_(const char* str);
     static char * find_digit_(char* str);
     static char * find_next_digit_(char* str);
-    static void indent_(byte level);
     static void yaml_time_(byte hours, byte minutes);
     static void yaml_time_(byte hours, byte minutes, byte seconds);
     static void yaml_time_(HoursMinutes time);

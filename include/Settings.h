@@ -167,9 +167,6 @@ I2C addresses
 /*
 Serial CLI
 */
-// Width of indentation (e.g. in help and YAML)
-#define Serial_indentation_width 2  // characters
-
 // YAML_begin and YAML_end need to be put on separate lines with no other
 // characters (except for '\r' and '\n')
 #define YAML_begin F("---")

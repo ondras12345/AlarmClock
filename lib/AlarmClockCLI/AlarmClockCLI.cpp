@@ -222,16 +222,6 @@ char* AlarmClockCLI::find_next_digit_(char* str)
 }
 
 
-void AlarmClockCLI::indent_(byte level)
-{
-    // No tabs in YAML!
-    for (byte i = 0; i < level * Serial_indentation_width; i++)
-    {
-        ser_->print(' ');
-    }
-}
-
-
 void AlarmClockCLI::yaml_time_(byte hours, byte minutes)
 {
     ser_->print('\'');
@@ -272,29 +262,29 @@ void AlarmClockCLI::yaml_alarm_(byte index, bool comments)
     ser_->print(index);
     ser_->println(':');
 
-    indent_(1);
-    ser_->print(F("enabled: "));
+    ser_->print(F("  enabled: "));
+    const __FlashStringHelper * enabled = F("");
     switch (alarms_[index]->get_enabled())
     {
         case Off:
-            ser_->println(F("'OFF'"));
+            enabled = F("'OFF'");
             break;
 
         case Single:
-            ser_->println(F("SGL"));
+            enabled = F("SGL");
             break;
 
         case Repeat:
-            ser_->println(F("RPT"));
+            enabled = F("RPT");
             break;
 
         case Skip:
-            ser_->println(F("SKP"));
+            enabled = F("SKP");
             break;
     }
+    ser_->println(enabled);
 
-    indent_(1);
-    ser_->print(F("dow: 0x"));
+    ser_->print(F("  dow: 0x"));
     // Filter out bit 0. It has no meaning and should always be zero.
     ser_->print(alarms_[index]->get_days_of_week().days_of_week & 0xFE, HEX);
     if (comments)
@@ -310,31 +300,23 @@ void AlarmClockCLI::yaml_alarm_(byte index, bool comments)
     }
     ser_->println();
 
-    indent_(1);
-    ser_->print(F("time: "));
+    ser_->print(F("  time: "));
     yaml_time_(alarms_[index]->get_time());
 
-    indent_(1);
-    ser_->println(F("snz:"));
-    indent_(2);
-    ser_->print(F("time: "));
+    ser_->println(F("  snz:"));
+    ser_->print(F("    time: "));
     ser_->print(alarms_[index]->get_snooze().time_minutes);
     if (comments) ser_->println(F("  # min"));
     else ser_->println();
-    indent_(2);
-    ser_->print(F("count: "));
+    ser_->print(F("    count: "));
     ser_->println(alarms_[index]->get_snooze().count);
 
-    indent_(1);
-    ser_->println(F("sig:"));
-    indent_(2);
-    ser_->print(F("ambient: "));
+    ser_->println(F("  sig:"));
+    ser_->print(F("    ambient: "));
     ser_->println(alarms_[index]->get_signalization().ambient);
-    indent_(2);
-    ser_->print(F("lamp: "));
+    ser_->print(F("    lamp: "));
     ser_->println(alarms_[index]->get_signalization().lamp);
-    indent_(2);
-    ser_->print(F("buzzer: "));
+    ser_->print(F("    buzzer: "));
     ser_->print(alarms_[index]->get_signalization().buzzer);
     if (comments)
     {
@@ -353,21 +335,16 @@ void AlarmClockCLI::yaml_alarm_(byte index, bool comments)
 void AlarmClockCLI::yaml_timer_()
 {
     ser_->println(F("timer:"));
-    indent_(1);
-    ser_->print(F("running: "));
+    ser_->print(F("  running: "));
     ser_->println(timer_->get_running() ? F("true") : F("false"));
-    indent_(1);
-    ser_->print(F("time left: "));
+    ser_->print(F("  time left: "));
     TimeSpan time_left(timer_->time_left);
     yaml_time_(time_left.hours(), time_left.minutes(), time_left.seconds());
-    indent_(1);
-    ser_->print(F("ambient: "));
+    ser_->print(F("  ambient: "));
     ser_->println(timer_->events.ambient);
-    indent_(1);
-    ser_->print(F("lamp: "));
+    ser_->print(F("  lamp: "));
     ser_->println(timer_->events.lamp ? 1 : 0);
-    indent_(1);
-    ser_->print(F("buzzer: "));
+    ser_->print(F("  buzzer: "));
     ser_->println(timer_->events.buzzer ? 1 : 0);
 }
 
@@ -375,11 +352,9 @@ void AlarmClockCLI::yaml_timer_()
 void AlarmClockCLI::yaml_ambient_()
 {
     ser_->println(F("ambient:"));
-    indent_(1);
-    ser_->print(F("current: "));
+    ser_->print(F("  current: "));
     ser_->println(ambientDimmer_->get_value());
-    indent_(1);
-    ser_->print(F("target: "));
+    ser_->print(F("  target: "));
     ser_->println(ambientDimmer_->get_stop());
 }
 
@@ -825,13 +800,11 @@ SerialCLI::error_t AlarmClockCLI::cmd_rtc_(char *ignored)
 
     ser_->println(YAML_begin);
     ser_->println(F("rtc:"));
-    indent_(1);
-    ser_->print(F("time: "));
+    ser_->print(F("  time: "));
     char buff[] = "YYYY-MM-DD hh:mm:ss";
     ser_->println(now_.toString(buff));
 
-    indent_(1);
-    ser_->print(F("dow: "));
+    ser_->print(F("  dow: "));
     ser_->println(days_of_the_week_names_short[
             (now_.dayOfTheWeek() == 0) ? 7 : now_.dayOfTheWeek()
             ]);
@@ -905,14 +878,11 @@ SerialCLI::error_t AlarmClockCLI::cmd_ver_(char *ignored)
     (void)ignored;
     ser_->println(YAML_begin);
     ser_->println(F("ver:"));
-    indent_(1);
-    ser_->print(F("number of alarms: "));
+    ser_->print(F("  number of alarms: "));
     ser_->println(alarms_count);
-    indent_(1);
-    ser_->print(F("version: "));
+    ser_->print(F("  version: "));
     ser_->println(F(AlarmClock_version));
-    indent_(1);
-    ser_->print(F("build time: "));
+    ser_->print(F("  build time: "));
     ser_->println(F(AlarmClock_build_time));
     ser_->println(YAML_end);
 
@@ -1001,8 +971,7 @@ SerialCLI::error_t AlarmClockCLI::cmd_eer_(char *args)
     if (address >= EEPROM_size) return kArgument;
 
     ser_->println(YAML_begin);
-    ser_->println(F("EEPROM:"));
-    indent_(1);
+    ser_->print(F("EEPROM:\r\n  "));
     ser_->print(address);
     ser_->print(": ");
     ser_->println(EEPROM.read(address));
@@ -1035,8 +1004,7 @@ SerialCLI::error_t AlarmClockCLI::cmd_status_(char *ignored)
     {
         if (alarms_[i]->get_active())
         {
-            indent_(1);
-            ser_->print(F("- "));
+            ser_->print(F("  - "));
             ser_->println(i);
         }
     }
@@ -1046,8 +1014,7 @@ SerialCLI::error_t AlarmClockCLI::cmd_status_(char *ignored)
     {
         if (alarms_[i]->get_ambient_status())
         {
-            indent_(1);
-            ser_->print(F("- "));
+            ser_->print(F("  - "));
             ser_->println(i);
         }
     }
