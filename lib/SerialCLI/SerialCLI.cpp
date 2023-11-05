@@ -94,7 +94,6 @@ void SerialCLI::loop()
     if (complete_message)
     {
         DEBUG_println();
-        DEBUG_println(F("Processing"));
 
         bool cmd_found = false;
 
