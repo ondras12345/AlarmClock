@@ -132,6 +132,7 @@ void GUI::loop(const DateTime& now)
                             {
                                 // Data is written to the EEPROM when returning
                                 // to home screen.
+                                // TODO automatically return to home screen after some amount of time
                                 change_ = false;
                                 writeEEPROM_();
                             }
@@ -358,6 +359,7 @@ void GUI::loop(const DateTime& now)
                             // signalization_melody_start-2 is off
                             // signalization_melody_start-1 is standard beeping
                             // the rest are melodies
+                            // TODO change this to 0 off; 1 standard; 2..17 melodies
                             if (prev_sig.buzzer > signalization_melody_end)
                                 prev_sig.buzzer = signalization_melody_start-1;
                             else if (prev_sig.buzzer == 0)
