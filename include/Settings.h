@@ -220,8 +220,11 @@ Buttons
 
 // Duration of a long press
 // Not needed right now
-//#define button_long_press 1000  // ms
+#define button_long_press 1000  // ms
 
+// Fade out duration when controlled by snooze button.
+#define button_ambient_fade_out_duration 1000UL  // ms
+#define button_ambient_fade_in_duration 2*1000UL  // ms
 
 
 /*

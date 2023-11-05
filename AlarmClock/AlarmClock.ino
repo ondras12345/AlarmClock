@@ -203,6 +203,44 @@ void loop()
                 break;
         }
     }
+
+    static bool dimming = false;
+    if (!dimming &&
+        buttons[button_index_snooze].read() == LOW &&
+        buttons[button_index_snooze].currentDuration() >= button_long_press
+        )
+    {
+        // don't do this over and over again
+        dimming = true;
+        // if it is on, turn it off
+        if (ambientDimmer.get_stop() != 0)
+        {
+            ambientDimmer.set_from_duration(
+                ambientDimmer.get_value(), 0,
+                button_ambient_fade_out_duration
+            );
+            ambientDimmer.start();
+        }
+        else
+        {
+            ambientDimmer.set_from_duration(
+                0, 255,
+                button_ambient_fade_in_duration
+            );
+            ambientDimmer.start();
+        }
+    }
+    if (dimming && buttons[button_index_snooze].rose())
+    {
+        dimming = false;
+        if (ambientDimmer.get_stop() != 0)
+        {
+            uint8_t current = ambientDimmer.get_value();
+            ambientDimmer.set(current, current, 1, 1);
+            ambientDimmer.start();
+        }
+    }
+
     if (buttons[button_index_stop].fell())
     {
         if(myGUI.get_backlight() == GUI::off) myGUI.set_backlight(GUI::on_full);
