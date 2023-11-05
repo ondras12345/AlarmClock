@@ -91,6 +91,8 @@ public:
         strcpy(prompt_, prompt_default_);
     };
 
+    void notify_alarms_changed();
+
 protected:
     /*!
         @brief  Errors that can be returned by commands.
@@ -110,6 +112,11 @@ protected:
         kUnsupported = 16,  //!< command not supported in this build
         kLast = 32,  //!< last; all errors are lower than this
     };
+
+    void notify_change();
+
+    unsigned long last_BEL_change = 0;
+    bool BEL_change = false;
 
     //! Error strings corresponding to errors in CommandError
     static const char* error_strings[];

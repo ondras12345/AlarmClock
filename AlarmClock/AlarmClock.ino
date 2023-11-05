@@ -270,6 +270,8 @@ bool readEEPROM()
 
 void writeEEPROM()
 {
+    myCLI.notify_alarms_changed();
+
     DEBUG_println(F("EEPROM write"));
     // basic config:
 

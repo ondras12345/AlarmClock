@@ -86,9 +86,10 @@ void AlarmClockCLI::loop(const DateTime& now)
     now_ = now;
     CLI_.loop();
 
+    unsigned long millis_now = millis();
     // autosave
     if (change_ &&
-            (unsigned long)(millis() - CLI_.prev_command_millis()) >= Serial_autosave_interval)
+            (unsigned long)(millis_now - CLI_.prev_command_millis()) >= Serial_autosave_interval)
     {
         ser_->println();
         ser_->println(F("Autosaving"));
@@ -107,8 +108,31 @@ void AlarmClockCLI::loop(const DateTime& now)
         prev_inhibit = get_inhibit_();
         prev_ambient = ambientDimmer_->get_stop();
         prev_lamp = lamp_->get();
+        notify_change();
+    }
+
+    if (BEL_change && millis_now - last_BEL_change >= Serial_change_debounce)
+    {
+        BEL_change = false;
         ser_->print(Serial_change_character);
     }
+}
+
+
+/// Notify the serial client of a change in configuration of alarms.
+void AlarmClockCLI::notify_alarms_changed()
+{
+    notify_change();
+}
+
+
+/**
+ * Send Serial_change_character to notify the serial client of a state change.
+ */
+void AlarmClockCLI::notify_change()
+{
+    BEL_change = true;
+    last_BEL_change = millis();
 }
 
 

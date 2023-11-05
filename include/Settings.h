@@ -189,6 +189,9 @@ Serial CLI
 // default: '\a' (= '\x07' = ASCII BEL)
 #define Serial_change_character '\a'
 
+// Debounce period for Serial_change_character.
+#define Serial_change_debounce 500UL  // ms
+
 
 
 /*
